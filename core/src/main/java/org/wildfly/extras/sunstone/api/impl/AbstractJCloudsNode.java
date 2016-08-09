@@ -1,7 +1,17 @@
 package org.wildfly.extras.sunstone.api.impl;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
 import org.jboss.shrinkwrap.impl.base.io.tar.TarInputStream;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
@@ -21,17 +31,8 @@ import org.wildfly.extras.sunstone.api.PortOpeningTimeoutException;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
 import org.wildfly.extras.sunstone.api.process.ExecBuilder;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 
 /**
  * <p>Abstract class of a JClouds Node with some default implementations.</p>
@@ -128,7 +129,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
         this.nodeGroupName = nodeGroup;
 
         LOGGER.info("Starting {} node '{}'", cloudProvider.cloudProviderType.getHumanReadableName(), getName());
-        LOGGER.debug("Using node group '{}'", nodeGroup);
+        LOGGER.debug("Using node group '{}' for node '{}'", nodeGroup, getName());
 
         // this constructor _intentionally_ doesn't start the node, this is left for subclass constructors
         //
@@ -172,7 +173,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
 
     @Override
     public void waitForPorts(long timeoutSeconds, int... portNrs) throws PortOpeningTimeoutException {
-        LOGGER.debug("Waiting for ports {} with timeout {} sec", portNrs, timeoutSeconds);
+        LOGGER.debug("Waiting for ports {} with timeout {} sec on node '{}'", portNrs, timeoutSeconds, getName());
         NodeMetadata nodeMetadata = getFreshNodeMetadata();
         for (int port : portNrs) {
             try {
@@ -215,7 +216,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
                     "Local path to copy file from has to be a single regular file: " + localSrc);
         }
 
-        SunstoneCoreLogger.SSH.debug("Copying local path '{}' to remote target '{}'", localSrc, remoteTarget);
+        SunstoneCoreLogger.SSH.debug("Copying local path '{}' to remote target '{}' on node '{}'", localSrc, remoteTarget,
+                getName());
 
         if (Strings.isNullOrEmpty(remoteTarget)) {
             remoteTarget = exec("sh", "-c", "echo -n $PWD").getOutput();
@@ -231,7 +233,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
         try {
             sshClient = getSsh();
             sshClient.put(remoteTarget, Payloads.newPayload(localSrc.toFile()));
-            SunstoneCoreLogger.SSH.debug("Copied local path '{}' to remote target '{}'", localSrc, remoteTarget);
+            SunstoneCoreLogger.SSH.debug("Copied local path '{}' to remote target '{}' on node '{}'", localSrc, remoteTarget,
+                    getName());
         } finally {
             if (sshClient != null) {
                 sshClient.disconnect();
@@ -260,7 +263,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
             throw new IllegalArgumentException("Remote path must not be empty.");
         }
 
-        SunstoneCoreLogger.SSH.debug("Copying remote path '{}' to local target '{}'", remoteSrc, localTarget);
+        SunstoneCoreLogger.SSH.debug("Copying remote path '{}' on node '{}' to local target '{}'", remoteSrc, getName(),
+                localTarget);
 
         SshUtils.FileType remoteFileType = SshUtils.FileType
                 .fromExitCode(exec("sh", "-c", SshUtils.FileType.getShellTestStr(remoteSrc)).getExitCode());
@@ -277,10 +281,10 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
         Path remoteFile = Paths.get(remoteSrc);
         String remoteTarSrc = remoteFile.getParent() + "/" + remoteFile.getFileName() + ".tar"; // TODO: separators for other platforms?
         String command = "cd " + remoteFile.getParent().toString() + " ; tar " + "cf " + remoteTarSrc + " " + remoteFile.getFileName().toString();
-        SunstoneCoreLogger.SSH.debug("Using command '{}' to tar remote file", command);
+        SunstoneCoreLogger.SSH.debug("Using command '{}' to tar remote file on node '{}'", command, getName());
         ExecResponse execResponse = sshClient.exec(command);
         if (execResponse.getExitStatus() != 0) {
-            SunstoneCoreLogger.SSH.warn("Error output when copying file: {}", execResponse.getError());
+            SunstoneCoreLogger.SSH.warn("Error output when copying file on node '{}': {}", getName(), execResponse.getError());
             throw new IllegalStateException("File cannot be copied successfully. Return code of remote tar archive creation is " + execResponse.getExitStatus());
         }
 
@@ -302,7 +306,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
         } finally {
             exec("rm", remoteTarSrc); // TODO why not sshClient.exec(), like above for the 'tar' command?
             sshClient.disconnect();
-            SunstoneCoreLogger.SSH.debug("Copied remote path '{}' to local target '{}'", remoteSrc, localTarget);
+            SunstoneCoreLogger.SSH.debug("Copied remote path '{}' on node '{}' to local target '{}'", remoteSrc, getName(),
+                    localTarget);
         }
     }
 
@@ -336,7 +341,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     @Override
     public boolean isPortOpen(int portNr) {
         portNr = getPublicTcpPort(portNr);
-        LOGGER.debug("Checking port open: {}", portNr);
+        LOGGER.debug("Checking if port is open {} on node '{}'", portNr, getName());
         try {
             socketFinder.findOpenSocketOnNode(getFreshNodeMetadata(), portNr, 0, TimeUnit.SECONDS);
             return true;
@@ -377,11 +382,13 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
                     connected = true;
                     break;
                 } catch (Exception e) {
-                    SunstoneCoreLogger.SSH.debug("Failed to connect to SSH (attempt {} out of {})", (i + 1), SSH_CONNECTION_RETRIES, e);
+                    SunstoneCoreLogger.SSH.debug("Failed to connect to SSH on node '{}' (attempt {} out of {})", getName(),
+                            (i + 1), SSH_CONNECTION_RETRIES, e);
                     try {
                         sshClient.disconnect();
                     } catch (Exception e2) {
-                        SunstoneCoreLogger.SSH.trace("Failed to destroy SSH client that failed to connect", e2);
+                        SunstoneCoreLogger.SSH.trace("Failed to destroy SSH client that failed to connect to node '{}'",
+                                getName(), e2);
                     }
 
                     if (i + 1 >= SSH_CONNECTION_RETRIES) {
@@ -393,7 +400,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
             try {
                 Thread.sleep(SSH_CONNECTION_WAIT_BETWEEN_RETRIES);
             } catch (InterruptedException e) {
-                SunstoneCoreLogger.SSH.warn("Interrupted while attempting to establish SSH connection", e);
+                SunstoneCoreLogger.SSH.warn("Interrupted while attempting to establish SSH connection to node '{}'", getName(),
+                        e);
                 Thread.currentThread().interrupt();
                 break;
             }
