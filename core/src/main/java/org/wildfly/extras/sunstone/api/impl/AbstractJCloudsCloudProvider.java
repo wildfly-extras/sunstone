@@ -16,8 +16,6 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Injector;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.util.OpenSocketFinder;
@@ -28,6 +26,9 @@ import org.wildfly.extras.sunstone.api.CreatedNodes;
 import org.wildfly.extras.sunstone.api.Node;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsCloudProvider;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
+
+import com.google.common.collect.ImmutableList;
+import com.google.inject.Injector;
 
 /**
  * Abstract {@link JCloudsCloudProvider} implementation which holds common logic.
@@ -182,9 +183,12 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
         LOGGER.info("Destroying {} node '{}'", cloudProviderType.getHumanReadableName(), node.getName());
         if (nodeRequiresDestroy()) {
             computeServiceContext.getComputeService().destroyNode(node.getInitialNodeMetadata().getId());
+            LOGGER.info("Destroyed {} node '{}'", cloudProviderType.getHumanReadableName(), node.getName());
+        } else {
+            LOGGER.info("The {} node '{}' ({}) was configured to be kept running. The node is not destroyed.",
+                    cloudProviderType.getHumanReadableName(), node.getName());
         }
         nodes.remove(node.getName());
-        LOGGER.info("Destroyed {} node '{}'", cloudProviderType.getHumanReadableName(), node.getName());
     }
 
     @Override
