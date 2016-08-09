@@ -1,7 +1,16 @@
 package org.wildfly.extras.sunstone.api.impl.azure;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.jclouds.azurecompute.compute.options.AzureComputeTemplateOptions;
 import org.jclouds.azurecompute.domain.NetworkConfiguration;
 import org.jclouds.compute.RunNodesException;
@@ -13,22 +22,14 @@ import org.jclouds.compute.domain.Template;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.ExecResult;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
-import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
+import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.process.ExecBuilder;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Pattern;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 
 /**
  * Azure implementation of {@link org.wildfly.extras.sunstone.api.Node}. This implementation uses JClouds internally.
@@ -74,7 +75,7 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
         // see the AzureCloudProvider.generateUniqueNodeName method javadoc for more details
         templateOptions.nodeNames(Collections.singleton(azureCloudProvider.generateUniqueNodeName(nodeGroupName)));
 
-        LOGGER.debug("Creating JClouds Template with options: {}", templateOptions);
+        LOGGER.debug("Creating JClouds Template for node '{}' with options: {}", getName(), templateOptions);
 
         final OsFamily osFamily = objectProperties.getPropertyAsBoolean(Config.Node.Azure.IMAGE_IS_WINDOWS, false)
                 ? OsFamily.WINDOWS
@@ -86,8 +87,9 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
                 .options(templateOptions)
                 .build();
 
-        LOGGER.debug("Creating {} node from template: {}",
-                cloudProvider.getCloudProviderType().getHumanReadableName(), template);
+        LOGGER.debug("Creating {} node '{}' from template: {}",
+                cloudProvider.getCloudProviderType().getHumanReadableName(),
+                getName(), template);
         try {
             this.initialNodeMetadata = createNode(template);
         } catch (RunNodesException e) {
@@ -120,18 +122,18 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
             throw new IllegalArgumentException("Only one of " + Config.Node.Azure.USER_DATA + " and " + Config.Node.Azure.USER_DATA_FILE + " can be specified");
         }
         if (!Strings.isNullOrEmpty(script)) {
-            LOGGER.debug("The following script string will be run: '{}'", script);
+            LOGGER.debug("The following script string will be run on node '{}': '{}'", getName(), script);
             scriptPath = Files.createTempFile("tmpOnBootScript", ".sh");
             scriptPath.toFile().deleteOnExit();
             Files.write(scriptPath, script.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
         }
         if (scriptPath != null) {
-            LOGGER.debug("Script from file '{}' will be run", scriptPath);
+            LOGGER.debug("Script from file '{}' will be run on node '{}'", scriptPath, getName());
             try {
                 String remoteScriptPath = "/tmp/onBootScript.sh";
                 this.copyFileToNode(scriptPath, remoteScriptPath);
                 ExecResult result = ExecBuilder.fromCommand("sh", remoteScriptPath).withSudo().exec(this);
-                LOGGER.trace("Execution result: {}: " + result);
+                LOGGER.trace("BootScript execution result on node '{}': {}", getName(), result);
             } catch (IOException e) {
                 throw new IllegalArgumentException("Error opening user data file " + scriptPath, e);
             }
@@ -185,7 +187,8 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
         String subnet = objectProperties.getProperty(Config.Node.Azure.SUBNET);
 
         if (virtualNetwork != null && subnet != null) {
-            LOGGER.debug("Looking up virtual network '{}'", virtualNetwork);
+            final String nodeName = objectProperties.getName();
+            LOGGER.debug("Looking up virtual network '{}' for node '{}'", virtualNetwork, nodeName);
             NetworkConfiguration.VirtualNetworkSite foundVirtualNetwork = cloudProvider.getVirtualNetworkApi()
                     .list()
                     .stream()
@@ -193,19 +196,19 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
                     .findAny()
                     .orElseThrow(() -> new IllegalArgumentException("Specified virtual network '" + virtualNetwork
                             + "' doesn't exist in Azure"));
-            LOGGER.debug("Found virtual network '{}'", virtualNetwork);
+            LOGGER.debug("Found virtual network '{}' for node '{}'", virtualNetwork, nodeName);
 
-            LOGGER.debug("Looking up subnet '{}' in virtual network '{}'", subnet, virtualNetwork);
+            LOGGER.debug("Looking up subnet '{}' in virtual network '{}' for node '{}'", subnet, virtualNetwork, nodeName);
             NetworkConfiguration.Subnet foundSubnet = foundVirtualNetwork.subnets()
                     .stream()
                     .filter(s -> subnet.equals(s.name()))
                     .findAny()
                     .orElseThrow(() -> new IllegalArgumentException("Specified subnet '" + subnet
                             + "' doesn't exist in Azure virtual network '" + virtualNetwork + "'"));
-            LOGGER.debug("Found subnet '{}' in virtual network '{}'", subnet, virtualNetwork);
+            LOGGER.debug("Found subnet '{}' in virtual network '{}' for node '{}'", subnet, virtualNetwork, nodeName);
 
-            LOGGER.debug("Using subnet '" + subnet + "' (" + foundSubnet.addressPrefix()
-                    + ") in virtual network '" + virtualNetwork + "'");
+            LOGGER.debug("Using subnet '{}' ({}) in virtual network '{}' for node '{}'", subnet, foundSubnet.addressPrefix(),
+                    virtualNetwork, nodeName);
             templateOptions.virtualNetworkName(virtualNetwork);
             templateOptions.subnetNames(subnet);
         } else if (virtualNetwork != null) {
