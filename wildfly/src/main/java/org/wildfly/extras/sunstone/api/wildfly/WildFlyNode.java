@@ -86,6 +86,13 @@ public class WildFlyNode extends NodeWrapper {
     }
 
     /**
+     * Returns timeout (in seconds) used for waiting for the server to finish booting after its management interface becomes available.
+     */
+    public long getBootTimeoutInSec() {
+        return config().getPropertyAsLong(WildFlyNodeConfig.MGMT_BOOT_TIMEOUT_IN_SEC, 60);
+    }
+
+    /**
      * Creates Creaper {@link OnlineManagementClient}, which can be used for server configuration.
      * The client connection timeout configuration comes from Node property {@value WildFlyNodeConfig#MGMT_CONNECTION_TIMEOUT_IN_SEC}.
      * Note that <b>it's the caller's responsibility</b> to {@code close} the {@code OnlineManagementClient}!
@@ -106,7 +113,8 @@ public class WildFlyNode extends NodeWrapper {
         OnlineOptions.OptionalOnlineOptions clientOptions = options
                 .hostAndPort(getPublicAddress(), getMgmtPort())
                 .auth(mgmtUser, mgmtPassword)
-                .connectionTimeout(timeoutInMillis);
+                .connectionTimeout(timeoutInMillis)
+                .bootTimeout(1000 * (int) getBootTimeoutInSec());
 
         return ManagementClient.online(clientOptions.build());
     }

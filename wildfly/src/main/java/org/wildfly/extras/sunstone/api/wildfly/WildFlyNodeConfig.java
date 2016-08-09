@@ -9,6 +9,7 @@ public final class WildFlyNodeConfig {
     public static final String MGMT_USER = "wildfly.management.user";
     public static final String MGMT_PASSWORD = "wildfly.management.password";
     public static final String MGMT_CONNECTION_TIMEOUT_IN_SEC = "wildfly.management.connectionTimeoutInSec";
+    public static final String MGMT_BOOT_TIMEOUT_IN_SEC = "wildfly.management.bootTimeoutInSec";
     public static final String MGMT_PORT_OPENING_TIMEOUT_IN_SEC = "wildfly.management.portOpeningTimeoutInSec";
 
     public static final String MGMT_MODE = "wildfly.mode";
