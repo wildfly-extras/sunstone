@@ -2,7 +2,7 @@
 
 COUNT=0
 
-for F in $(find / -type d -maxdepth 2)
+for F in $(find /etc -type d -maxdepth 2)
 do
   echo $F
 
