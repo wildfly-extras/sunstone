@@ -1,0 +1,24 @@
+sudo: required
+
+language: java
+
+notifications:
+  email: false
+
+services:  
+    - docker
+
+env:  
+    global:
+        - DOCKER_VERSION=1.10.1-0~trusty
+
+before_install:  
+    # list docker-engine versions
+    - apt-cache madison docker-engine
+
+    # upgrade docker-engine to specific version and enable remote API
+    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+    - echo 'DOCKER_OPTS="-H tcp:// -H unix:///var/run/docker.sock"' | sudo tee -a /etc/default/docker 
+    - sudo cat /etc/default/docker
+    - sudo service docker restart
+    - docker version
