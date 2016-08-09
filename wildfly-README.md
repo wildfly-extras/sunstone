@@ -36,6 +36,7 @@ List of configuration properties for WildFlyNode instances.
 | wildfly.management.password | Password of management user                                       | [None. Optional.]                  |
 | wildfly.management.portOpeningTimeoutInSec | Timeout (in seconds) used for waiting for management port. | `60`                       |
 | wildfly.management.connectionTimeoutInSec  | Timeout (in seconds) used for Creaper's `OnlineManagementClient` operations | `60`      |
+| wildfly.management.bootTimeoutInSec  | Timeout (in seconds) for server to finish booting after management port becomes available. | `60`      |
 | wildfly.mode                | Operating mode of the server. `standalone` or `domain`.           | `standalone`                       |
 | wildfly.domain.default.profile | Will be passed to Creaper's `OnlineOptions.forProfile` if `wildfly.mode` is set to `domain`. | [None. Optional.] |
 | wildfly.domain.default.host    | Will be passed to Creaper's `OnlineOptions.forHost` if `wildfly.mode` is set to `domain`.    | [None. Optional.] |
