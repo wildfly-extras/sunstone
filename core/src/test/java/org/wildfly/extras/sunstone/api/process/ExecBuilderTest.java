@@ -257,7 +257,7 @@ public class ExecBuilderTest {
             // a more real-life example with script stored in a resource file
             result = ExecBuilder.fromShellScript(IOUtils.toString(getClass().getResourceAsStream("shell-script"), StandardCharsets.UTF_8)).exec(sshNode);
             assertEquals(0, result.getExitCode());
-            assertThat(result.getOutput(), endsWith("Found 84 dirs\n"));
+            assertThat(result.getOutput(), endsWith("Found 37 dirs\n"));
         }
     }
 
