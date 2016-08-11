@@ -3,6 +3,7 @@
 ## 0.9.0 (not yet released)
 
 - added configurable boot timeout for WildFly - `wildfly.management.bootTimeoutInSec` property
+- fixed issues reported by Coverity static analysis tool
 
 ## 0.8.0 (2016-08-03)
 
