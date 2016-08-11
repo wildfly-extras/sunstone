@@ -17,7 +17,6 @@ import java.nio.file.Path;
 
 /**
  * Class which contains useful constants, enumerations and methods for working with ssh.
- *
  */
 public class SshUtils {
     private static final Logger LOGGER = SunstoneCoreLogger.SSH;
@@ -72,7 +71,7 @@ public class SshUtils {
     public static void untarFolder(TarInputStream tis, Path localTarget, String strToStrip)
             throws IOException {
         File parentFile = localTarget.toFile();
-        parentFile.mkdirs();
+        mkdirsOrFail(parentFile);
         TarEntry tarEntry;
         while (null != (tarEntry = tis.getNextEntry())) {
             String entryName = tarEntry.getName();
@@ -88,9 +87,9 @@ public class SshUtils {
             File targetFile = new File(parentFile, entryName);
             if (tarEntry.isDirectory()) {
                 LOGGER.debug("Untaring folder {}", targetFile);
-                targetFile.mkdirs();
+                mkdirsOrFail(targetFile);
             } else {
-                targetFile.getParentFile().mkdirs();
+                mkdirsOrFail(targetFile.getParentFile());
                 LOGGER.debug("Untaring entry {} into file {}", entryName, targetFile);
                 try (FileOutputStream out = new FileOutputStream(targetFile)) {
                     byte[] rdbuf = new byte[32 * 1024];
@@ -115,9 +114,7 @@ public class SshUtils {
     public static void untarFile(TarInputStream tis, Path target, boolean targetIsParent) throws IOException {
         File targetFile = target.toFile();
         File parentFile = targetIsParent ? targetFile : targetFile.getParentFile();
-        if (parentFile != null) {
-            parentFile.mkdirs();
-        }
+        mkdirsOrFail(parentFile);
         TarEntry tarEntry;
         while (null != (tarEntry = tis.getNextEntry())) {
             if (!tarEntry.isDirectory()) {
@@ -133,6 +130,25 @@ public class SshUtils {
                         out.write(rdbuf, 0, numRead);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Check if given file is directory and try to create it if not. It throws {@link IOException} if the directory doesn't
+     * exist and it's not possible to create it.
+     *
+     * @param dirFile directory to be created (may be {@code null})
+     * @throws IOException Creation of directory was not successful
+     */
+    private static void mkdirsOrFail(File dirFile) throws IOException {
+        if (dirFile == null) {
+            return;
+        }
+
+        if (!dirFile.isDirectory()) {
+            if (!dirFile.mkdirs()) {
+                throw new IOException("Directory doesn't exist and its creation failed: " + dirFile.getAbsolutePath());
             }
         }
     }
