@@ -31,6 +31,7 @@ addons:
     project:
       name: wildfly-extras/sunstone
       description: Sunstone via Travis CI
+    notification_email: josef.cacek@gmail.com
     build_command_prepend: mvn clean
     build_command: mvn -DskipTests=true compile
     branch_pattern: master
