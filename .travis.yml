@@ -13,16 +13,24 @@ services:
 
 env:  
     global:
-        - DOCKER_VERSION=1.12.0-0~trusty
+        - secure: "foEO/hyh6lWNmYktArL9sQFfjHcXH5Agt5dJS1ptGEjk6LlZaG/QjJaHmpH30LQHbxScfUmrk3dpabjKF0aFPlnEHYvHIaD52kJAFIo3atMN5GuOBYqbrHxctD9nGjyQI0XtDV8k7aSLCJ064vRhxG3B73XPyrICbGISQlMpslMdQGUoT6r5lrijOSD4KyfJmxPwggEWHbd1PcUrXmuEXLX+MXR63dPiJaX20VPONQAZNw/IcYCAL0g+KXZobEu3cXwqtDlwHLGSRC2sPxY1Y1xGgXs1HLpk2svDEHd9T87HCD9gVGeOE/GK+bL6Mcp/KjeToNNEVFdqw45Dzd4miFf2eBYhYvqA9u9vO7yI3bipOeOr8msmvBp/vUqpKm6Wftkm2lSa8uPDLHY5RLA4lNhvPM1cRXhoyI9z2RkHBv65jRkuhpYI1tkV1XRxZ/0M39sEuU/tHUBVEgNs2nPFNfqWPdbHrDkfJhTBn84dq5pNmEfE6GZaoJsJTwcbLaFQhvJXMxrWmvgOejAy5QEOS39ESXZSQ6DuGxPC8JEnkazbgs1K8ETSVAhm8jqIqr6p/s1IyoivgVKwUO2v72z96lnSfg043K+DsbCmXiqLEYlVLttBg4uWtAKvxjF8l0feH9rfkC2zsaVEyb9wEHET7nNojCXXm1pHeK8b7SV+oJI="
 
 before_install:  
     # list docker-engine versions
     - apt-cache madison docker-engine
     - docker version
 
-    # upgrade docker-engine to specific version and enable remote API
-    # - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+    # enable docker remote API
     - echo 'DOCKER_OPTS="-H tcp:// -H unix:///var/run/docker.sock"' | sudo tee -a /etc/default/docker 
     - sudo cat /etc/default/docker
     - sudo service docker restart
     - docker version
+
+addons:
+  coverity_scan:
+    project:
+      name: wildfly-extras/sunstone
+      description: Sunstone via Travis CI
+    build_command_prepend: mvn clean
+    build_command: mvn -DskipTests=true compile
+    branch_pattern: master
