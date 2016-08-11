@@ -2,7 +2,6 @@ package org.wildfly.extras.sunstone.api.impl;
 
 /**
  * Clouds configuration entries/constants.
- *
  */
 public final class Config {
 
@@ -50,14 +49,14 @@ public final class Config {
     /**
      * Cloud provider related keys
      */
-    public final class CloudProvider {
+    public static final class CloudProvider {
 
         public static final String TYPE = "type";
 
         /**
          * Docker cloud provider related keys. When changing, don't forget to change {@code docker-README.md}.
          */
-        public final class Docker {
+        public static final class Docker {
 
             /**
              * key for docker endpoint url
@@ -72,7 +71,7 @@ public final class Config {
         /**
          * EC2 cloud provider related keys. When changing, don't forget to change {@code ec2-README.md}.
          */
-        public final class EC2 {
+        public static final class EC2 {
             /**
              * The AMI query which is used for searching the AMI. Setting this option should not be necessary if you don't intend to search for AMIs (e.g. if you have a specific AMI in mind)
              */
@@ -104,7 +103,7 @@ public final class Config {
         /**
          * Azure cloud provider related keys. When changing, don't forget to change {@code azure-README.md}.
          */
-        public final class Azure {
+        public static final class Azure {
             public static final String SUBSCRIPTION_ID = "azure.subscriptionId";
             public static final String PRIVATE_KEY_FILE = "azure.privateKeyFile";
             public static final String PRIVATE_KEY_PASSWORD = "azure.privateKeyPassword";
@@ -113,7 +112,7 @@ public final class Config {
         /**
          * Azure ARM cloud provider related keys. When changing, don't forget to change {@code azure-arm-README.md}.
          */
-        public final class AzureArm {
+        public static final class AzureArm {
             public static final String SUBSCRIPTION_ID = "azure-arm.subscriptionId";
             public static final String TENANT_ID = "azure-arm.tenantId";
             public static final String APPLICATION_ID = "azure-arm.applicationId";
@@ -124,7 +123,7 @@ public final class Config {
         /**
          * OpenStack cloud provider related keys. When changing, don't forget to change {@code openstack-README.md}.
          */
-        public final class Openstack {
+        public static final class Openstack {
             public static final String ENDPOINT = "openstack.endpoint";
             public static final String USERNAME = "openstack.username";
             public static final String PASSWORD = "openstack.password";
@@ -133,7 +132,7 @@ public final class Config {
         /**
          * Bare metal cloud provider related keys.  When changing, don't forget to change {@code baremetal-README.md}.
          */
-        public final class BareMetal {
+        public static final class BareMetal {
             public static final String NODES = "baremetal.nodes";
         }
     }
@@ -141,12 +140,12 @@ public final class Config {
     /**
      * Configuration related to nodes
      */
-    public final class Node {
+    public static final class Node {
 
         /**
          * Configuration keys for Docker nodes. When changing, don't forget to change {@code docker-README.md}.
          */
-        public final class Docker {
+        public static final class Docker {
 
             /**
              * key for Docker image name (or id)
@@ -187,7 +186,7 @@ public final class Config {
         /**
          * Configuration keys for EC2 nodes. When changing, don't forget to change {@code ec2-README.md}.
          */
-        public final class EC2 {
+        public static final class EC2 {
             /**
              * <a href="https://aws.amazon.com/ec2/instance-types/">Instance type</a> for the node. This defines the
              * computing/networking/... capabilities of the node.
@@ -270,7 +269,7 @@ public final class Config {
         /**
          * Configuration keys for Azure nodes. When changing, don't forget to change {@code azure-README.md}.
          */
-        public final class Azure {
+        public static final class Azure {
             public static final String IMAGE = "azure.image";
             public static final String IMAGE_IS_WINDOWS = "azure.image.isWindows";
             public static final String SIZE = "azure.size";
@@ -297,7 +296,7 @@ public final class Config {
         /**
          * Configuration keys for Azure ARM nodes. When changing, don't forget to change {@code azure-arm-README.md}.
          */
-        public final class AzureArm {
+        public static final class AzureArm {
             public static final String IMAGE = "azure-arm.image";
             public static final String IMAGE_IS_WINDOWS = "azure-arm.image.isWindows";
             public static final String SIZE = "azure-arm.size";
@@ -311,7 +310,7 @@ public final class Config {
         /**
          * Configuration keys for OpenStack nodes. When changing, don't forget to change {@code openstack-README.md}.
          */
-        public final class Openstack {
+        public static final class Openstack {
             public static final String SSH_USER = "openstack.ssh.user";
             public static final String SSH_PASSWORD = "openstack.ssh.password";
             public static final String INSTANCE_TYPE = "openstack.instance.type";
@@ -333,7 +332,7 @@ public final class Config {
         /**
          * Configuration keys for bare metal nodes. When changing, don't forget to change {@code baremetal-README.md}.
          */
-        public final class BareMetal {
+        public static final class BareMetal {
             public static final String HOST = "baremetal.host";
             public static final String SSH_USER = "baremetal.ssh.user";
             public static final String SSH_PASSWORD = "baremetal.ssh.password";
