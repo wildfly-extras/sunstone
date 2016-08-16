@@ -4,6 +4,8 @@
 
 - added configurable boot timeout for WildFly - `wildfly.management.bootTimeoutInSec` property
 - fixed issues reported by Coverity static analysis tool
+- added support for subnets on EC2, switched on by providing `ec2.subnetId` and
+  `ec2.securityGroupIds`; note that security group IDs have to be provided, not names
 
 ## 0.8.0 (2016-08-03)
 
