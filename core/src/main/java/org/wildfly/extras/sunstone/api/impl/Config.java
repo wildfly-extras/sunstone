@@ -215,6 +215,7 @@ public final class Config {
              * The identifier for the security group for this instance. See EC2 management console for list of your security groups.
              */
             public static final String SECURITY_GROUPS = "ec2.securityGroups";
+            public static final String SECURITY_GROUP_IDS = "ec2.securityGroupIds";
 
             /**
              * The list of ports to be available to the outer world.
@@ -264,6 +265,7 @@ public final class Config {
              * @see #USER_DATA
              */
             public static final String USER_DATA_FILE = "ec2.userData.file";
+            public static final String SUBNET_ID = "ec2.subnetId";
         }
 
         /**

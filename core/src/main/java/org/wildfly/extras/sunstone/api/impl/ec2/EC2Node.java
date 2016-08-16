@@ -2,6 +2,7 @@ package org.wildfly.extras.sunstone.api.impl.ec2;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -97,7 +98,7 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
     }
 
     private static EC2TemplateOptions buildTemplateOptions(ObjectProperties objectProperties) {
-        EC2TemplateOptions templateOptions = new EC2TemplateOptions();
+        AWSEC2TemplateOptions templateOptions = new AWSEC2TemplateOptions();
 
         final int[] inboundPorts = Pattern.compile(",")
                 .splitAsStream(objectProperties.getProperty(Config.Node.EC2.INBOUND_PORTS, "")).mapToInt(Integer::parseInt)
@@ -128,9 +129,26 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
             templateOptions.keyPair(keyPair);
         }
 
+        final String securityGroupIds = objectProperties.getProperty(Config.Node.EC2.SECURITY_GROUP_IDS);
         final String securityGroups = objectProperties.getProperty(Config.Node.EC2.SECURITY_GROUPS);
+        if (!Strings.isNullOrEmpty(securityGroupIds) && !Strings.isNullOrEmpty(securityGroups)) {
+            throw new IllegalStateException("Specify security groups either by name (for use outside non-default VPCs) " +
+                    "or by ID (for use with non-default VPCs), but not both");
+        }
+        if (!Strings.isNullOrEmpty(securityGroupIds)) {
+            templateOptions.securityGroupIds(securityGroupIds.split(","));
+        }
         if (!Strings.isNullOrEmpty(securityGroups)) {
             templateOptions.securityGroups(securityGroups.split(","));
+        }
+
+        final String subnetId = objectProperties.getProperty(Config.Node.EC2.SUBNET_ID);
+        if (!Strings.isNullOrEmpty(subnetId) && !Strings.isNullOrEmpty(securityGroups)) {
+            throw new IllegalStateException("Subnet IDs cannot be specified when security groups are specified by name. " +
+                    "You need to specify security group IDs.");
+        }
+        if (!Strings.isNullOrEmpty(subnetId)) {
+            templateOptions.subnetId(subnetId);
         }
 
         byte[] userData = null;
