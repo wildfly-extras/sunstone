@@ -62,6 +62,32 @@ node.mynode.ec2.ssh.user=EC2_USER
 
 Amazon EC2 cloud provider is based on JClouds `aws-ec2` provider implementation.
 
+## VPCs and subnets
+
+The AWS EC2 cloud provider allows you to assign a node into a subnet. The subnet has to be
+specified by it's ID. Every subnet also belongs in a VPC, although a VPC can contain multiple
+subnets. There can be two kinds of VPCs and AWS behaves differently depending on which you specify:
+
+* **Default VPC** This is a VPC that is always present in newer AWS accounts or regions. It cannot be
+  deleted and every instance that is started without specifying a subnet is assigned inside this
+  VPC. When you supply the EC2 cloud provider with an ID of a subnet which belongs in a default
+  VPC, you need to specify security groups by names (not IDs!).
+* **Non-default VPC.** This is a VPC that has been created by a user in any kind of AWS account. When
+  you supply the EC2 cloud provider with a subnet inside a non-default VPC, you need to specify
+  security groups by IDs (not names!) due to VPC API requirements.
+
+Sample deployment into a non-default VPC subnet would use properties like these:
+```
+node.mynode.ec2.subnetId=subnet-sbnt1234
+node.mynode.ec2.securityGroupIds=sg-scgrp123
+```
+
+The need to specify security groups is temporary and waits on resolution of
+https://issues.apache.org/jira/browse/JCLOUDS-1120. When that is resolved, and Sunstone is updated,
+a default security group should be created when none is specified.
+
+See the AWS VPC documentation for more details on VPCs: https://aws.amazon.com/documentation/vpc/.
+
 ### CloudProvider
 
 ```
@@ -108,3 +134,5 @@ List of EC2 `Node` properties:
 | ec2.waitForPorts            | Comma-separated list of ports to wait for. Port 22 is recommended, since you'll likely want to run some commands through ssh on your machine. | 22 |
 | ec2.userData                | User data in a string. Takes precedence over `ec2.userData.file`. | [None. Optional.] |
 | ec2.userData.file           | Path to file with user data. See [EC2 User data](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) | [None. Optional.] |
+| ec2.subnetId                | The ID of a subnet this node should belong in. A VPC may have multiple subnets in different availability zones, but a subnet is always only associated with only a single VPC. | [None. Optional.] |
+| ec2.securityGroupIds        | The IDs (not names!) of VPC security groups. These are used only for non-default VPCs and cannot be used when security group names are specified. Also see `ec2.subnetId` and `ec2.securityGroups`. | [None. Optional. (Unless subnet ID has been specified.)] |
