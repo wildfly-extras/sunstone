@@ -1,12 +1,13 @@
 package org.wildfly.extras.sunstone.api.impl;
 
-import org.slf4j.Logger;
-
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.slf4j.Logger;
 
 public final class FilesUtils {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
@@ -39,4 +40,18 @@ public final class FilesUtils {
             return is;
         }
     }
+
+    /**
+     * This method sets permissions to the given file to not allow everybody to read it. Only when underlying OS allows the change.
+     *
+     * @param file File to set permissions (must be not-{@code null})
+     */
+    public static void setNotWorldReadablePermissions(File file) {
+       file.setReadable(false, false);
+       file.setWritable(false, false);
+       file.setExecutable(false, false);
+       file.setReadable(true, true);
+       file.setWritable(true, true);
+    }
+
 }

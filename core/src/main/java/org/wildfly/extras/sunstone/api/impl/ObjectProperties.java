@@ -243,8 +243,10 @@ public class ObjectProperties implements ConfigProperties {
 
             try {
                 Path tempFile = Files.createTempFile(prefix, suffix).toAbsolutePath().normalize();
-                Resources.asByteSource(classpathUrl).copyTo(com.google.common.io.Files.asByteSink(tempFile.toFile()));
-                tempFile.toFile().deleteOnExit();
+                final File file = tempFile.toFile();
+                FilesUtils.setNotWorldReadablePermissions(file);
+                Resources.asByteSource(classpathUrl).copyTo(com.google.common.io.Files.asByteSink(file));
+                file.deleteOnExit();
                 return tempFile;
             } catch (IOException e) {
                 throw new IllegalArgumentException("Couldn't copy file from classpath to a temporary file: " + propertyValue, e);
