@@ -107,13 +107,18 @@ public final class CloudProperties {
                     properties.load(is);
                     LOGGER.debug("CloudProperties loaded from {}", path);
                 } else {
-                    LOGGER.warn("Loading CloudProperties failed, because the file {} was not found", path);
+                    String message = "Loading CloudProperties failed, because the file " + path + " was not found";
+                    LOGGER.warn(message);
+                    throw new ResourceLoadingException(message);
                 }
             } catch (IOException e) {
                 LOGGER.error("Loading CloudProperties from {} failed", path, e);
+                throw new ResourceLoadingException(e);
             }
         } else {
-            LOGGER.warn("Unable to read properties from null path");
+            String message = "Unable to read properties from null path";
+            LOGGER.warn(message);
+            throw new NullPointerException(message);
         }
         return this;
     }
@@ -130,9 +135,12 @@ public final class CloudProperties {
                 LOGGER.debug("CloudProperties loaded from given InputStream", is);
             } catch (IOException e) {
                 LOGGER.error("Loading CloudProperties from given InputStream failed", e);
+                throw new ResourceLoadingException(e);
             }
         } else {
-            LOGGER.warn("Unable to read properties from null InputStream");
+            String message = "Unable to read properties from null InputStream";
+            LOGGER.warn(message);
+            throw new NullPointerException(message);
         }
         return this;
     }
@@ -158,9 +166,12 @@ public final class CloudProperties {
                 LOGGER.debug("CloudProperties loaded from classpath resource {}", propertiesResourcePath);
             } catch (IOException e) {
                 LOGGER.error("Loading CloudProperties from given classpath resource failed", e);
+                throw new ResourceLoadingException(e);
             }
         } else {
-            LOGGER.warn("Unable to load properties for null Class");
+            String message = "Unable to load properties for null Class";
+            LOGGER.warn(message);
+            throw new NullPointerException(message);
         }
         return this;
     }
