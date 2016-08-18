@@ -10,6 +10,7 @@
   with `classpath:` prefix (if the underlying OS supports configuring the permissions)
 - `CloudProperties` now throw `ResourceLoadingException` when loading properties from a
   source that does not exist; the thrown excepion wraps its cause
+- fixed preliminary closing of SSH client when using `asDaemon` method of the `ExecBuilder`
 
 ## 0.8.0 (2016-08-03)
 
