@@ -47,14 +47,7 @@ public class EC2Test extends AbstractCloudProviderTest {
 
         @Override
         public boolean execBuilderSupported() {
-            // the following fails with the image we are using in the test:
-            //
-            //     ExecBuilder.fromCommand("touch", "/tmp/bagr").asDaemon().exec(node)
-            //
-            // even if it works OK without the 'asDaemon' part
-            //
-            // it works correctly with other images, so just skipping the test for now
-            return false;
+            return true;
         }
 
         @Override
