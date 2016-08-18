@@ -1,5 +1,6 @@
 package org.wildfly.extras.sunstone.api.impl.azure;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.ExecResult;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
 import org.wildfly.extras.sunstone.api.impl.Config;
+import org.wildfly.extras.sunstone.api.impl.FilesUtils;
 import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
@@ -134,7 +136,9 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
         if (!Strings.isNullOrEmpty(script)) {
             LOGGER.debug("The following script string will be run on node '{}': '{}'", getName(), script);
             scriptPath = Files.createTempFile("tmpOnBootScript", ".sh");
-            scriptPath.toFile().deleteOnExit();
+            final File file = scriptPath.toFile();
+            FilesUtils.setNotWorldReadablePermissions(file);
+            file.deleteOnExit();
             Files.write(scriptPath, script.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
         }
         if (scriptPath != null) {
