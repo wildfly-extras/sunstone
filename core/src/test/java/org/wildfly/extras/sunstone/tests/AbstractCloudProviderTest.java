@@ -274,15 +274,14 @@ public abstract class AbstractCloudProviderTest {
         assertThat(node.exec("cat", "/tmp/my-sudo-id.txt").getOutput(), containsString("root"));
 
         long sleepInSecs = 60;
-        ExecBuilder sleepCheckExec = ExecBuilder.fromCommand("pgrep", "sleep");
-        assertNotEquals("No running 'sleep' process should be found", 0, sleepCheckExec.exec(node).getExitCode());
+        assertEquals("No running 'sleep' process should be found", 1, node.exec("pgrep","sleep").getExitCode());
         Instant start = Instant.now();
         result = ExecBuilder.fromCommand("sh", "-c", "sleep " + sleepInSecs).asDaemon().exec(node);
         Instant end = Instant.now();
         assertThat("ExecBuilder.asDaemon().exec() should return immediatelly",
                 Duration.between(start, end).getSeconds(), lessThan(sleepInSecs));
         assertSame("ExecBuilder.asDaemon().exec() should return the constant", ExecBuilder.EXEC_RESULT_DAEMON, result);
-        assertEquals("Running 'sleep' process should be found", 0, sleepCheckExec.exec(node).getExitCode());
+        assertEquals("Running 'sleep' process should be found", 0, node.exec("pgrep","sleep").getExitCode());
     }
 
     private void testLifecycleControl(Node node) {

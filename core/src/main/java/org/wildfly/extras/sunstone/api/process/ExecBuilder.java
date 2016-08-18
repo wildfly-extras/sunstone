@@ -16,7 +16,6 @@ import org.wildfly.extras.sunstone.api.Node;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.impl.DaemonExecResult;
 import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
-import org.wildfly.extras.sunstone.api.ssh.CommandExecution;
 import org.wildfly.extras.sunstone.api.ssh.SshClient;
 
 /**
@@ -110,16 +109,10 @@ public class ExecBuilder {
         LOGGER.debug("Executing command on node '{}': {}", node.getName(), renderedCommand);
 
         try (SshClient ssh = node.ssh()) {
-            ExecResult execResult;
+            ExecResult execResult = ssh.execAndWait(renderedCommand);
             if (asDaemon) {
-                try (CommandExecution commandExecution = ssh.exec(renderedCommand)) {
-                    // empty is OK, we don't want to touch the streams - it's the daemon.
-                    LOGGER.debug("SSH CommandExecution was created for running command on node '{}' as daemon: {}",
-                            node.getName(), renderedCommand);
-                }
+                LOGGER.trace("Nohup execution result (will not be propagated): {}", execResult);
                 execResult = EXEC_RESULT_DAEMON;
-            } else {
-                execResult = ssh.execAndWait(renderedCommand);
             }
             LOGGER.trace("ExecBuilder execution result: {}", execResult);
             return execResult;
@@ -295,7 +288,7 @@ public class ExecBuilder {
                 }
             }
             if (withSudo) {
-                exec.append("sudo ");
+                exec.append("sudo -S ");
             }
             // sudo with subshell to cover redirects into a file with root privileges
             if (withSudo|| hasEnv) {
