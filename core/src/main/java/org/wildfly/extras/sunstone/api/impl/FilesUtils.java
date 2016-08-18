@@ -42,16 +42,19 @@ public final class FilesUtils {
     }
 
     /**
-     * This method sets permissions to the given file to not allow everybody to read it. Only when underlying OS allows the change.
+     * This method sets permissions to the given file to not allow everybody to read it. Only when underlying OS allows the
+     * change.
      *
      * @param file File to set permissions (must be not-{@code null})
      */
     public static void setNotWorldReadablePermissions(File file) {
-       file.setReadable(false, false);
-       file.setWritable(false, false);
-       file.setExecutable(false, false);
-       file.setReadable(true, true);
-       file.setWritable(true, true);
+        boolean permChgResult = true;
+        permChgResult &= file.setReadable(false, false);
+        permChgResult &= file.setWritable(false, false);
+        permChgResult &= file.setExecutable(false, false);
+        permChgResult &= file.setReadable(true, true);
+        permChgResult &= file.setWritable(true, true);
+        LOGGER.debug("Changing '{}' file permission to be not world-readable {}.", file, permChgResult ? "succeeded" : "failed");
     }
 
 }
