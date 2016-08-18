@@ -1,6 +1,8 @@
 package org.wildfly.extras.sunstone.tests;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -30,9 +32,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.wildfly.extras.sunstone.api.CloudProperties;
 import org.wildfly.extras.sunstone.api.CloudProvider;
+import org.wildfly.extras.sunstone.api.CreatedNodes;
 import org.wildfly.extras.sunstone.api.ExecResult;
 import org.wildfly.extras.sunstone.api.Node;
-import org.wildfly.extras.sunstone.api.CreatedNodes;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.PortOpeningException;
 import org.wildfly.extras.sunstone.api.process.ExecBuilder;
@@ -155,19 +157,28 @@ public abstract class AbstractCloudProviderTest {
                 // OK
             }
 
-            try (Node node = cloudProvider.createNode("mynode")) {
-                assertEquals(1, cloudProvider.getNodes().size());
-                assertNotNull(cloudProvider.getNode("mynode"));
+            try (CreatedNodes createdNodes = cloudProvider.createNodes("mynode", "othernode")) {
+                assertNotNull(createdNodes);
+                assertEquals(2, createdNodes.size());
+
+                final Node node = createdNodes.get(0);
+                final Node node2 = createdNodes.get(1);
+                assertNotNull(node);
+                assertEquals("mynode", node.getName());
+                assertNotNull(node2);
+                assertEquals("othernode", node2.getName());
+
+                assertEquals(2, cloudProvider.getNodes().size());
                 assertEquals(node, cloudProvider.getNode("mynode"));
+                assertEquals(node2, cloudProvider.getNode("othernode"));
                 assertNull(cloudProvider.getNode("MyNode"));
 
-                assertEquals("mynode", node.getName());
                 if (testedCloudProvider.hasImages()) {
-                    assertNotNullNorEmpty(node.getImageName());
+                    assertThat(node.getImageName(), is(not(emptyOrNullString())));
                 }
                 assertEquals(cloudProvider, node.getCloudProvider());
-                assertNotNullNorEmpty(node.getPublicAddress());
-                assertNotNullNorEmpty(node.getPrivateAddress());
+                assertThat(node.getPublicAddress(), is(not(emptyOrNullString())));
+                assertThat(node.getPrivateAddress(), is(not(emptyOrNullString())));
 
                 testPorts(node);
                 testCommandExecution(node);
@@ -180,37 +191,6 @@ public abstract class AbstractCloudProviderTest {
                 } catch (IllegalArgumentException e) {
                     // expected
                 }
-
-
-                assertEquals(1, cloudProvider.getNodes().size());
-                assertNull(cloudProvider.getNode("othernode"));
-
-                try (Node node2 = cloudProvider.createNode("othernode")) {
-                    assertEquals(2, cloudProvider.getNodes().size());
-                    assertEquals(node, cloudProvider.getNode("mynode"));
-                    assertEquals(node2, cloudProvider.getNode("othernode"));
-                    assertEquals("othernode", node2.getName());
-                }
-
-                assertEquals(1, cloudProvider.getNodes().size());
-                assertNull(cloudProvider.getNode("othernode"));
-            }
-
-            assertEquals(0, cloudProvider.getNodes().size());
-            assertNull(cloudProvider.getNode("mynode"));
-            assertNull(cloudProvider.getNode("othernode"));
-
-            try (CreatedNodes nodes = cloudProvider.createNodes("mynode", "othernode")) {
-                assertEquals(2, nodes.size());
-                assertEquals(2, cloudProvider.getNodes().size());
-
-                assertNotNull(cloudProvider.getNode("mynode"));
-                assertNotNull(cloudProvider.getNode("othernode"));
-                assertNull(cloudProvider.getNode("MyNode"));
-
-                // checking order
-                assertEquals("mynode", nodes.get(0).getName());
-                assertEquals("othernode", nodes.get(1).getName());
             }
 
             assertEquals(0, cloudProvider.getNodes().size());
@@ -257,13 +237,14 @@ public abstract class AbstractCloudProviderTest {
 
         ExecResult result = node.exec("id");
         assertEquals(0, result.getExitCode());
-        assertNotNullNorEmpty(result.getOutput());
-        assertNullOrEmpty(result.getError());
+
+        assertThat(result.getOutput(), is(not(emptyOrNullString())));
+        assertThat(result.getError(), is(emptyOrNullString()));
 
         result = node.exec("echo", "foobar");
         assertEquals(0, result.getExitCode());
         assertThat(result.getOutput(), containsString("foobar"));
-        assertNullOrEmpty(result.getError());
+        assertThat(result.getError(), is(emptyOrNullString()));
 
         result = node.exec("doesnt-exist", "foobar");
         assertNotEquals(0, result.getExitCode());
@@ -345,24 +326,5 @@ public abstract class AbstractCloudProviderTest {
 
         String content = new String(Files.readAllBytes(copiedTextFile), StandardCharsets.US_ASCII);
         assertThat(content, containsString("foo bar"));
-    }
-
-    // ---
-
-    // this also returns true for a string full of whitespace
-    private static boolean isNullOrEmpty(String string) {
-        return string == null || string.trim().isEmpty();
-    }
-
-    private static void assertNotNullNorEmpty(String string) {
-        if (isNullOrEmpty(string)) {
-            fail("Expected not-null nor empty string: '" + string + "'");
-        }
-    }
-
-    private static void assertNullOrEmpty(String string) {
-        if (!isNullOrEmpty(string)) {
-            fail("Expected null or empty string: '" + string + "'");
-        }
     }
 }
