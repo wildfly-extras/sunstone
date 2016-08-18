@@ -8,6 +8,8 @@
   `ec2.securityGroupIds`; note that security group IDs have to be provided, not names
 - added more restrictive permissions to the temporary files created for path resources 
   with `classpath:` prefix (if the underlying OS supports configuring the permissions)
+- `CloudProperties` now throw `ResourceLoadingException` when loading properties from a
+  source that does not exist; the thrown excepion wraps its cause
 
 ## 0.8.0 (2016-08-03)
 
