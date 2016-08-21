@@ -182,7 +182,15 @@ The Node interface provides set of methods to work with it. It supports for inst
 * retrieving the node address
 * checking if a port is open on the node
 
-There are currently no general configuration options for Nodes.
+List of general `Node` properties:
+
+| Property name   | Description                                                                              | Default value     |
+|:----------------|:-----------------------------------------------------------------------------------------|:------------------|
+| bootScript      | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| bootScript.file | As `bootScript`, but allows you to specify a path to a file that contains the script. Only one of `bootScript` and `bootScript.file` can be specified at a time. | [None. Optional.] |
+
+These properties can be overriden on cloud provider level by appending provider name prefix (e.g. `docker.bootScript`).
+
 Consult documentation of specific cloud implementation for Node configuration options. 
 
 #### Node API example

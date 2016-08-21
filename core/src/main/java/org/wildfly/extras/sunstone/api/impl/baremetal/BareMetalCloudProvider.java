@@ -1,8 +1,10 @@
 package org.wildfly.extras.sunstone.api.impl.baremetal;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.primitives.Booleans;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.wildfly.extras.sunstone.api.CloudProviderType;
@@ -15,10 +17,9 @@ import org.wildfly.extras.sunstone.api.impl.ObjectType;
 import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPublicInterfacesModule;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
 
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.primitives.Booleans;
 
 /**
  * Bare metal implementation of CloudProvider. This implementation uses JClouds internally.
@@ -91,7 +92,8 @@ public class BareMetalCloudProvider extends AbstractJCloudsCloudProvider {
         return new BareMetalNode(this, name, overrides);
     }
 
-    protected boolean nodeRequiresDestroy() {
+    @Override
+    public boolean nodeRequiresDestroy() {
         return false;
     }
 }

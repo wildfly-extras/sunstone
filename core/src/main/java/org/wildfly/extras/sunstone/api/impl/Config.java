@@ -142,6 +142,11 @@ public final class Config {
      */
     public static final class Node {
 
+        public static final class Shared {
+            public static final String BOOT_SCRIPT = "bootScript";
+            public static final String BOOT_SCRIPT_FILE = "bootScript.file";
+        }
+
         /**
          * Configuration keys for Docker nodes. When changing, don't forget to change {@code docker-README.md}.
          */
@@ -253,17 +258,17 @@ public final class Config {
             public static final String WAIT_FOR_PORTS = "ec2.waitForPorts";
             /**
              * Unencoded Value of <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html">EC2 User data</a>.
-             * This property takes precedence over the {@value #USER_DATA_FILE}.
+             * This property takes precedence over the {@value #BOOT_SCRIPT_FILE}.
              *
-             * @see #USER_DATA_FILE
+             * @see #BOOT_SCRIPT_FILE
              */
             public static final String USER_DATA = "ec2.userData";
             /**
              * Path to a file with unencoded value of
              * <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html">EC2 User data</a>. This property is
-             * only used when {@value #USER_DATA} property is not specified.
+             * only used when {@value #BOOT_SCRIPT} property is not specified.
              *
-             * @see #USER_DATA
+             * @see #BOOT_SCRIPT
              */
             public static final String USER_DATA_FILE = "ec2.userData.file";
             public static final String SUBNET_ID = "ec2.subnetId";
@@ -284,12 +289,20 @@ public final class Config {
             public static final String SSH_PRIVATE_KEY_FILE = "azure.ssh.privateKeyFile";
             public static final String WAIT_FOR_PORTS = "azure.waitForPorts";
             public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "azure.waitForPorts.timeoutSec";
-            public static final String USER_DATA = "azure.userData";
-            public static final String USER_DATA_FILE = "azure.userData.file";
             public static final String PROVISION_GUEST_AGENT = "azure.provisionGuestAgent";
             public static final String VIRTUAL_NETWORK = "azure.virtualNetwork";
             public static final String SUBNET = "azure.subnet";
 
+            /**
+             * @deprecated Use {@link Config.Node.Shared#BOOT_SCRIPT}
+             */
+            @Deprecated
+            public static final String USER_DATA = "azure.userData";
+            /**
+             * @deprecated Use {@link Config.Node.Shared#BOOT_SCRIPT_FILE}
+             */
+            @Deprecated
+            public static final String USER_DATA_FILE = "azure.userData.file";
             @Deprecated
             public static final String LOGIN_NAME = "azure.login.name";
             @Deprecated

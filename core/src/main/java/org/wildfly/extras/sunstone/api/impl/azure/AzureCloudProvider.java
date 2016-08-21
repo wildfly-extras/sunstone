@@ -1,6 +1,12 @@
 package org.wildfly.extras.sunstone.api.impl.azure;
 
-import com.google.common.collect.ImmutableSet;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.azurecompute.AzureComputeApi;
 import org.jclouds.azurecompute.config.AzureComputeProperties;
@@ -18,12 +24,7 @@ import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPublicInterfacesModule;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
 
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Azure implementation of CloudProvider. This implementation uses JClouds internally.

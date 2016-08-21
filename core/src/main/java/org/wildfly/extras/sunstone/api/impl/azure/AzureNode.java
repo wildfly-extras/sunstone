@@ -107,7 +107,7 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
         try {
             waitForPorts(timeout, 22);
         } catch (Exception e) {
-            if (!objectProperties.getPropertyAsBoolean(Config.LEAVE_NODES_RUNNING, false)) {
+            if (cloudProvider.nodeRequiresDestroy()) {
                 computeService.destroyNode(initialNodeMetadata.getId());
             }
             throw e;
@@ -116,7 +116,7 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
         try {
             executeOnBootScript(objectProperties);
         } catch (InterruptedException | IOException | IllegalArgumentException e) {
-            if (!objectProperties.getPropertyAsBoolean(Config.LEAVE_NODES_RUNNING, false)) {
+            if (cloudProvider.nodeRequiresDestroy()) {
                 computeService.destroyNode(initialNodeMetadata.getId());
             }
             throw new RuntimeException("Unable to execute on boot script on node " + name, e);
