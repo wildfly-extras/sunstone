@@ -104,6 +104,8 @@ List of Docker `Node` properties:
 |:-----------------------|:------------------------------------------------------------------|:-----------------------------------|
 | nodegroup              | Name of the node group for this node. Default value should typically be satisfactory. | The `nodegroup` value from the cloud provider. |
 | docker.image           | Image name from which the node is started                         |                                    |
+| docker.bootScript      | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| docker.bootScript.file | As `docker.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `docker.bootScript` and `docker.bootScript.file` can be specified at a time. | [None. Optional.] |
 | docker.networkMode     | NetworkMode used                                                  | `host`                             |
 | docker.capAdd          | Comma separated list of Linux capabilities to be added.           |                                    |
 | docker.cmd             | Docker command                                                    |                                    |

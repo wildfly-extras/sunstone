@@ -1,8 +1,10 @@
 package org.wildfly.extras.sunstone.api.impl.ec2;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Module;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.aws.ec2.reference.AWSEC2Constants;
 import org.jclouds.ec2.EC2Api;
@@ -18,10 +20,9 @@ import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPublicInterfacesModule;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Module;
 
 /**
  * EC2 implementation of CloudProvider. This implementation uses JClouds internally.

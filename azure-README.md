@@ -77,6 +77,8 @@ List of Azure `Node` properties:
 | nodegroup              | Name of the node group for this node. Default value should typically be satisfactory. | The `nodegroup` value from the cloud provider. |
 | azure.image            | Name of the Azure virtual machine image                           | [None. Mandatory.]                 |
 | azure.image.isWindows  | Set the `true` value if the OS of provided image is Windows. This flag allows to configure username and password for Windows systems. | `false`                            |
+| azure.bootScript       | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| azure.bootScript.file  | As `azure.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `azure.bootScript` and `azure.bootScript.file` can be specified at a time. | [None. Optional.] |
 | azure.provisionGuestAgent | Allows to set optional `true`/`false` Azure Role `ProvisionGuestAgent` parameter. Set it `true`, if you want to have possibility to reset user's password on Windows VM through the Azure portal. | [None. Optional.] |
 | azure.size             | ID of the Azure virtual machine size. Some typical are: `BASIC_A[0-4]`, `A[5-11]`, `EXTRASMALL`, `SMALL`, `MEDIUM`, `LARGE`, `EXTRALARGE`. | Azure-specific default value. |
 | azure.inboundPorts     | Comma-delimited numbers of TCP ports that should be open.         | 22                                 |
@@ -87,5 +89,5 @@ List of Azure `Node` properties:
 | azure.subnet           | Name of an existing subnet in an existing virtual network in Azure. See `azure.virtualNetwork` for more. | [None. Optional.] |
 | azure.waitForPorts     | Comma-delimited list of ports that must be open after the virtual machine starts. | [None. Optional.]  |
 | azure.waitForPorts.timeoutSec | How long to wait for `azure.waitForPorts` to become open.  | 5 minutes                          |
-| azure.userData         | Allows you to specify a script that is to be run on boot. The script is run as the root user. | [None. Optional.] |
-| azure.userDataFile     | As `azure.userData`, but allows you to specify a path to a file that contains the script. Only one of `azure.userData` and `azure.userDataFile` can be specified at a time. | [None. Optional.] |
+| ~azure.userData~       | **Deprecated** - use `azure.bootScript` instead.                  | [None. Optional.]                  |
+| ~azure.userData.file~  | **Deprecated** - use `azure.bootScript.file` instead.             | [None. Optional.]                  |

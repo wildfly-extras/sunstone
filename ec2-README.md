@@ -123,6 +123,8 @@ List of EC2 `Node` properties:
 | ec2.instance.name           | The instance name. Has no impact on node configuration.           | [None. Mandatory.] |
 | ec2.image                   | Name of the image for the node. If ambiguous or missing, `ec2.image.id` will be used. See EC2 console for the list of instances available to you. | [None. Mandatory. (Well technically, it's optional, but it's recommended to treat is as mandatory.)] |
 | ec2.image.id                | ID of the image for the node. Used when `ec2.image` is ambiguous or missing. | [None. Mandatory when `ec2.image` is missing or ambiguous.] |
+| ec2.bootScript              | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| ec2.bootScript.file         | As `ec2.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `ec2.bootScript` and `ec2.bootScript.file` can be specified at a time. | [None. Optional.] |
 | ec2.keyPair                 | The key pair for this instance. If you want to connect manually to the instance, this will be used to access it. You can import a key pair in the EC2 console. | [None. Mandatory.] |
 | ec2.securityGroups          | The security group definition for your instance. See EC2 console for the list of security groups available to you. | [None. Mandatory.] |
 | ec2.inboundPorts            | Comma-separated list of ports that can be used to access the instance. You will usually require at least port 22 for SSH access. | 22 |
