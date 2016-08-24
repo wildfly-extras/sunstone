@@ -1,10 +1,8 @@
 package org.wildfly.extras.sunstone.api.impl.ec2;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Module;
 import org.jclouds.ContextBuilder;
 import org.jclouds.aws.ec2.reference.AWSEC2Constants;
 import org.jclouds.ec2.EC2Api;
@@ -20,9 +18,10 @@ import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPublicInterfacesModule;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Module;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * EC2 implementation of CloudProvider. This implementation uses JClouds internally.
@@ -72,6 +71,17 @@ public final class EC2CloudProvider extends AbstractJCloudsCloudProvider {
     @Override
     protected JCloudsNode createNodeInternal(String name, Map<String, String> overrides) {
         return new EC2Node(this, name, overrides);
+    }
+
+    @Override
+    protected String postProcessNodeGroupWhenCreatingNode(String nodeGroup) {
+        // JClouds place a limitation of 63 characters on the node group (see https://github.com/wildfly-extras/sunstone/issues/27)
+        // EC2 seems to accept longer instance names, so there's no problem with that; JClouds even append instance-ids to the node-group
+        if (nodeGroup.length() > 63) {
+            nodeGroup = nodeGroup.substring(0, 63);
+        }
+
+        return nodeGroup;
     }
 
     /**
