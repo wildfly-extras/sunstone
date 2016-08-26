@@ -11,6 +11,8 @@
 - `CloudProperties` now throw `ResourceLoadingException` when loading properties from a
   source that does not exist; the thrown excepion wraps its cause
 - fixed preliminary closing of SSH client when using `asDaemon` method of the `ExecBuilder`
+- added support for Docker volume bindings; It's configured through a new `DockerNode`
+  property `docker.volumeBindings` which accepts comma separated list of bindings
 
 ## 0.8.0 (2016-08-03)
 

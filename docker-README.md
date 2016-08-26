@@ -111,13 +111,14 @@ List of Docker `Node` properties:
 | docker.env             | Environment variables in form `KEY=VALUE` separated by value defined in `docker.env.splitter` |        |
 | docker.env.splitter    | Separator RegEx for `docker.env` values                           |  `,`                               |
 | docker.inboundPorts    | which ports should be open                                        |                                    |
-| docker.portBindings    | comma separated list of TCP port bindings in form "hostPort:nodePort" |                                |
+| docker.portBindings    | Comma separated list of TCP port bindings in form "hostPort:nodePort" |                                |
 | docker.privileged      | true/false flag which controls if the container is privileged     | false                              |
-| docker.waitForPorts    | comma separated list of port numbers to wait for when starting the node |                              |
+| docker.waitForPorts    | Comma separated list of port numbers to wait for when starting the node |                              |
 | docker.waitForPorts.timeoutSec | maximum wait time (in seconds) for opening the `docker.waitForPorts` port | 30                 |
 | docker.ssh.port        | SSH port number if SSH is installed                               |                                    |
 | docker.ssh.user        | SSH username                                                      |                                    |
 | docker.ssh.password    | SSH user password                                                 |                                    |
 | docker.ssh.privateKey  | SSH user private key                                              |                                    |
+| docker.volumeBindings  | Comma separated list of volume bindings in form `/hostDir:/containerDir`  |                               |
 | docker.cpuShares       | [CPU shares](https://docs.docker.com/engine/reference/run/#cpu-share-constraint) (relative weight) |   |
 | docker.memoryInMb      | [Memory limit](https://docs.docker.com/engine/reference/run/#runtime-constraints-on-resources) in megabytes | |

@@ -45,12 +45,12 @@ import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.PortOpeningException;
 import org.wildfly.extras.sunstone.api.PortOpeningTimeoutException;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
-import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.DefaultExecResult;
 import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SshUtils;
+import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -69,11 +69,8 @@ import com.google.gson.stream.JsonToken;
 public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
 
-    private static final NodeConfigData DOCKER_NODE_CONFIG_DATA = new NodeConfigData(
-            Config.Node.Docker.WAIT_FOR_PORTS,
-            Config.Node.Docker.WAIT_FOR_PORTS_TIMEOUT_SEC,
-            30
-    );
+    private static final NodeConfigData DOCKER_NODE_CONFIG_DATA = new NodeConfigData(Config.Node.Docker.WAIT_FOR_PORTS,
+            Config.Node.Docker.WAIT_FOR_PORTS_TIMEOUT_SEC, 30);
 
     private final String imageName;
     private final NodeMetadata initialNodeMetadata;
@@ -158,8 +155,7 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
         final Map<String, List<Map<String, String>>> portBindingsConf = Maps.newHashMap();
         final String portBindings = objectProperties.getProperty(Config.Node.Docker.PORT_BINDINGS);
         if (!Strings.isNullOrEmpty(portBindings)) {
-            Splitter.on(',').trimResults().omitEmptyStrings().splitToList(portBindings).stream()
-                    .map(s -> s.split(":"))
+            Splitter.on(',').trimResults().omitEmptyStrings().splitToList(portBindings).stream().map(s -> s.split(":"))
                     .forEach(hostToNodeArr -> {
                         if (hostToNodeArr.length == 2) {
                             portBindingsConf.put(hostToNodeArr[1] + "/tcp", ImmutableList.<Map<String, String>> of(
@@ -172,8 +168,7 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
 
         Map<String, Object> exposedPorts = null;
         final int[] inboundPorts = Pattern.compile(",")
-                .splitAsStream(objectProperties.getProperty(Config.Node.Docker.INBOUND_PORTS, ""))
-                .mapToInt(Integer::parseInt)
+                .splitAsStream(objectProperties.getProperty(Config.Node.Docker.INBOUND_PORTS, "")).mapToInt(Integer::parseInt)
                 .toArray();
         if (inboundPorts.length > 0) {
             templateOptions.inboundPorts(inboundPorts);
@@ -220,6 +215,11 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
         final String entryPoint = objectProperties.getProperty(Config.Node.Docker.ENTRYPOINT);
         if (entryPoint != null) {
             confBuilder.entrypoint(Arrays.asList(entryPoint.split(",", -1)));
+        }
+
+        final String volumeBindings = objectProperties.getProperty(Config.Node.Docker.VOLUME_BINDINGS);
+        if (volumeBindings != null) {
+            hostConfBuilder.binds(Splitter.on(',').trimResults().omitEmptyStrings().splitToList(volumeBindings));
         }
 
         final String sshUser = objectProperties.getProperty(Config.Node.Docker.SSH_USER);
@@ -295,8 +295,9 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
                     try {
                         result = Integer.parseInt(hostPortStr);
                     } catch (NumberFormatException e) {
-                        LOGGER.debug("Unable to parse public port number for internal port {} (value found was {}) on node '{}'", tcpPort,
-                                hostPortStr, getName());
+                        LOGGER.debug(
+                                "Unable to parse public port number for internal port {} (value found was {}) on node '{}'",
+                                tcpPort, hostPortStr, getName());
                     }
                 } else {
                     LOGGER.debug("Unable to find TCP port mapping for port {} on node '{}'", tcpPort, getName());
@@ -327,8 +328,8 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
                 if (address != null && address.isLoopbackAddress()) {
                     InetSocketAddress inetSockAddr2 = new InetSocketAddress(container.networkSettings().ipAddress(), portNr);
                     if (!isSocketAddrOpen(inetSockAddr2)) {
-                        LOGGER.debug("Port {} is open on public interface, but not on private one ({}) on node '{}'", publicPortNr,
-                                inetSockAddr2, getName());
+                        LOGGER.debug("Port {} is open on public interface, but not on private one ({}) on node '{}'",
+                                publicPortNr, inetSockAddr2, getName());
                         return false;
                     }
                 }
