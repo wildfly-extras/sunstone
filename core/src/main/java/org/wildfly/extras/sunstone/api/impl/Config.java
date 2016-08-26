@@ -166,6 +166,7 @@ public final class Config {
 
             public static final String CMD = "docker.cmd";
             public static final String ENTRYPOINT = "docker.entrypoint";
+            public static final String VOLUME_BINDINGS = "docker.volumeBindings";
 
             public static final String PRIVILEGED = "docker.privileged";
             public static final String CAP_ADD = "docker.capAdd";
