@@ -40,11 +40,14 @@ public class ObjectProperties implements ConfigProperties {
 
     private final ObjectProperties template;
 
-    public ObjectProperties(ObjectPropertiesType objectPropertiesType, String objectName) {
+    public ObjectProperties(ObjectPropertiesType objectPropertiesType, String objectName, Map<String, String> overrides) {
         this.properties = new Properties();
         this.objectType = objectPropertiesType;
         this.name = objectName;
         loadDefaults();
+        if (overrides != null) {
+            applyOverrides(overrides);
+        }
         final String templateName = getProperty(Config.TEMPLATE);
         if (!Strings.isNullOrEmpty(templateName)) {
             Set<String> nameSet = new HashSet<>();
@@ -53,6 +56,10 @@ public class ObjectProperties implements ConfigProperties {
         } else {
             template = null;
         }
+    }
+
+    public ObjectProperties(ObjectPropertiesType objectPropertiesType, String objectName) {
+        this(objectPropertiesType, objectName, (Map<String, String>) null);
     }
 
     /**

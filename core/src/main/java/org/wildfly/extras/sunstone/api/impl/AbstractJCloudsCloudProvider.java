@@ -57,8 +57,7 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
         Objects.requireNonNull(name, "Cloud provider name has to be provided.");
 
         this.cloudProviderType = cloudProviderType;
-        this.objectProperties = new ObjectProperties(ObjectType.CLOUD_PROVIDER, name);
-        this.objectProperties.applyOverrides(overrides);
+        this.objectProperties = new ObjectProperties(ObjectType.CLOUD_PROVIDER, name, overrides);
 
         LOGGER.debug("Creating {} ComputeServiceContext", cloudProviderType.getHumanReadableName());
         ContextBuilder contextBuilder = contextBuilderCreator.apply(objectProperties);

@@ -128,8 +128,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
         this.cloudProvider = cloudProvider;
         this.computeServiceContext = cloudProvider.getComputeServiceContext();
         this.computeService = computeServiceContext.getComputeService();
-        this.objectProperties = new ObjectProperties(ObjectType.NODE, name);
-        this.objectProperties.applyOverrides(configOverrides);
+        this.objectProperties = new ObjectProperties(ObjectType.NODE, name, configOverrides);
         this.socketFinder = cloudProvider.socketFinder;
         this.nodeConfigData = nodeConfigData;
 
