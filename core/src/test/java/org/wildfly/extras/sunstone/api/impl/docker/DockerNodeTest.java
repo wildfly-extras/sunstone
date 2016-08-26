@@ -1,9 +1,11 @@
 package org.wildfly.extras.sunstone.api.impl.docker;
 
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -16,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -532,6 +535,22 @@ public class DockerNodeTest {
         try (DockerNode node = (DockerNode) dockerProvider.createNode("capabilities",
                 ImmutableMap.<String, String> of("docker.capAdd", "SYSLOG"))) {
             assertNotEquals(0, node.exec("sudo", "iptables", "-L").getExitCode());
+        }
+    }
+
+    @Test
+    public void testVolumeBindings() {
+        final int nonce = new Random().nextInt();
+        try (DockerNode node = (DockerNode) dockerProvider.createNode("alpineVolumes",
+                ImmutableMap.<String, String> of("template", "alpine", "docker.volumeBindings", "/tmp:/data"))) {
+            node.exec("sh", "-c", "echo " + nonce + " > /data/testVolumeBindings").assertSuccess();
+        }
+        try (DockerNode node = (DockerNode) dockerProvider.createNode("alpineVolumes",
+                ImmutableMap.<String, String> of("template", "alpine", "docker.volumeBindings", "/tmp:/mnt"))) {
+            final ExecResult execResult = node.exec("cat", "/mnt/testVolumeBindings");
+            execResult.assertSuccess();
+            assertThat(execResult.getOutput(), containsString(String.valueOf(nonce)));
+            node.exec("rm", "-f", "/mnt/testVolumeBindings").assertSuccess();
         }
     }
 
