@@ -87,7 +87,7 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
         try {
             waitForStartPorts();
         } catch (Exception e) {
-            if (!objectProperties.getPropertyAsBoolean(Config.LEAVE_NODES_RUNNING, false)) {
+            if (cloudProvider.nodeRequiresDestroy()) {
                 computeService.destroyNode(initialNodeMetadata.getId());
             }
             throw e;

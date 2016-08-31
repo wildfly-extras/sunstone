@@ -56,9 +56,11 @@ List of Azure `Node` properties:
 | nodegroup              | Name of the node group for this node. Default value should typically be satisfactory. | The `nodegroup` value from the cloud provider. |
 | azure-arm.image        | Reference to the Azure virtual machine image in the format `location/publisher/offer/sku`. Either references a marketplace image (e.g. `eastus/Canonical/UbuntuServer/16.04.0-LTS`) or an image in a blob store under a particular storage account. In the latter case, it looks like `location//#storageAccount/blob`. | [None. Mandatory.] |
 | azure-arm.image.isWindows | TODO this is implemented, but I'm not sure if it makes any sense. | `false`                         |
+| azure-arm.bootScript   | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| azure-arm.bootScript.file | As `azure-arm.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `azure-arm.bootScript` and `azure-arm.bootScript.file` can be specified at a time. | [None. Optional.] |
 | azure-arm.size         | ID of the Azure ARM virtual machine size. Some typical are: `Basic_A[0-4]`, `Standard_A[0-7]`. Note that not all locations have to support all sizes. | Azure-specific default value. |
 | azure-arm.inboundPorts | Comma-delimited numbers of TCP ports that should be open.         | 22                                 |
 | azure-arm.ssh.user     | Username of the user that will be created in the virtual machine. Will be later used for SSH. | [None. Mandatory.] |
 | azure-arm.ssh.password | Password of the user that will be created in the virtual machine. Will be later used for SSH. Note that Azure requires passwords to have certain quality; too simple passwords will cause an error. | [None. Mandatory.] |
 | azure-arm.waitForPorts | Comma-delimited list of ports that must be open after the virtual machine starts. | [None. Optional.]  |
-| azure-arm.waitForPorts.timeoutSec | How long to wait for `azure.waitForPorts` to become open. | 5 minutes                       |
+| azure-arm.waitForPorts.timeoutSec | How long to wait for `azure-arm.waitForPorts` to become open. | 5 minutes                       |

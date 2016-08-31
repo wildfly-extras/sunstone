@@ -70,6 +70,8 @@ List of OpenStack `Node` properties:
 | openstack.instance.type     | Instance type for the node (Flavor). This defines the computing/networking/... capabilities of the node. | [None. Mandatory.] |
 | openstack.image             | Name of the image for the node. If ambiguous or missing, `openstack.image.id` will be used. | [None. Mandatory. (Well techinically, it's optional, but it's recommended to treat is as mandatory.)] |
 | openstack.image.id          | ID of the image for the node. Used when `openstack.image` is ambiguous or missing. | [None. Mandatory when `openstack.image` is missing or ambiguous.] |
+| openstack.bootScript        | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| openstack.bootScript.file   | As `openstack.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `openstack.bootScript` and `openstack.bootScript.file` can be specified at a time. | [None. Optional.] |
 | openstack.floatingIpPools   | Comma separated list of floating IP pool names. If the value is not provided, then all available pool names are used. | [None. Optional.] |
 | openstack.keyPair           | The key pair name (for public key) to be imported into this instance as an `authorized_key`. You can import a public key in the OpenStack dashboard. | [None. Optional.] |
 | openstack.inboundPorts      | Comma separated list of ports that can be used to access the instance. You will usually require at least port 22 for ssh access. | [None. Optional.] |
