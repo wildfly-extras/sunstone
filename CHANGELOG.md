@@ -13,8 +13,10 @@
 - fixed preliminary closing of SSH client when using `asDaemon` method of the `ExecBuilder`
 - added support for Docker volume bindings; It's configured through a new `DockerNode`
   property `docker.volumeBindings` which accepts comma separated list of bindings
-- added new properties shared across cloud providers: `bootScript` and `bootScript.file`; they can be
-  overriden by provider specific variants prefixed by `[providerType].` (e.g. `docker.bootScript`)
+- added new properties shared across cloud providers; These properties can be overriden
+  by provider specific variants prefixed with `[providerType].` (e.g. `docker.bootScript`):
+  - `bootScript` and `bootScript.file`
+  - `stop.timeoutSec` and `start.timeoutSec`
 
 ## 0.8.0 (2016-08-03)
 

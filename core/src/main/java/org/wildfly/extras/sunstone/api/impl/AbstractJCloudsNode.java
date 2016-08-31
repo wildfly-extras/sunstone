@@ -475,7 +475,10 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     public void stop() throws OperationNotSupportedException {
         LOGGER.info("Stopping {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
         computeService.suspendNode(getInitialNodeMetadata().getId());
-        waitForState(NodeMetadata.Status.SUSPENDED, TimeUnit.MINUTES.toSeconds(2));
+        final String timeoutPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.STOP_TIMEOUT_SEC);
+        final int timeoutInSec = objectProperties.getPropertyAsInt(timeoutPropertyName, 300);
+        waitForState(NodeMetadata.Status.SUSPENDED, timeoutInSec);
         LOGGER.info("Stopped {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 
@@ -485,7 +488,10 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     public void start() throws OperationNotSupportedException {
         LOGGER.info("Starting {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
         computeService.resumeNode(getInitialNodeMetadata().getId());
-        waitForState(NodeMetadata.Status.RUNNING, TimeUnit.MINUTES.toSeconds(5));
+        final String timeoutPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.START_TIMEOUT_SEC);
+        final int timeoutInSec = objectProperties.getPropertyAsInt(timeoutPropertyName, 300);
+        waitForState(NodeMetadata.Status.RUNNING, timeoutInSec);
         LOGGER.info("Started {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 
