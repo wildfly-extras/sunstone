@@ -1,7 +1,10 @@
 package org.wildfly.extras.sunstone.api.impl.openstack;
 
-import com.google.common.base.Strings;
-import com.google.inject.Module;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
@@ -13,14 +16,11 @@ import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPublicInterfacesModule;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import com.google.common.base.Strings;
+import com.google.inject.Module;
 
 /**
  * Openstack implementation of CloudProvider. This implementation uses JClouds internally.
- *
  */
 public final class OpenstackCloudProvider extends AbstractJCloudsCloudProvider {
     public OpenstackCloudProvider(String providerName, Map<String, String> overrideMap) {

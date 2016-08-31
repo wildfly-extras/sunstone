@@ -3,9 +3,11 @@ package org.wildfly.extras.sunstone.api.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -35,9 +37,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 /**
- * <p>Abstract class of a JClouds Node with some default implementations.</p>
+ * <p>
+ * Abstract class of a JClouds Node with some default implementations.
+ * </p>
  *
- * <p>Subclasses are generally expected to look like this:</p>
+ * <p>
+ * Subclasses are generally expected to look like this:
+ * </p>
  *
  * <pre>
  * public class XxxNode extends AbstractJCloudsNode&lt;XxxCloudProvider> {
@@ -124,7 +130,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     protected final String nodeGroupName;
 
     protected AbstractJCloudsNode(CP cloudProvider, String name, Map<String, String> configOverrides,
-                                  NodeConfigData nodeConfigData) {
+            NodeConfigData nodeConfigData) {
         this.cloudProvider = cloudProvider;
         this.computeServiceContext = cloudProvider.getComputeServiceContext();
         this.computeService = computeServiceContext.getComputeService();
@@ -169,11 +175,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
             return;
         }
 
-        int[] ports = Pattern.compile(",")
-                .splitAsStream(portsString)
-                .filter(s -> !Strings.isNullOrEmpty(s))
-                .mapToInt(Integer::parseInt)
-                .toArray();
+        int[] ports = Pattern.compile(",").splitAsStream(portsString).filter(s -> !Strings.isNullOrEmpty(s))
+                .mapToInt(Integer::parseInt).toArray();
         int timeout = objectProperties.getPropertyAsInt(nodeConfigData.waitForPortsTimeoutProperty,
                 nodeConfigData.waitForPortsDefaultTimeout);
         waitForPorts(timeout, ports);
@@ -198,9 +201,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     }
 
     /**
-     * Copies a file or a directory (TODO!) from local path to the node. If {@code remoteTarget}
-     * is null, the current working directory on the remote machine is taken as a default
-     * destination.
+     * Copies a file or a directory (TODO!) from local path to the node. If {@code remoteTarget} is null, the current working
+     * directory on the remote machine is taken as a default destination.
      *
      * @param localSrc a path to a file on the local machine that is to be copied
      * @param remoteTarget a path on the target machine where the file is to be copied to
@@ -210,9 +212,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
      * @throws FileNotFoundException if {@code localSrc} does not exist
      */
     @Override
-    public void copyFileToNode(Path localSrc, String remoteTarget)
-            throws OperationNotSupportedException, IllegalArgumentException, NullPointerException, IOException,
-            InterruptedException {
+    public void copyFileToNode(Path localSrc, String remoteTarget) throws OperationNotSupportedException,
+            IllegalArgumentException, NullPointerException, IOException, InterruptedException {
         if (localSrc == null) {
             throw new NullPointerException("Local path to copy file from can't be null.");
         }
@@ -220,8 +221,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
             throw new FileNotFoundException("Local path to copy file from doesn't exist: " + localSrc);
         }
         if (!Files.isRegularFile(localSrc)) {
-            throw new IllegalArgumentException(
-                    "Local path to copy file from has to be a single regular file: " + localSrc);
+            throw new IllegalArgumentException("Local path to copy file from has to be a single regular file: " + localSrc);
         }
 
         SunstoneCoreLogger.SSH.debug("Copying local path '{}' to remote target '{}' on node '{}'", localSrc, remoteTarget,
@@ -256,14 +256,14 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
      * @param remoteSrc path to remote file of folder
      * @param localTarget path to local folder, or, if {@code remoteSrc} is a file, also a file
      * @throws OperationNotSupportedException if this node implementation doesn't provide ssh access
-     * @throws IllegalArgumentException if {@code remoteSrc} is a folder and {@code localTarget} is a regular file or if {@code remoteSrc} is an empty string
+     * @throws IllegalArgumentException if {@code remoteSrc} is a folder and {@code localTarget} is a regular file or if
+     *         {@code remoteSrc} is an empty string
      * @throws NullPointerException if {@code remoteSrc} or {@code localTarget} is {@code null}.
      * @throws FileNotFoundException if {@code remoteSrc} does not exist
      */
     @Override
-    public void copyFileFromNode(String remoteSrc, Path localTarget)
-            throws OperationNotSupportedException, IllegalArgumentException, NullPointerException, IOException,
-            InterruptedException {
+    public void copyFileFromNode(String remoteSrc, Path localTarget) throws OperationNotSupportedException,
+            IllegalArgumentException, NullPointerException, IOException, InterruptedException {
         if (remoteSrc == null || localTarget == null) {
             throw new NullPointerException("Remote path and local path can't be null.");
         }
@@ -282,25 +282,30 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
 
         SshUtils.FileType localFileType = SshUtils.FileType.fromPath(localTarget);
         if (localFileType == SshUtils.FileType.FILE && remoteFileType == SshUtils.FileType.DIRECTORY) {
-            throw new IllegalArgumentException("Unable to copy remote directory " + remoteSrc + " to local regular file " + localTarget);
+            throw new IllegalArgumentException(
+                    "Unable to copy remote directory " + remoteSrc + " to local regular file " + localTarget);
         }
 
         SshClient sshClient = getSsh();
         Path remoteFile = Paths.get(remoteSrc);
-        String remoteTarSrc = remoteFile.getParent() + "/" + remoteFile.getFileName() + ".tar"; // TODO: separators for other platforms?
-        String command = "cd " + remoteFile.getParent().toString() + " ; tar " + "cf " + remoteTarSrc + " " + remoteFile.getFileName().toString();
+        String remoteTarSrc = remoteFile.getParent() + "/" + remoteFile.getFileName() + ".tar"; // TODO: separators for other
+                                                                                                // platforms?
+        String command = "cd " + remoteFile.getParent().toString() + " ; tar " + "cf " + remoteTarSrc + " "
+                + remoteFile.getFileName().toString();
         SunstoneCoreLogger.SSH.debug("Using command '{}' to tar remote file on node '{}'", command, getName());
         ExecResponse execResponse = sshClient.exec(command);
         if (execResponse.getExitStatus() != 0) {
             SunstoneCoreLogger.SSH.warn("Error output when copying file on node '{}': {}", getName(), execResponse.getError());
-            throw new IllegalStateException("File cannot be copied successfully. Return code of remote tar archive creation is " + execResponse.getExitStatus());
+            throw new IllegalStateException("File cannot be copied successfully. Return code of remote tar archive creation is "
+                    + execResponse.getExitStatus());
         }
 
         Payload payload = sshClient.get(remoteTarSrc);
 
         try (TarInputStream tis = new TarInputStream(payload.openStream())) {
             if (remoteFileType == SshUtils.FileType.DIRECTORY) {
-                SshUtils.untarFolder(tis, localTarget, localFileType == SshUtils.FileType.NA ? new File(remoteSrc).getName() : null);
+                SshUtils.untarFolder(tis, localTarget,
+                        localFileType == SshUtils.FileType.NA ? new File(remoteSrc).getName() : null);
             } else {
                 SshUtils.untarFile(tis, localTarget, localFileType == SshUtils.FileType.DIRECTORY);
             }
@@ -309,8 +314,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
                 // just skip
             }
         } catch (IOException e) {
-            throw new RuntimeException("Copying file " + remoteSrc + " from node " + getInitialNodeMetadata().getId()
-                    + " failed", e);
+            throw new RuntimeException(
+                    "Copying file " + remoteSrc + " from node " + getInitialNodeMetadata().getId() + " failed", e);
         } finally {
             exec("rm", remoteTarSrc); // TODO why not sshClient.exec(), like above for the 'tar' command?
             sshClient.disconnect();
@@ -320,8 +325,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     }
 
     /**
-     * Default implementation returning {@code true} if and only if JClouds {@link NodeMetadata#getStatus()}
-     * returns {@code RUNNING}.
+     * Default implementation returning {@code true} if and only if JClouds {@link NodeMetadata#getStatus()} returns
+     * {@code RUNNING}.
      */
     @Override
     public boolean isRunning() throws OperationNotSupportedException {
@@ -367,9 +372,9 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     }
 
     /**
-     * This method takes care of establishing a working ssh channel between the program and remote instance.
-     * The reason for retrying the connection is that for some providers (EC2 for example) the authentication
-     * fails for a short period of time (~30 sec) even after the ports are open.
+     * This method takes care of establishing a working ssh channel between the program and remote instance. The reason for
+     * retrying the connection is that for some providers (EC2 for example) the authentication fails for a short period of time
+     * (~30 sec) even after the ports are open.
      *
      * It is user's responsibility to close the sshClient properly ({@code sshClient.disconnect()})
      *
@@ -400,7 +405,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
                     }
 
                     if (i + 1 >= SSH_CONNECTION_RETRIES) {
-                        SunstoneCoreLogger.SSH.warn("Failed to obtain SSH connection for node '{}'", nodeMetadata.getHostname());
+                        SunstoneCoreLogger.SSH.warn("Failed to obtain SSH connection for node '{}'",
+                                nodeMetadata.getHostname());
                     }
                 }
             }
@@ -416,7 +422,8 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
         }
 
         if (sshClient == null || !connected) {
-            throw new IllegalStateException("The SSH client could not be obtained or connected. See logs for further information.");
+            throw new IllegalStateException(
+                    "The SSH client could not be obtained or connected. See logs for further information.");
         }
 
         return sshClient;
@@ -468,7 +475,10 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     public void stop() throws OperationNotSupportedException {
         LOGGER.info("Stopping {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
         computeService.suspendNode(getInitialNodeMetadata().getId());
-        waitForState(NodeMetadata.Status.SUSPENDED, TimeUnit.MINUTES.toSeconds(2));
+        final String timeoutPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.STOP_TIMEOUT_SEC);
+        final int timeoutInSec = objectProperties.getPropertyAsInt(timeoutPropertyName, 300);
+        waitForState(NodeMetadata.Status.SUSPENDED, timeoutInSec);
         LOGGER.info("Stopped {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 
@@ -478,7 +488,10 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     public void start() throws OperationNotSupportedException {
         LOGGER.info("Starting {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
         computeService.resumeNode(getInitialNodeMetadata().getId());
-        waitForState(NodeMetadata.Status.RUNNING, TimeUnit.MINUTES.toSeconds(5));
+        final String timeoutPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.START_TIMEOUT_SEC);
+        final int timeoutInSec = objectProperties.getPropertyAsInt(timeoutPropertyName, 300);
+        waitForState(NodeMetadata.Status.RUNNING, timeoutInSec);
         LOGGER.info("Started {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 
@@ -488,7 +501,53 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
      * @see #stop()
      */
     public void kill() throws OperationNotSupportedException {
-        LOGGER.debug("Killing node '{}' requested, but there's no specific implementation of 'kill'; stopping instead", getName());
+        LOGGER.debug("Killing node '{}' requested, but there's no specific implementation of 'kill'; stopping instead",
+                getName());
         stop();
     }
+
+    protected void handleBootScript() throws IOException, InterruptedException {
+        final boolean isUserDataPropertyProviderSpecific = cloudProvider.hasProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.BOOT_SCRIPT);
+        final boolean isUserDataFilePropertyProviderSpecific = cloudProvider.hasProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.BOOT_SCRIPT_FILE);
+        final String scriptPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.BOOT_SCRIPT);
+        final String scriptPathPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.BOOT_SCRIPT_FILE);
+
+        String script = objectProperties.getProperty(scriptPropertyName);
+        Path scriptPath = objectProperties.getPropertyAsPath(scriptPathPropertyName, null);
+        if (isUserDataPropertyProviderSpecific && !isUserDataFilePropertyProviderSpecific) {
+            scriptPath = null;
+        } else if (!isUserDataPropertyProviderSpecific && isUserDataFilePropertyProviderSpecific) {
+            script = null;
+        }
+
+        // only one can be passed at a time
+        if (!Strings.isNullOrEmpty(script) && scriptPath != null) {
+            throw new IllegalArgumentException(
+                    "Only one of " + scriptPropertyName + " and " + scriptPathPropertyName + " can be specified");
+        }
+        if (!Strings.isNullOrEmpty(script)) {
+            LOGGER.debug("The following script string will be run on node '{}': '{}'", getName(), script);
+            scriptPath = Files.createTempFile("tmpOnBootScript", ".sh");
+            final File file = scriptPath.toFile();
+            FilesUtils.setNotWorldReadablePermissions(file);
+            file.deleteOnExit();
+            Files.write(scriptPath, script.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
+        }
+        if (scriptPath != null) {
+            LOGGER.debug("Script from file '{}' will be run on node '{}'", scriptPath, getName());
+            try {
+                String remoteScriptPath = "/tmp/onBootScript.sh";
+                this.copyFileToNode(scriptPath, remoteScriptPath);
+                ExecResult result = ExecBuilder.fromCommand("sh", remoteScriptPath).withSudo().exec(this);
+                LOGGER.trace("BootScript execution result on node '{}': {}", getName(), result);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Error opening user data file " + scriptPath, e);
+            }
+        }
+    }
+
 }

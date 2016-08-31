@@ -53,6 +53,7 @@ import org.wildfly.extras.sunstone.api.process.ExecBuilder;
  * The node {@code mynode} is expected to run Linux and expose SSH on port 22. The user that will be used for SSH
  * must not be {@code root}, but {@code sudo} without password must be possible. The node must not expose port
  * {@code 54321}. If the node has port mapping, it must not have port mapping for port {@code 54321}.
+ * The node must not have any {@code bootScript} property specified (the test will provide one doing {@code touch /tmp/bootScript.test}).
  * There are no particular requirements for node {@code othernode}, it can be absolutely minimal.
  */
 // TODO WildFly node? (probably require a new node "wildflynode" in cloud.properties, sounds easiest...)
@@ -157,6 +158,8 @@ public abstract class AbstractCloudProviderTest {
                 // OK
             }
 
+            System.setProperty("node.mynode.bootScript", "touch /tmp/bootScript.test");
+
             try (CreatedNodes createdNodes = cloudProvider.createNodes("mynode", "othernode")) {
                 assertNotNull(createdNodes);
                 assertEquals(2, createdNodes.size());
@@ -179,6 +182,8 @@ public abstract class AbstractCloudProviderTest {
                 assertEquals(cloudProvider, node.getCloudProvider());
                 assertThat(node.getPublicAddress(), is(not(emptyOrNullString())));
                 assertThat(node.getPrivateAddress(), is(not(emptyOrNullString())));
+
+                node.exec("test", "-f", "/tmp/bootScript.test").assertSuccess("File /tmp/bootScript.test should exist in the Node.");
 
                 testPorts(node);
                 testCommandExecution(node);

@@ -94,10 +94,20 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
         // nodes.put(name, createNodeInternal(name, overrides))
         JCloudsNode node = nodes.compute(name, (k, v) -> {
             if (v != null) {
-                throw new IllegalArgumentException("There already exist node with given name \"" + k + "\"; " +
-                        "You are not allowed to create two nodes with the same name under same provider");
+                throw new IllegalArgumentException("There already exist node with given name \"" + k + "\"; "
+                        + "You are not allowed to create two nodes with the same name under same provider");
             } else {
-                return createNodeInternal(name, overrides);
+                final AbstractJCloudsNode<?> createdNode = (AbstractJCloudsNode<?>) createNodeInternal(name, overrides);
+                try {
+                    createdNode.handleBootScript();
+                } catch (Exception e) {
+                    if (nodeRequiresDestroy()) {
+                        computeServiceContext.getComputeService().destroyNode(createdNode.getInitialNodeMetadata().getId());
+                    }
+                    throw new RuntimeException("Processing user data script failed for "
+                            + cloudProviderType.getHumanReadableName() + " node '" + name + "'", e);
+                }
+                return createdNode;
             }
         });
         return node;
@@ -212,7 +222,7 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
     }
 
     // typically shouldn't be overridden
-    protected boolean nodeRequiresDestroy() {
+    public boolean nodeRequiresDestroy() {
         if (objectProperties.getPropertyAsBoolean(Config.LEAVE_NODES_RUNNING, false)) {
             return false;
         }
@@ -237,5 +247,15 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
      */
     protected String postProcessNodeGroupWhenCreatingNode(String nodeGroup) {
         return nodeGroup;
+    }
+
+    public String getProviderSpecificPropertyName(ObjectProperties objectProperties, String sharedName) {
+        final String providerSpecificName = getCloudProviderType().getLabel() + "." + sharedName;
+        return hasProviderSpecificPropertyName(objectProperties, sharedName) ? providerSpecificName : sharedName;
+    }
+
+    public boolean hasProviderSpecificPropertyName(ObjectProperties objectProperties, String sharedName) {
+        final String providerSpecificName = getCloudProviderType().getLabel() + "." + sharedName;
+        return objectProperties.getProperty(providerSpecificName) != null;
     }
 }

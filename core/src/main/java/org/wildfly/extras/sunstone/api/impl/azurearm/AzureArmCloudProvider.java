@@ -1,6 +1,11 @@
 package org.wildfly.extras.sunstone.api.impl.azurearm;
 
-import com.google.common.collect.ImmutableSet;
+import static org.jclouds.Constants.PROPERTY_SESSION_INTERVAL;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.azurecompute.arm.config.AzureComputeProperties;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
@@ -13,11 +18,7 @@ import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPublicInterfacesModule;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-
-import static org.jclouds.Constants.PROPERTY_SESSION_INTERVAL;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Azure ARM implementation of CloudProvider. This implementation uses JClouds internally.
