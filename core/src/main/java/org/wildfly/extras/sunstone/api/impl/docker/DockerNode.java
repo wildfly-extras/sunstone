@@ -385,7 +385,7 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
     }
 
     /**
-     * Uses Docker stop to stop the node.
+     * Uses Docker stop to stop the node. This implementation doesn't use {@link Config.Node.Shared#STOP_TIMEOUT_SEC} property.
      *
      * @see org.wildfly.extras.sunstone.api.Node#stop()
      */
@@ -399,7 +399,8 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
     }
 
     /**
-     * User Docker start to (re)start the node.
+     * Uses Docker start to (re)start the node. This implementation doesn't use {@link Config.Node.Shared#START_TIMEOUT_SEC}
+     * property.
      *
      * @see org.wildfly.extras.sunstone.api.Node#start()
      */

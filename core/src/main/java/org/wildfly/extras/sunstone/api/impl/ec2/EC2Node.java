@@ -1,7 +1,13 @@
 package org.wildfly.extras.sunstone.api.impl.ec2;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
 import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -12,18 +18,14 @@ import org.jclouds.ec2.domain.InstanceState;
 import org.jclouds.ec2.domain.RunningInstance;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
-import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.ResolvedImage;
+import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.regex.Pattern;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 
 /**
  * EC2 implementation of {@link org.wildfly.extras.sunstone.api.Node}. This implementation uses JClouds internally.
@@ -31,8 +33,6 @@ import java.util.regex.Pattern;
  */
 public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
-
-    private static final int WAIT_FOR_NODE_STOP_TIMEOUT = 240_000; // milliseconds
 
     private static final NodeConfigData EC2_NODE_CONFIG_DATA = new NodeConfigData(
             Config.Node.EC2.WAIT_FOR_PORTS,
@@ -219,7 +219,10 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
     public void stop() {
         LOGGER.info("Stopping {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
         LOGGER.debug("Stopping instance: {}, instance state: {}", initialNodeMetadata.getId().split("/")[1],  getInstance().getInstanceState());
-        doLifecycle(InstanceState.STOPPED, false);
+        final String timeoutPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.STOP_TIMEOUT_SEC);
+        final int timeoutInSec = objectProperties.getPropertyAsInt(timeoutPropertyName, 300);
+        doLifecycle(InstanceState.STOPPED, false, timeoutInSec);
         LOGGER.info("Stopped {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 
@@ -232,7 +235,10 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
     public void start() {
         LOGGER.info("Starting {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
         LOGGER.debug("Starting instance: {}, instance state: {}", initialNodeMetadata.getId().split("/")[1],  getInstance().getInstanceState());
-        doLifecycle(InstanceState.RUNNING, false); // force (second) parameter does not matter
+        final String timeoutPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.START_TIMEOUT_SEC);
+        final int timeoutInSec = objectProperties.getPropertyAsInt(timeoutPropertyName, 300);
+        doLifecycle(InstanceState.RUNNING, false, timeoutInSec); // force (second) parameter does not matter
         LOGGER.info("Started {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 
@@ -247,19 +253,22 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
     public void kill() {
         LOGGER.info("Killing {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
         LOGGER.debug("Killing instance: {}, instance state: {}", initialNodeMetadata.getId().split("/")[1],  getInstance().getInstanceState());
-        doLifecycle(InstanceState.STOPPED, true);
+        final String timeoutPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Config.Node.Shared.STOP_TIMEOUT_SEC);
+        final int timeoutInSec = objectProperties.getPropertyAsInt(timeoutPropertyName, 300);
+        doLifecycle(InstanceState.STOPPED, true, timeoutInSec);
         LOGGER.info("Killed {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 
-    private void doLifecycle(InstanceState targetInstanceState, boolean force) {
+    private void doLifecycle(InstanceState targetInstanceState, boolean force, int timeoutSec) {
         if (targetInstanceState.equals(InstanceState.STOPPED)) {
             cloudProvider.getInstanceAPI().stopInstancesInRegion(getRegion(), force, initialNodeMetadata.getId().split("/")[1]);
         } else {
             cloudProvider.getInstanceAPI().startInstancesInRegion(getRegion(), initialNodeMetadata.getId().split("/")[1]);
         }
 
-        long timeout = System.currentTimeMillis() + WAIT_FOR_NODE_STOP_TIMEOUT;
-        while (System.currentTimeMillis() < timeout) {
+        long endTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timeoutSec);
+        while (System.currentTimeMillis() < endTime) {
             if (getInstance().getInstanceState().equals(targetInstanceState)) {
                 break;
             }
@@ -272,9 +281,9 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
             }
         }
 
-        if (timeout <= System.currentTimeMillis()) {
+        if (endTime <= System.currentTimeMillis()) {
             LOGGER.warn("Instance {} hasn't switched state to {} in time: {} seconds. Current instance state is: {}",
-                    initialNodeMetadata.getId().split("/")[1], targetInstanceState, WAIT_FOR_NODE_STOP_TIMEOUT / 1000, getInstance().getInstanceState());
+                    initialNodeMetadata.getId().split("/")[1], targetInstanceState, timeoutSec, getInstance().getInstanceState());
         }
     }
 
