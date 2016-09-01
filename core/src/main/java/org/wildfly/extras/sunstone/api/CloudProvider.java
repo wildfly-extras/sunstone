@@ -154,7 +154,7 @@ public interface CloudProvider extends AutoCloseable {
     static CloudProvider create(String providerName, Map<String, String> overrideMap) {
         Objects.requireNonNull(providerName, "Cloud provider name has to be provided.");
 
-        final ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUD_PROVIDER, providerName);
+        final ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUD_PROVIDER, providerName, overrideMap);
         final CloudProviderType type = CloudProviderType.fromLabel(objectProperties.getProperty(Config.CloudProvider.TYPE));
         switch (type) {
             case DOCKER:

@@ -54,6 +54,8 @@ List of Bare Metal `Node` properties:
 |:-----------------------|:------------------------------------------------------------------|:-----------------------------------|
 | nodegroup              | Name of the node group for this node. Default value should typically be satisfactory. | The `nodegroup` value from the cloud provider. |
 | baremetal.host         | Host name or IP address of the node.                              | [None. Mandatory.]                 |
+| baremetal.privateAddress | Private IP address of the node (if any) - it's used as a return value for `Node.getPrivateAddress()` method. | value of `Node.getPublicAddress()` |
+| baremetal.ssh.port     | Port number of running SSH server in the node.                    | `22`                               |
 | baremetal.ssh.user     | Username of the user that will be used for SSH.                   | [None. Mandatory.]                 |
 | baremetal.ssh.password | Password of the user that will be used for SSH.                   | [None. One of `password`, `privateKey`, `privateKeyFile` is mandatory.] |
 | baremetal.ssh.privateKey | Private key for SSH authentication in the PEM format.           | [None. One of `password`, `privateKey`, `privateKeyFile` is mandatory.] |
