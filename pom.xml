@@ -199,7 +199,7 @@
                 <version>${version.jclouds}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.jclouds.labs</groupId>
+                <groupId>org.apache.jclouds.api</groupId>
                 <artifactId>docker</artifactId>
                 <version>${version.jclouds}</version>
             </dependency>
