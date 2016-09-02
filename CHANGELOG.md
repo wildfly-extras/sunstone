@@ -17,6 +17,9 @@
   by provider specific variants prefixed with `[providerType].` (e.g. `docker.bootScript`):
   - `bootScript` and `bootScript.file`
   - `stop.timeoutSec` and `start.timeoutSec`
+- added new configuration entries to Bare Metal provider:
+  - `baremetal.ssh.port` - port number of SSH server in the Node
+  - `baremetal.privateAddress` - configurable value for `getPrivateAddress()` method
 
 ## 0.8.0 (2016-08-03)
 

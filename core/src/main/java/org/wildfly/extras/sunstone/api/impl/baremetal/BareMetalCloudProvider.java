@@ -54,6 +54,7 @@ public class BareMetalCloudProvider extends AbstractJCloudsCloudProvider {
             String sshPassword = nodeProperties.getProperty(Config.Node.BareMetal.SSH_PASSWORD);
             String sshPrivateKey = nodeProperties.getProperty(Config.Node.BareMetal.SSH_PRIVATE_KEY);
             Path sshPrivateKeyFile = nodeProperties.getPropertyAsPath(Config.Node.BareMetal.SSH_PRIVATE_KEY_FILE, null);
+            int sshPort = nodeProperties.getPropertyAsInt(Config.Node.BareMetal.SSH_PORT, 22);
             if (Booleans.countTrue(sshPassword != null, sshPrivateKey != null, sshPrivateKeyFile != null) != 1) {
                 throw new IllegalArgumentException("Exactly one of SSH password or private key or private key file must be set for node '" + node + "'");
             }
@@ -66,6 +67,7 @@ public class BareMetalCloudProvider extends AbstractJCloudsCloudProvider {
             nodesYaml.append("      os_family: immaterial\n"); // required by JClouds, but immaterial
             nodesYaml.append("      os_description: immaterial\n"); // required by JClouds, but immaterial
             nodesYaml.append("      group: ").append(nodeGroup).append("\n");
+            nodesYaml.append("      login_port: ").append(sshPort).append("\n");
             nodesYaml.append("      username: ").append(sshUser).append("\n");
             if (sshPassword != null) {
                 nodesYaml.append("      credential: ").append(sshPassword).append("\n");

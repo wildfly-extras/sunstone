@@ -1,15 +1,17 @@
 package org.wildfly.extras.sunstone.api.impl.baremetal;
 
-import com.google.common.collect.Iterables;
+import java.util.Map;
+
 import org.jclouds.compute.domain.NodeMetadata;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
-import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
+import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 
-import java.util.Map;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 
 /**
  * Bare metal implementation of {@link org.wildfly.extras.sunstone.api.Node}. This implementation uses JClouds internally.
@@ -62,9 +64,8 @@ public class BareMetalNode extends AbstractJCloudsNode<BareMetalCloudProvider> {
 
     @Override
     public String getPrivateAddress() {
-        // no such thing as private address, but we should return something
-        // TODO this should probably be configurable
-        return getPublicAddress();
+        final String privateAddr = objectProperties.getProperty(Config.Node.BareMetal.PRIVATE_ADDRESS);
+        return Strings.isNullOrEmpty(privateAddr) ? getPublicAddress() : privateAddr;
     }
 
     @Override

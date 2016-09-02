@@ -40,7 +40,6 @@ mvn clean install -DtestLogToFile=false \
   -Dopenstack.ssh.user=cloud-user \
   -Dopenstack.ssh.privateKeyFile=default \
   -Dopenstack.keypair=$USER
-  -Dbaremetal.run
 ```
 
 ## Common configuration properties
