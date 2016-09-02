@@ -115,9 +115,9 @@ List of Docker `Node` properties:
 | docker.inboundPorts    | which ports should be open                                        |                                    |
 | docker.portBindings    | Comma separated list of TCP port bindings in form "hostPort:nodePort" |                                |
 | docker.privileged      | true/false flag which controls if the container is privileged     | false                              |
-| docker.waitForPorts    | Comma separated list of port numbers to wait for when starting the node |                              |
+| docker.waitForPorts    | Comma separated list of port numbers  (not-mapped - i.e. in-container value) to wait for when starting the node | |
 | docker.waitForPorts.timeoutSec | maximum wait time (in seconds) for opening the `docker.waitForPorts` port | 30                 |
-| docker.ssh.port        | SSH port number if SSH is installed                               |                                    |
+| docker.ssh.port        | SSH port number if SSH is installed (not-mapped - i.e. in-container value) |                           |
 | docker.ssh.user        | SSH username                                                      |                                    |
 | docker.ssh.password    | SSH user password                                                 |                                    |
 | docker.ssh.privateKey  | SSH user private key                                              |                                    |
