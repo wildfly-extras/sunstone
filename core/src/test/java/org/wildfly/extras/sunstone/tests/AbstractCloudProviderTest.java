@@ -50,7 +50,8 @@ import org.wildfly.extras.sunstone.api.process.ExecBuilder;
  *     <li>nothing else</li>
  * </ul>
  *
- * The node {@code mynode} is expected to run Linux and expose SSH on port 22. The user that will be used for SSH
+ * The node {@code mynode} is expected to run Linux and expose SSH on port returned
+ * by {@link TestedCloudProvider#getPrivateSshPort(Node)}. The user that will be used for SSH
  * must not be {@code root}, but {@code sudo} without password must be possible. The node must not expose port
  * {@code 54321}. If the node has port mapping, it must not have port mapping for port {@code 54321}.
  * The node must not have any {@code bootScript} property specified (the test will provide one doing {@code touch /tmp/bootScript.test}).
@@ -204,6 +205,16 @@ public abstract class AbstractCloudProviderTest {
         }
     }
 
+    /**
+     * Method used to retrieve private (not-mapped) port number on which SSH server in given node was started. The default
+     * implementation returns {@code 22}.
+     *
+     * @return unmapped SSH port number.
+     */
+    protected int getPrivateSshPort(Node node) {
+        return 22;
+    }
+
     private void testPorts(Node node) {
         if (testedCloudProvider.hasPortMapping()) {
             assertEquals(-1, node.getPublicTcpPort(54321));
@@ -212,16 +223,17 @@ public abstract class AbstractCloudProviderTest {
             assertEquals(54321, node.getPublicTcpPort(54321));
         }
 
-        assertTrue(node.isPortOpen(22));
+        final int privateSshPort = testedCloudProvider.getPrivateSshPort(node);
+        assertTrue(node.isPortOpen(privateSshPort));
         assertFalse(node.isPortOpen(54321));
 
         try {
-            node.waitForPorts(0, 22);
+            node.waitForPorts(0, privateSshPort);
         } catch (PortOpeningException e) {
             fail("Waiting for port 22 shouldn't fail");
         }
         try {
-            node.waitForPorts(1, 22);
+            node.waitForPorts(1, privateSshPort);
         } catch (PortOpeningException e) {
             fail("Waiting for port 22 shouldn't fail");
         }

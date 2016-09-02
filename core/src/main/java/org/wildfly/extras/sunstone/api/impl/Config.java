@@ -352,6 +352,8 @@ public final class Config {
          */
         public static final class BareMetal {
             public static final String HOST = "baremetal.host";
+            public static final String PRIVATE_ADDRESS = "baremetal.privateAddress";
+            public static final String SSH_PORT = "baremetal.ssh.port";
             public static final String SSH_USER = "baremetal.ssh.user";
             public static final String SSH_PASSWORD = "baremetal.ssh.password";
             public static final String SSH_PRIVATE_KEY = "baremetal.ssh.privateKey";
