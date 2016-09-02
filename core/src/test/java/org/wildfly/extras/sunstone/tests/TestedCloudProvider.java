@@ -3,6 +3,7 @@ package org.wildfly.extras.sunstone.tests;
 import java.util.Map;
 
 import org.wildfly.extras.sunstone.api.CloudProviderType;
+import org.wildfly.extras.sunstone.api.Node;
 
 public interface TestedCloudProvider {
     /** The {@link CloudProviderType type} of the tested cloud provider. */
@@ -27,4 +28,15 @@ public interface TestedCloudProvider {
      * set wrong authentication data. Can return {@code null} if it isn't possible to devise such a set of overrides.
      */
     Map<String, String> overridesThatPreventCreatingNode();
+
+
+    /**
+     * Method used to retrieve private (not-mapped) port number on which SSH server in given node was started. The default
+     * implementation returns {@code 22}.
+     *
+     * @return unmapped SSH port number.
+     */
+    default int getPrivateSshPort(Node node) {
+        return 22;
+    }
 }

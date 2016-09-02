@@ -69,6 +69,5 @@ mvn clean install -fae \
   "-Dopenstack.image.id=$OS_IMAGE_ID" \
   -Dopenstack.ssh.user=cloud-user \
   -Dopenstack.ssh.privateKeyFile=$OS_PRIVATE_KEY_FILE  \
-  -Dopenstack.keypair=cloudsts \
-  -Dbaremetal.run
+  -Dopenstack.keypair=cloudsts
 ```
