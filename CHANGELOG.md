@@ -20,6 +20,9 @@
 - added new configuration entries to Bare Metal provider:
   - `baremetal.ssh.port` - port number of SSH server in the Node
   - `baremetal.privateAddress` - configurable value for `getPrivateAddress()` method
+- WildFly 10.1.0 BOM replaces JBoss EAP 6.4 BOM in `dependencyManagement`
+- removed transitive dependency on JBoss Controller client; users have to define it manually
+  in the same way as when using standalone Creaper library
 
 ## 0.8.0 (2016-08-03)
 
