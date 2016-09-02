@@ -22,7 +22,8 @@
 
         <testLogToFile>true</testLogToFile>
 
-        <version.jboss.bom.eap>6.4.0.GA</version.jboss.bom.eap>
+        <version.org.wildfly.bom>10.1.0.Final</version.org.wildfly.bom>
+        <version.org.wildfly.core>2.2.0.Final</version.org.wildfly.core>
         <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
 
         <version.jclouds>2.0.0-SNAPSHOT</version.jclouds>
@@ -184,14 +185,31 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <!-- WildFly and WildFly Core -->
             <dependency>
-                <groupId>org.jboss.bom.eap</groupId>
-                <artifactId>jboss-javaee-6.0-with-tools</artifactId>
-                <version>${version.jboss.bom.eap}</version>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>wildfly-javaee7-with-tools</artifactId>
+                <version>${version.org.wildfly.bom}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
+
+            <dependency>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-controller-client</artifactId>
+                <version>${version.org.wildfly.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-cli</artifactId>
+                <version>${version.org.wildfly.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-patching</artifactId>
+                <version>${version.org.wildfly.core}</version>
+            </dependency>
+
             <!-- JClouds -->
             <dependency>
                 <groupId>org.apache.jclouds.provider</groupId>
@@ -339,82 +357,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>wildfly10</id>
-            <activation>
-                <property>
-                    <name>!eap6</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.wildfly.core</groupId>
-                    <artifactId>wildfly-controller-client</artifactId>
-                    <version>2.0.1.Final</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.wildfly.core</groupId>
-                    <artifactId>wildfly-cli</artifactId>
-                    <version>2.0.1.Final</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.wildfly.core</groupId>
-                    <artifactId>wildfly-patching</artifactId>
-                    <version>2.0.1.Final</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.wildfly.arquillian</groupId>
-                    <artifactId>wildfly-arquillian-container-remote</artifactId>
-                    <version>1.1.0.Alpha1</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>eap6</id>
-            <activation>
-                <property>
-                    <name>eap6</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.wildfly.extras.creaper</groupId>
-                    <artifactId>creaper-core</artifactId>
-                    <version>${version.org.wildfly.extras.creaper}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.wildfly.extras.creaper</groupId>
-                    <artifactId>creaper-commands</artifactId>
-                    <version>${version.org.wildfly.extras.creaper}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-arquillian-container-remote</artifactId>
-                </dependency>
-
-            </dependencies>
-        </profile>
-
-        <!-- Activate JBoss Product Maven repository -->
-        <profile>
-            <id>jboss-product-repository</id>
-            <activation>
-                <property>
-                    <name>!jboss-product-repository</name>
-                </property>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>redhat-techpreview-all-repository</id>
-                    <url>http://maven.repository.redhat.com/techpreview/all/</url>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
-    
     <repositories>
         <repository>
             <id>apache-snapshots</id>

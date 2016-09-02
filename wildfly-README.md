@@ -4,13 +4,54 @@ The `WildFlyNode` class is a subclass of the `NodeWrapper` class. It lives in `s
 
 The implementation provides access to WildFly management API for the wrapped Nodes.
 
-**Usage:**
+## Quick start
 
+### Add Maven dependencies
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.wildfly.extras.sunstone</groupId>
+        <artifactId>sunstone-wildfly</artifactId>
+        <version>${version.org.wildfly.extras.sunstone}</version>
+    </dependency>
+
+    <!-- ... -->
+</dependencies>
 ```
+
+WildFly client libraries must also be specified as described
+in [Creaper library README](https://github.com/wildfly-extras/creaper/blob/master/README.md#jboss-as-7--wildfly-client-libraries).
+
+Sample WildFly client dependencies can look like:
+
+```xml
+<dependency>
+    <groupId>org.wildfly.core</groupId>
+    <artifactId>wildfly-controller-client</artifactId>
+    <version>${version.org.wildfly.core}</version>
+</dependency>
+<dependency>
+    <groupId>org.wildfly.core</groupId>
+    <artifactId>wildfly-cli</artifactId>
+    <version>${version.org.wildfly.core}</version>
+</dependency>
+<dependency>
+    <groupId>org.wildfly.core</groupId>
+    <artifactId>wildfly-patching</artifactId>
+    <version>${version.org.wildfly.core}</version>
+</dependency>
+```
+
+### Configure WildFly related node properties
+
+```properties
 node.node0.wildfly.management.port=9990
 node.node0.wildfly.management.user=admin
 node.node0.wildfly.management.password=pass.1234
 ```
+
+### Use Creaper API to manage WildFly node
 
 ```java
 import org.wildfly.extras.sunstone.api.wildfly.WildFlyNode;
@@ -27,7 +68,9 @@ try (WildFlyNode wildFlyNode = new WildFlyNode(cloudProvider.createNode("node0")
 
 ```
 
-List of configuration properties for WildFlyNode instances.
+## Configuration
+
+### Node object properties
 
 | Property name               | Description                                                       | Default value                      |
 |:----------------------------|:------------------------------------------------------------------|:-----------------------------------|
