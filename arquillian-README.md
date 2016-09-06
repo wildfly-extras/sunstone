@@ -43,6 +43,10 @@ Let's move the testing into cloud. We'll use Docker instead of real Cloud provid
     </dependency>
 </dependencies>
 ```
+
+WildFly client libraries must also be specified as described
+in [Creaper library README](https://github.com/wildfly-extras/creaper/blob/master/README.md#jboss-as-7--wildfly-client-libraries).
+
 **Note:** If you use JUnit and start your tests through Maven surefire plugin, then use the version 2.19.1 or newer. 
 Arquillian doesn't work correctly with the older ones due to the issue [SUREFIRE-1187](https://issues.apache.org/jira/browse/SUREFIRE-1187).  
 
