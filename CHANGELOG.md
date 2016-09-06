@@ -1,9 +1,17 @@
 # Changelog
 
-## 0.9.0 (not yet released)
+## 0.9.0 (2016-09-06)
 
+- added new properties shared across cloud providers; These properties can be overriden
+  by provider specific variants prefixed with `[providerType].` (e.g. `docker.bootScript`):
+  - `bootScript` and `bootScript.file`
+  - `stop.timeoutSec` and `start.timeoutSec`
+- added support for Docker volume bindings; It's configured through a new `DockerNode`
+  property `docker.volumeBindings` which accepts comma separated list of bindings
+- added new configuration entries to Bare Metal provider:
+  - `baremetal.ssh.port` - port number of SSH server in the Node
+  - `baremetal.privateAddress` - configurable value for `getPrivateAddress()` method
 - added configurable boot timeout for WildFly - `wildfly.management.bootTimeoutInSec` property
-- fixed issues reported by Coverity static analysis tool
 - added support for subnets on EC2, switched on by providing `ec2.subnetId` and
   `ec2.securityGroupIds`; note that security group IDs have to be provided, not names
 - added more restrictive permissions to the temporary files created for path resources 
@@ -11,18 +19,11 @@
 - `CloudProperties` now throw `ResourceLoadingException` when loading properties from a
   source that does not exist; the thrown excepion wraps its cause
 - fixed preliminary closing of SSH client when using `asDaemon` method of the `ExecBuilder`
-- added support for Docker volume bindings; It's configured through a new `DockerNode`
-  property `docker.volumeBindings` which accepts comma separated list of bindings
-- added new properties shared across cloud providers; These properties can be overriden
-  by provider specific variants prefixed with `[providerType].` (e.g. `docker.bootScript`):
-  - `bootScript` and `bootScript.file`
-  - `stop.timeoutSec` and `start.timeoutSec`
-- added new configuration entries to Bare Metal provider:
-  - `baremetal.ssh.port` - port number of SSH server in the Node
-  - `baremetal.privateAddress` - configurable value for `getPrivateAddress()` method
 - WildFly 10.1.0 BOM replaces JBoss EAP 6.4 BOM in `dependencyManagement`
 - removed transitive dependency on JBoss Controller client; users have to define it manually
   in the same way as when using standalone Creaper library
+- fixed issues reported by Coverity static analysis tool
+- use JClouds internal fork `2.0.0-eapqe.12` - with Azure VM disk delete fix included
 
 ## 0.8.0 (2016-08-03)
 
