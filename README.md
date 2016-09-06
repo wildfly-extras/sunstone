@@ -3,7 +3,7 @@
 Simple library which helps to control virtual machines in cloud environments.
 It's aimed mainly to testing WildFly application server.
 
-> Name: [sunstone](https://en.wikipedia.org/wiki/Sunstone_\(medieval\))
+> Name: [Sunstone](https://en.wikipedia.org/wiki/Sunstone_\(medieval\))
 > is a crystal that was supposedly used by Vikings to navigate in cloudy weather.
 
 [![Build Status](https://travis-ci.org/wildfly-extras/sunstone.svg?branch=master)](https://travis-ci.org/wildfly-extras/sunstone)
@@ -26,7 +26,7 @@ The library is here to simplify test development for new clouds. One set of test
 * possibility to control WildFly nodes with [Creaper](https://github.com/wildfly-extras/creaper)
 * Arquillian test framework support
 
-### How
+### How?
 
 *It's so cool. Now, show me the code!*
 
