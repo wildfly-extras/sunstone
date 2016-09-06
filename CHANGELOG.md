@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.0 (not yet released)
+
+
 ## 0.9.0 (2016-09-06)
 
 - added new properties shared across cloud providers; These properties can be overriden
