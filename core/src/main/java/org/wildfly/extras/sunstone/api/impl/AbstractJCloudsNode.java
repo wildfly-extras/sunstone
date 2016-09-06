@@ -438,6 +438,9 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
             if (status != null && status.equals(targetStatus)) {
                 LOGGER.debug("Node '{}' is in status '{}'", getName(), targetStatus.name());
                 return true;
+            } else if (!NodeMetadata.Status.ERROR.equals(targetStatus) && NodeMetadata.Status.ERROR.equals(status)) {
+                // fail fast
+                throw new IllegalStateException("Node '" + getName() + "' is in unexpected ERROR state.");
             }
 
             try {
