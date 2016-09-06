@@ -19,9 +19,9 @@ This text assumes that the version number for a release is X.Y.Z.
 1. Your workspace should now be pristine. Check with `git status`
 1. Run all the tests if possible (see below)  
 1. Build  
-   `mvn clean source:jar install`
+   `mvn clean install`
 1. Deploy  
-   `mvn deploy -DskipTests`
+   `mvn source:jar deploy -DskipTests`
 1. `git tag sunstone-X.Y.Z"`
 1. Close the relevant GitHub Milestone. Optionally create a new Milestone
 1. Set a new `-SNAPSHOT` version in `pom.xml` and corresponding heading to the top of `CHANGELOG.md`.
