@@ -1,7 +1,10 @@
 package org.wildfly.extras.sunstone.api.impl.azurearm;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.Image;
@@ -11,15 +14,12 @@ import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.options.TemplateOptions;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
-import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.impl.Config;
-import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
+import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Pattern;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 
 /**
  * Azure ARM implementation of {@link org.wildfly.extras.sunstone.api.Node}. This implementation uses JClouds internally.
@@ -27,17 +27,11 @@ import java.util.regex.Pattern;
 public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
 
-    private static final NodeConfigData AZURE_ARM_NODE_CONFIG_DATA = new NodeConfigData(
-            Config.Node.AzureArm.WAIT_FOR_PORTS,
-            Config.Node.AzureArm.WAIT_FOR_PORTS_TIMEOUT_SEC,
-            600
-    );
-
     private final String imageName;
     private final NodeMetadata initialNodeMetadata;
 
     public AzureArmNode(AzureArmCloudProvider azureCloudProvider, String name, Map<String, String> configOverrides) {
-        super(azureCloudProvider, name, configOverrides, AZURE_ARM_NODE_CONFIG_DATA);
+        super(azureCloudProvider, name, configOverrides, null);
 
         this.imageName = objectProperties.getProperty(Config.Node.AzureArm.IMAGE);
         if (Strings.isNullOrEmpty(imageName)) {
@@ -82,15 +76,6 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
         } catch (RunNodesException e) {
             throw new RuntimeException("Unable to create " + cloudProvider.getCloudProviderType().getHumanReadableName()
                     + " node from template " + template, e);
-        }
-
-        try {
-            waitForStartPorts();
-        } catch (Exception e) {
-            if (cloudProvider.nodeRequiresDestroy()) {
-                computeService.destroyNode(initialNodeMetadata.getId());
-            }
-            throw e;
         }
     }
 

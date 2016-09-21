@@ -56,8 +56,6 @@ README has to provide full documentation of the recognized properties. This docu
 | xxx.image              | A human-readable name of the virtual machine image.               | node                                               |
 | xxx.image.id           | A unique identifier of the virtual machine image in case the human-readable name can be ambiguous. | node              |
 | xxx.inboundPorts       | List of ports that will be exposed to the outside. The default value should be `22`. | node                            |
-| xxx.waitForPorts       | List of ports that will be waited for after starting the node. There should be no default value. | node                |
-| xxx.waitForPorts.timeoutSec | How long to wait for `xxx.waitForPorts` to become open. The default value can be different for each cloud provider. | node |
 | xxx.ssh.port           | SSH port number.                                                  | node                                               |
 | xxx.ssh.user           | Username of the user that will be used for SSH.                   | node                                               |
 | xxx.ssh.password       | Password of the user that will be used for SSH.                   | node                                               |
