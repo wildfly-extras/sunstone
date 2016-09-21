@@ -87,7 +87,3 @@ List of Azure `Node` properties:
 | azure.ssh.password     | Password of the user that will be created in the virtual machine. Will be later used for SSH. Note that Azure requires passwords to have certain quality; too simple passwords will cause an error. | [None. Mandatory.] |
 | azure.virtualNetwork   | Name of an existing virtual network in Azure. This node will join this virtual network and will be available in a subnet of this virtual network specified by `azure.subnet`. Both of `azure.virtualNetwork` and `azure.subnet` must be used, or none of them. Specifying only one is an error. | [None. Optional.] |
 | azure.subnet           | Name of an existing subnet in an existing virtual network in Azure. See `azure.virtualNetwork` for more. | [None. Optional.] |
-| azure.waitForPorts     | Comma-delimited list of ports that must be open after the virtual machine starts. | [None. Optional.]  |
-| azure.waitForPorts.timeoutSec | How long to wait for `azure.waitForPorts` to become open.  | 5 minutes                          |
-| ~azure.userData~       | **Deprecated** - use `azure.bootScript` instead.                  | [None. Optional.]                  |
-| ~azure.userData.file~  | **Deprecated** - use `azure.bootScript.file` instead.             | [None. Optional.]                  |

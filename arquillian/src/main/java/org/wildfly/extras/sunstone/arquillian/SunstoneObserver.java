@@ -103,7 +103,7 @@ public class SunstoneObserver {
                     cloudProviderRegistry.configureWildflyContainer(nodeName, serviceLoader, registry, containerContext.get());
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception | NoClassDefFoundError e) {
             LOGGER.error(
                     "Starting Class level nodes failed. Nodes will be closed. Check if all resources was released successfully afterwards.",
                     e);
@@ -176,7 +176,7 @@ public class SunstoneObserver {
                     }
                 }
             });
-        } catch (Exception e) {
+        } catch (Exception | NoClassDefFoundError e) {
             LOGGER.error("Starting Suite level nodes failed. Cloud providers will be closed. Check if all resources was released successfully afterwards.", e);
             for (CompletableFuture<Node> future : futures) {
                 if (!future.isCompletedExceptionally()) {

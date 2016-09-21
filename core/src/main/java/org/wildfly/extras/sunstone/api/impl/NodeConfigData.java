@@ -5,13 +5,8 @@ package org.wildfly.extras.sunstone.api.impl;
  * data between a cloud-provider-specific subclass and general {@link AbstractJCloudsNode}.
  */
 public final class NodeConfigData {
-    final String waitForPortsProperty;
-    public final String waitForPortsTimeoutProperty;
-    public final int waitForPortsDefaultTimeout;
+    // for future use
 
-    public NodeConfigData(String waitForPortsProperty, String waitForPortsTimeoutProperty, int defaultTimeout) {
-        this.waitForPortsProperty = waitForPortsProperty;
-        this.waitForPortsTimeoutProperty = waitForPortsTimeoutProperty;
-        this.waitForPortsDefaultTimeout = defaultTimeout;
+    public NodeConfigData() {
     }
 }

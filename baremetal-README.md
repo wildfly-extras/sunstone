@@ -62,5 +62,3 @@ List of Bare Metal `Node` properties:
 | baremetal.ssh.privateKeyFile | Path to a file with private key for SSH authentication in the PEM format. | [None. One of `password`, `privateKey`, `privateKeyFile` is mandatory.] |
 | baremetal.bootScript   | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
 | baremetal.bootScript.file | As `baremetal.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `baremetal.bootScript` and `baremetal.bootScript.file` can be specified at a time. | [None. Optional.] |
-| baremetal.waitForPorts | Comma-separated list of ports that must be open at the beginning. | [None. Optional.]                  |
-| baremetal.waitForPorts.timeoutSec | How long to wait for `baremetal.waitForPorts` to become open. | 30 seconds                  |
