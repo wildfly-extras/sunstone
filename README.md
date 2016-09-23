@@ -186,8 +186,12 @@ List of general `Node` properties:
 
 | Property name    | Description                                                                              | Default value     |
 |:-----------------|:-----------------------------------------------------------------------------------------|:------------------|
+| waitForPorts     | What ports (comma separated list) to wait for. SSH port is recommended, since you'll likely want to run some commands through ssh on the Node. | [None. Optional.] |
+| waitForPorts.timeoutSec | How long to wait for ports to open after the instance is started (in seconds).    | 60                |
 | bootScript       | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
 | bootScript.file  | As `bootScript`, but allows you to specify a path to a file that contains the script. Only one of `bootScript` and `bootScript.file` can be specified at a time. | [None. Optional.] |
+| bootScript.waitForPorts | What ports (comma separated list) to wait for **before** the executing `bootScript`. This property is not used if no `bootScript` (or `bootScript.file`) is provided. | [None. Optional.] |
+| bootScript.waitForPorts.timeoutSec | How long to wait for ports to open before the bootscript is executed (in seconds). | 60     |
 | start.timeoutSec | How long to wait for node start (in seconds).                                            | 300               |
 | stop.timeoutSec  | How long to wait for node stop (in seconds).                                             | 300               |
 

@@ -100,12 +100,17 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
                 final AbstractJCloudsNode<?> createdNode = (AbstractJCloudsNode<?>) createNodeInternal(name, overrides);
                 try {
                     createdNode.handleBootScript();
+                    createdNode.waitForStartPorts(null);
                 } catch (Exception e) {
                     if (nodeRequiresDestroy()) {
                         computeServiceContext.getComputeService().destroyNode(createdNode.getInitialNodeMetadata().getId());
                     }
-                    throw new RuntimeException("Processing user data script failed for "
-                            + cloudProviderType.getHumanReadableName() + " node '" + name + "'", e);
+                    if (e instanceof RuntimeException) {
+                        throw (RuntimeException) e;
+                    } else {
+                        throw new RuntimeException("Processing boot script failed for "
+                                + cloudProviderType.getHumanReadableName() + " node '" + name + "'", e);
+                    }
                 }
                 return createdNode;
             }
@@ -130,11 +135,12 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
             LOGGER.warn("Encountered exception while creating nodes => taking care of cleaning remaining nodes " +
                     "which might take a while please be patient");
             for (CompletableFuture<Node> future : futures) {
-               if (!future.isCompletedExceptionally()) {
-                   try {
-                       Node node = future.join();
-                       node.close();
-                   } catch (Exception e2) {
+                if (!future.isCompletedExceptionally()) {
+                    try {
+                        @SuppressWarnings("resource")
+                        Node node = future.join();
+                        node.close();
+                    } catch (Exception e2) {
                         e.addSuppressed(e2);
                     }
                 }

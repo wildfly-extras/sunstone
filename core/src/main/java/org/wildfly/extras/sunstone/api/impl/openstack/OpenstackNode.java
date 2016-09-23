@@ -1,9 +1,14 @@
 package org.wildfly.extras.sunstone.api.impl.openstack;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.FileUtils;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.Hardware;
@@ -17,20 +22,15 @@ import org.jclouds.openstack.nova.v2_0.domain.FloatingIPPool;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPPoolApi;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
-import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.impl.Config;
-import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.ResolvedImage;
+import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 /**
  * OpenStack implementation of {@link org.wildfly.extras.sunstone.api.Node}. This implementation uses JClouds internally.
@@ -40,17 +40,11 @@ public class OpenstackNode extends AbstractJCloudsNode<OpenstackCloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
     private static final String SPECIAL_VALUE_DEFAULT = "default";
 
-    private static final NodeConfigData OPENSTACK_NODE_CONFIG_DATA = new NodeConfigData(
-            Config.Node.Openstack.WAIT_FOR_PORTS,
-            Config.Node.Openstack.WAIT_FOR_PORTS_TIMEOUT_SEC,
-            300
-    );
-
     private final String imageName;
     private final NodeMetadata initialNodeMetadata;
 
     public OpenstackNode(OpenstackCloudProvider osCloudProvider, String name, Map<String, String> configOverrides) {
-        super(osCloudProvider, name, configOverrides, OPENSTACK_NODE_CONFIG_DATA);
+        super(osCloudProvider, name, configOverrides);
 
         NovaTemplateOptions templateOptions = buildTemplateOptions(objectProperties);
 
@@ -120,15 +114,6 @@ public class OpenstackNode extends AbstractJCloudsNode<OpenstackCloudProvider> {
         } catch (RunNodesException e) {
             throw new RuntimeException("Unable to create " + cloudProvider.getCloudProviderType().getHumanReadableName()
                     + " node from template " + template, e);
-        }
-
-        try {
-            waitForStartPorts();
-        } catch (Exception e) {
-            if (cloudProvider.nodeRequiresDestroy()) {
-                computeService.destroyNode(initialNodeMetadata.getId());
-            }
-            throw e;
         }
     }
 

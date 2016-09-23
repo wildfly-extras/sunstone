@@ -132,8 +132,6 @@ List of EC2 `Node` properties:
 | ec2.ssh.password            | Overrides the user password for accessing the instance. Not necessary if you are using a key pair. | [None. Optional.] |
 | ec2.ssh.privateKey          | The SSH private key (not the file of the key!). In case you want to pass a private key manually. Currently unused in favor of `ec2.ssh.privateKeyFile`. | [None. Optional.] |
 | ec2.ssh.privateKeyFile      | The path to the private key which should be used to connect to the instance. Necessary for establishing an SSH channel in your tests. | [None. Optional.] |
-| ec2.waitForPorts.timeoutSec | How long to wait for ports to open after the instance is started (in seconds). | 300 |
-| ec2.waitForPorts            | Comma-separated list of ports to wait for. Port 22 is recommended, since you'll likely want to run some commands through ssh on your machine. | 22 |
 | ec2.userData                | User data in a string. Takes precedence over `ec2.userData.file`. | [None. Optional.] |
 | ec2.userData.file           | Path to file with user data. See [EC2 User data](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) | [None. Optional.] |
 | ec2.subnetId                | The ID of a subnet this node should belong in. A VPC may have multiple subnets in different availability zones, but a subnet is always only associated with only a single VPC. | [None. Optional.] |

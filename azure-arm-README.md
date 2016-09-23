@@ -62,5 +62,3 @@ List of Azure `Node` properties:
 | azure-arm.inboundPorts | Comma-delimited numbers of TCP ports that should be open.         | 22                                 |
 | azure-arm.ssh.user     | Username of the user that will be created in the virtual machine. Will be later used for SSH. | [None. Mandatory.] |
 | azure-arm.ssh.password | Password of the user that will be created in the virtual machine. Will be later used for SSH. Note that Azure requires passwords to have certain quality; too simple passwords will cause an error. | [None. Mandatory.] |
-| azure-arm.waitForPorts | Comma-delimited list of ports that must be open after the virtual machine starts. | [None. Optional.]  |
-| azure-arm.waitForPorts.timeoutSec | How long to wait for `azure-arm.waitForPorts` to become open. | 5 minutes                       |

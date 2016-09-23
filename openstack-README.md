@@ -83,5 +83,3 @@ List of OpenStack `Node` properties:
 | openstack.ssh.privateKeyFile | The path to the private key file which should be used to connect to the instance. If special value `default` is used, then private key is loaded from `~/.ssh/id_rsa`. This property is only used when the `openstack.ssh.privateKey` property is empty.| [None. Optional. One of `openstack.ssh.password`, `openstack.ssh.privateKey` or `openstack.ssh.privateKeyFile` should be set.] |
 | openstack.userData          | User data in a string. Takes precedence over `openstack.userData.file`. | [None. Optional.] |
 | openstack.userData.file     | Path to file with user data.                                      | [None. Optional.] |
-| openstack.waitForPorts.timeoutSec | How long to wait for ports to open after the instance is started (in seconds). | 300 |
-| openstack.waitForPorts      | What ports to wait for (comma separated list). Port 22 is recommended, since you'll likely want to run some commands through ssh on your machine. | [None. Optional.] |
