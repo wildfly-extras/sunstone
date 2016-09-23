@@ -21,7 +21,7 @@ public class BareMetalNode extends AbstractJCloudsNode<BareMetalCloudProvider> {
     private final NodeMetadata initialNodeMetadata;
 
     public BareMetalNode(BareMetalCloudProvider cloudProvider, String name, Map<String, String> configOverrides) {
-        super(cloudProvider, name, configOverrides, null);
+        super(cloudProvider, name, configOverrides);
 
         if (!computeService
                 .listNodes()

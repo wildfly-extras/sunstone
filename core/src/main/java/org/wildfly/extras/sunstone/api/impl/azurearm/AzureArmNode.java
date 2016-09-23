@@ -31,7 +31,7 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
     private final NodeMetadata initialNodeMetadata;
 
     public AzureArmNode(AzureArmCloudProvider azureCloudProvider, String name, Map<String, String> configOverrides) {
-        super(azureCloudProvider, name, configOverrides, null);
+        super(azureCloudProvider, name, configOverrides);
 
         this.imageName = objectProperties.getProperty(Config.Node.AzureArm.IMAGE);
         if (Strings.isNullOrEmpty(imageName)) {

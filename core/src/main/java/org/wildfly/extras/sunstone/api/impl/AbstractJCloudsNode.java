@@ -114,17 +114,14 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     protected final ComputeService computeService;
     protected final ObjectProperties objectProperties;
     protected final OpenSocketFinder socketFinder;
-    protected final NodeConfigData nodeConfigData;
     protected final String nodeGroupName;
 
-    protected AbstractJCloudsNode(CP cloudProvider, String name, Map<String, String> configOverrides,
-            NodeConfigData nodeConfigData) {
+    protected AbstractJCloudsNode(CP cloudProvider, String name, Map<String, String> configOverrides) {
         this.cloudProvider = cloudProvider;
         this.computeServiceContext = cloudProvider.getComputeServiceContext();
         this.computeService = computeServiceContext.getComputeService();
         this.objectProperties = new ObjectProperties(ObjectType.NODE, name, configOverrides);
         this.socketFinder = cloudProvider.socketFinder;
-        this.nodeConfigData = nodeConfigData;
 
         String nodeGroup = NodeGroupUtil.nodeGroupName(objectProperties, cloudProvider.objectProperties);
         nodeGroup = cloudProvider.postProcessNodeGroupWhenCreatingNode(nodeGroup);

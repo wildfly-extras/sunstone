@@ -73,7 +73,7 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
     private final DockerTemplateOptions templateOptions;
 
     public DockerNode(DockerCloudProvider dockerCloudProvider, String name, Map<String, String> configOverrides) {
-        super(dockerCloudProvider, name, configOverrides, null);
+        super(dockerCloudProvider, name, configOverrides);
 
         this.imageName = objectProperties.getProperty(Config.Node.Docker.IMAGE);
         if (Strings.isNullOrEmpty(imageName)) {

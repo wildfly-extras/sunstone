@@ -44,7 +44,7 @@ public class OpenstackNode extends AbstractJCloudsNode<OpenstackCloudProvider> {
     private final NodeMetadata initialNodeMetadata;
 
     public OpenstackNode(OpenstackCloudProvider osCloudProvider, String name, Map<String, String> configOverrides) {
-        super(osCloudProvider, name, configOverrides, null);
+        super(osCloudProvider, name, configOverrides);
 
         NovaTemplateOptions templateOptions = buildTemplateOptions(objectProperties);
 
