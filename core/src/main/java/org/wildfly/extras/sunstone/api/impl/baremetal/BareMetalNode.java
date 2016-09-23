@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
 import org.wildfly.extras.sunstone.api.impl.Config;
-import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 
 import com.google.common.base.Strings;
@@ -19,16 +18,10 @@ import com.google.common.collect.Iterables;
 public class BareMetalNode extends AbstractJCloudsNode<BareMetalCloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
 
-    private static final NodeConfigData BARE_METAL_NODE_CONFIG_DATA = new NodeConfigData(
-            Config.Node.BareMetal.WAIT_FOR_PORTS,
-            Config.Node.BareMetal.WAIT_FOR_PORTS_TIMEOUT_SEC,
-            30
-    );
-
     private final NodeMetadata initialNodeMetadata;
 
     public BareMetalNode(BareMetalCloudProvider cloudProvider, String name, Map<String, String> configOverrides) {
-        super(cloudProvider, name, configOverrides, BARE_METAL_NODE_CONFIG_DATA);
+        super(cloudProvider, name, configOverrides);
 
         if (!computeService
                 .listNodes()
@@ -44,7 +37,6 @@ public class BareMetalNode extends AbstractJCloudsNode<BareMetalCloudProvider> {
         String publicAddress = Iterables.getFirst(initialNodeMetadata.getPublicAddresses(), null);
         LOGGER.info("Obtained {} node '{}', its public IP address is {}",
                 cloudProvider.getCloudProviderType().getHumanReadableName(), name, publicAddress);
-        waitForStartPorts();
     }
 
     @Override

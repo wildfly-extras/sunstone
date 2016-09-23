@@ -125,6 +125,12 @@ public final class Config {
         public static final class Shared {
             public static final String BOOT_SCRIPT = "bootScript";
             public static final String BOOT_SCRIPT_FILE = "bootScript.file";
+
+            public static final String WAIT_FOR_PORTS = "waitForPorts";
+            public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "waitForPorts.timeoutSec";
+
+            public static final String BOOT_SCRIPT_WAIT_FOR_PORTS_PREFIX = "bootScript.";
+
             public static final String STOP_TIMEOUT_SEC = "stop.timeoutSec";
             public static final String START_TIMEOUT_SEC = "start.timeoutSec";
         }
@@ -147,9 +153,6 @@ public final class Config {
             public static final String INBOUND_PORTS = "docker.inboundPorts";
 
             public static final String PORT_BINDINGS = "docker.portBindings";
-
-            public static final String WAIT_FOR_PORTS = "docker.waitForPorts";
-            public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "docker.waitForPorts.timeoutSec";
 
             public static final String CMD = "docker.cmd";
             public static final String ENTRYPOINT = "docker.entrypoint";
@@ -186,8 +189,6 @@ public final class Config {
             private static final String SSH_PASSWORD = "ec2.ssh.password";
             private static final String SSH_PRIVATE_KEY = "ec2.ssh.privateKey";
             public static final String SSH_PRIVATE_KEY_FILE = "ec2.ssh.privateKeyFile";
-            public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "ec2.waitForPorts.timeoutSec";
-            public static final String WAIT_FOR_PORTS = "ec2.waitForPorts";
             public static final String USER_DATA = "ec2.userData";
             public static final String USER_DATA_FILE = "ec2.userData.file";
             public static final String SUBNET_ID = "ec2.subnetId";
@@ -206,22 +207,10 @@ public final class Config {
             public static final String SSH_PASSWORD = "azure.ssh.password";
             public static final String SSH_PRIVATE_KEY = "azure.ssh.privateKey";
             public static final String SSH_PRIVATE_KEY_FILE = "azure.ssh.privateKeyFile";
-            public static final String WAIT_FOR_PORTS = "azure.waitForPorts";
-            public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "azure.waitForPorts.timeoutSec";
             public static final String PROVISION_GUEST_AGENT = "azure.provisionGuestAgent";
             public static final String VIRTUAL_NETWORK = "azure.virtualNetwork";
             public static final String SUBNET = "azure.subnet";
 
-            /**
-             * @deprecated Use {@link Config.Node.Shared#BOOT_SCRIPT}
-             */
-            @Deprecated
-            public static final String USER_DATA = "azure.userData";
-            /**
-             * @deprecated Use {@link Config.Node.Shared#BOOT_SCRIPT_FILE}
-             */
-            @Deprecated
-            public static final String USER_DATA_FILE = "azure.userData.file";
             @Deprecated
             public static final String LOGIN_NAME = "azure.login.name";
             @Deprecated
@@ -238,8 +227,6 @@ public final class Config {
             public static final String INBOUND_PORTS = "azure-arm.inboundPorts";
             public static final String SSH_USER = "azure-arm.ssh.user";
             public static final String SSH_PASSWORD = "azure-arm.ssh.password";
-            public static final String WAIT_FOR_PORTS = "azure-arm.waitForPorts";
-            public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "azure-arm.waitForPorts.timeoutSec";
         }
 
         /**
@@ -257,8 +244,6 @@ public final class Config {
             public static final String INBOUND_PORTS = "openstack.inboundPorts";
             public static final String SSH_PRIVATE_KEY = "openstack.ssh.privateKey";
             public static final String SSH_PRIVATE_KEY_FILE = "openstack.ssh.privateKeyFile";
-            public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "openstack.waitForPorts.timeoutSec";
-            public static final String WAIT_FOR_PORTS = "openstack.waitForPorts";
             public static final String USER_DATA = "openstack.userData";
             public static final String USER_DATA_FILE = "openstack.userData.file";
             public static final String FLOATING_IP_POOLS = "openstack.floatingIpPools";
@@ -275,8 +260,6 @@ public final class Config {
             public static final String SSH_PASSWORD = "baremetal.ssh.password";
             public static final String SSH_PRIVATE_KEY = "baremetal.ssh.privateKey";
             public static final String SSH_PRIVATE_KEY_FILE = "baremetal.ssh.privateKeyFile";
-            public static final String WAIT_FOR_PORTS = "baremetal.waitForPorts";
-            public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "baremetal.waitForPorts.timeoutSec";
         }
     }
 

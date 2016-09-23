@@ -19,7 +19,6 @@ import org.jclouds.ec2.domain.RunningInstance;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
 import org.wildfly.extras.sunstone.api.impl.Config;
-import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.ResolvedImage;
 import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
@@ -34,17 +33,11 @@ import com.google.common.collect.Iterables;
 public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
 
-    private static final NodeConfigData EC2_NODE_CONFIG_DATA = new NodeConfigData(
-            Config.Node.EC2.WAIT_FOR_PORTS,
-            Config.Node.EC2.WAIT_FOR_PORTS_TIMEOUT_SEC,
-            600
-    );
-
     private final String imageName;
     private final NodeMetadata initialNodeMetadata;
 
     public EC2Node(EC2CloudProvider ec2CloudProvider, String name, Map<String, String> configOverrides) {
-        super(ec2CloudProvider, name, configOverrides, EC2_NODE_CONFIG_DATA);
+        super(ec2CloudProvider, name, configOverrides);
 
         EC2TemplateOptions templateOptions = buildTemplateOptions(objectProperties);
         final TemplateBuilder templateBuilder = computeService.templateBuilder();
@@ -85,15 +78,6 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
         } catch (RunNodesException e) {
             throw new RuntimeException("Unable to create " + cloudProvider.getCloudProviderType().getHumanReadableName()
                     + " node from template " + template, e);
-        }
-
-        try {
-            waitForStartPorts();
-        } catch (Exception e) {
-            if (cloudProvider.nodeRequiresDestroy()) {
-                computeService.destroyNode(initialNodeMetadata.getId());
-            }
-            throw e;
         }
     }
 

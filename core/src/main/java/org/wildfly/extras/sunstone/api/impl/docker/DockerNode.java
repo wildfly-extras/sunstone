@@ -47,7 +47,6 @@ import org.wildfly.extras.sunstone.api.PortOpeningTimeoutException;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
 import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.DefaultExecResult;
-import org.wildfly.extras.sunstone.api.impl.NodeConfigData;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.SshUtils;
 import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
@@ -69,15 +68,12 @@ import com.google.gson.stream.JsonToken;
 public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
 
-    private static final NodeConfigData DOCKER_NODE_CONFIG_DATA = new NodeConfigData(Config.Node.Docker.WAIT_FOR_PORTS,
-            Config.Node.Docker.WAIT_FOR_PORTS_TIMEOUT_SEC, 30);
-
     private final String imageName;
     private final NodeMetadata initialNodeMetadata;
     private final DockerTemplateOptions templateOptions;
 
     public DockerNode(DockerCloudProvider dockerCloudProvider, String name, Map<String, String> configOverrides) {
-        super(dockerCloudProvider, name, configOverrides, DOCKER_NODE_CONFIG_DATA);
+        super(dockerCloudProvider, name, configOverrides);
 
         this.imageName = objectProperties.getProperty(Config.Node.Docker.IMAGE);
         if (Strings.isNullOrEmpty(imageName)) {
@@ -134,15 +130,6 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
         } catch (RunNodesException e) {
             throw new RuntimeException("Unable to create " + cloudProvider.getCloudProviderType().getHumanReadableName()
                     + " node from template " + template, e);
-        }
-
-        try {
-            waitForStartPorts();
-        } catch (Exception e) {
-            if (cloudProvider.nodeRequiresDestroy()) {
-                computeService.destroyNode(initialNodeMetadata.getId());
-            }
-            throw e;
         }
     }
 
@@ -410,7 +397,6 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
         final String id = initialNodeMetadata.getId();
         LOGGER.debug("Starting container {} (ID {})", getName(), id);
         cloudProvider.getContainerApi().startContainer(id);
-        waitForStartPorts();
         LOGGER.info("Started {} node '{}'", cloudProvider.getCloudProviderType().getHumanReadableName(), getName());
     }
 

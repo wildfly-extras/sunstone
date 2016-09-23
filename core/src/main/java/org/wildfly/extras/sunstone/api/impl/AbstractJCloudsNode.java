@@ -49,8 +49,6 @@ import com.google.common.collect.Iterables;
  * public class XxxNode extends AbstractJCloudsNode&lt;XxxCloudProvider> {
  *     private static final Logger LOGGER = LoggerFactory.getLogger(XxxNode.class);
  *
- *     private static final NodeConfigData XXX_NODE_CONFIG_DATA = new NodeConfigData(...);
- *
  *     private final String imageName;
  *     private final NodeMetadata initialNodeMetadata;
  *
@@ -78,16 +76,6 @@ import com.google.common.collect.Iterables;
  *         } catch (RunNodesException e) {
  *             throw new RuntimeException("Unable to create " + cloudProvider.getCloudProviderType().getHumanReadableName()
  *                     + " node from template " + template, e);
- *         }
- *
- *         try {
- *             waitForStartPorts();
- *         } catch (Exception e) {
- *             // to avoid leaking VMs in case there is an issue when opening the ports
- *             if (!objectProperties.getPropertyAsBoolean(Config.LEAVE_NODES_RUNNING, false)) {
- *                 computeService.destroyNode(initialNodeMetadata.getId());
- *             }
- *             throw e;
  *         }
  *     }
  *
@@ -126,17 +114,14 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
     protected final ComputeService computeService;
     protected final ObjectProperties objectProperties;
     protected final OpenSocketFinder socketFinder;
-    protected final NodeConfigData nodeConfigData;
     protected final String nodeGroupName;
 
-    protected AbstractJCloudsNode(CP cloudProvider, String name, Map<String, String> configOverrides,
-            NodeConfigData nodeConfigData) {
+    protected AbstractJCloudsNode(CP cloudProvider, String name, Map<String, String> configOverrides) {
         this.cloudProvider = cloudProvider;
         this.computeServiceContext = cloudProvider.getComputeServiceContext();
         this.computeService = computeServiceContext.getComputeService();
         this.objectProperties = new ObjectProperties(ObjectType.NODE, name, configOverrides);
         this.socketFinder = cloudProvider.socketFinder;
-        this.nodeConfigData = nodeConfigData;
 
         String nodeGroup = NodeGroupUtil.nodeGroupName(objectProperties, cloudProvider.objectProperties);
         nodeGroup = cloudProvider.postProcessNodeGroupWhenCreatingNode(nodeGroup);
@@ -169,16 +154,20 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
         return cloudProvider;
     }
 
-    protected final void waitForStartPorts() {
-        String portsString = objectProperties.getProperty(nodeConfigData.waitForPortsProperty, "");
+    protected final void waitForStartPorts(String propertyNamePrefix) {
+        String propertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Strings.nullToEmpty(propertyNamePrefix) + Config.Node.Shared.WAIT_FOR_PORTS);
+        String portsString = objectProperties.getProperty(propertyName, "");
         if (Strings.isNullOrEmpty(portsString)) {
             return;
         }
 
+        propertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                Strings.nullToEmpty(propertyNamePrefix) + Config.Node.Shared.WAIT_FOR_PORTS_TIMEOUT_SEC);
+
         int[] ports = Pattern.compile(",").splitAsStream(portsString).filter(s -> !Strings.isNullOrEmpty(s))
                 .mapToInt(Integer::parseInt).toArray();
-        int timeout = objectProperties.getPropertyAsInt(nodeConfigData.waitForPortsTimeoutProperty,
-                nodeConfigData.waitForPortsDefaultTimeout);
+        int timeout = objectProperties.getPropertyAsInt(propertyName, 60);
         waitForPorts(timeout, ports);
     }
 
@@ -541,6 +530,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
             Files.write(scriptPath, script.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
         }
         if (scriptPath != null) {
+            waitForStartPorts(Config.Node.Shared.BOOT_SCRIPT_WAIT_FOR_PORTS_PREFIX);
             LOGGER.debug("Script from file '{}' will be run on node '{}'", scriptPath, getName());
             try {
                 String remoteScriptPath = "/tmp/onBootScript.sh";
