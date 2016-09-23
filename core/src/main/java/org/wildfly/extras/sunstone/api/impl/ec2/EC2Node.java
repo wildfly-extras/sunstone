@@ -37,7 +37,7 @@ public class EC2Node extends AbstractJCloudsNode<EC2CloudProvider> {
     private final NodeMetadata initialNodeMetadata;
 
     public EC2Node(EC2CloudProvider ec2CloudProvider, String name, Map<String, String> configOverrides) {
-        super(ec2CloudProvider, name, configOverrides, null);
+        super(ec2CloudProvider, name, configOverrides);
 
         EC2TemplateOptions templateOptions = buildTemplateOptions(objectProperties);
         final TemplateBuilder templateBuilder = computeService.templateBuilder();

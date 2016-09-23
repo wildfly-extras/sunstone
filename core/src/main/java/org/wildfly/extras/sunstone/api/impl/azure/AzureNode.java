@@ -34,7 +34,7 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
     private final NodeMetadata initialNodeMetadata;
 
     public AzureNode(AzureCloudProvider azureCloudProvider, String name, Map<String, String> configOverrides) {
-        super(azureCloudProvider, name, configOverrides, null);
+        super(azureCloudProvider, name, configOverrides);
 
         this.imageName = objectProperties.getProperty(Config.Node.Azure.IMAGE);
         if (Strings.isNullOrEmpty(imageName)) {
