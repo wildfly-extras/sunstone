@@ -125,6 +125,8 @@ public final class Config {
         public static final class Shared {
             public static final String BOOT_SCRIPT = "bootScript";
             public static final String BOOT_SCRIPT_FILE = "bootScript.file";
+            public static final String BOOT_SCRIPT_WITH_SUDO = "bootScript.withSudo";
+            public static final String BOOT_SCRIPT_REMOTE_PATH = "bootScript.remotePath";
 
             public static final String WAIT_FOR_PORTS = "waitForPorts";
             public static final String WAIT_FOR_PORTS_TIMEOUT_SEC = "waitForPorts.timeoutSec";
@@ -133,6 +135,8 @@ public final class Config {
 
             public static final String STOP_TIMEOUT_SEC = "stop.timeoutSec";
             public static final String START_TIMEOUT_SEC = "start.timeoutSec";
+
+            public static final String SUDO_COMMAND = "sudo.command";
         }
 
         /**

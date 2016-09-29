@@ -255,13 +255,13 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
         return nodeGroup;
     }
 
-    public String getProviderSpecificPropertyName(ObjectProperties objectProperties, String sharedName) {
+    public String getProviderSpecificPropertyName(ConfigProperties configProperties, String sharedName) {
         final String providerSpecificName = getCloudProviderType().getLabel() + "." + sharedName;
-        return hasProviderSpecificPropertyName(objectProperties, sharedName) ? providerSpecificName : sharedName;
+        return hasProviderSpecificPropertyName(configProperties, sharedName) ? providerSpecificName : sharedName;
     }
 
-    public boolean hasProviderSpecificPropertyName(ObjectProperties objectProperties, String sharedName) {
+    public boolean hasProviderSpecificPropertyName(ConfigProperties configProperties, String sharedName) {
         final String providerSpecificName = getCloudProviderType().getLabel() + "." + sharedName;
-        return objectProperties.getProperty(providerSpecificName) != null;
+        return configProperties.getProperty(providerSpecificName) != null;
     }
 }

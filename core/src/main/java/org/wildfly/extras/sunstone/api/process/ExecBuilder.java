@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.ExecResult;
 import org.wildfly.extras.sunstone.api.Node;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
+import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsCloudProvider;
+import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.DaemonExecResult;
 import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.ssh.SshClient;
@@ -105,7 +107,7 @@ public class ExecBuilder {
     public ExecResult exec(Node node) throws OperationNotSupportedException, IOException, InterruptedException {
         Objects.requireNonNull(node, "Can't execute command on null Node");
 
-        String renderedCommand = renderCommand();
+        String renderedCommand = renderCommand(node);
         LOGGER.debug("Executing command on node '{}': {}", node.getName(), renderedCommand);
 
         try (SshClient ssh = node.ssh()) {
@@ -240,9 +242,17 @@ public class ExecBuilder {
      * <li>redirecting output to file under the root user when using sudo</li>
      * </ul>
      */
-    private String renderCommand() {
+    private String renderCommand(final Node node) {
         StringBuilder escapedCommand = new StringBuilder();
         boolean hasEnv = false;
+
+        String sudoCmd = "sudo -S";
+        if (withSudo && node.getCloudProvider() instanceof AbstractJCloudsCloudProvider) {
+            AbstractJCloudsCloudProvider cp = (AbstractJCloudsCloudProvider) node.getCloudProvider();
+            final String sudoCmdProperty = cp.getProviderSpecificPropertyName(node.config(), Config.Node.Shared.SUDO_COMMAND);
+            sudoCmd = node.config().getProperty(sudoCmdProperty, sudoCmd);
+        }
+        sudoCmd = sudoCmd + " ";
 
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             escapedCommand.append("export ").append(entry.getKey()).append("=")
@@ -269,7 +279,7 @@ public class ExecBuilder {
                     .append(stdOut.equals(stdErr) ? "&1" : ESCAPE_ARG.translate(stdErr));
             escapedCommand.append(" &");
             if (withSudo) {
-                exec.append("nohup sudo sh -c ");
+                exec.append("nohup ").append(sudoCmd).append("sh -c ");
             } else {
                 exec.append("nohup sh -c ");
             }
@@ -288,10 +298,10 @@ public class ExecBuilder {
                 }
             }
             if (withSudo) {
-                exec.append("sudo -S ");
+                exec.append(sudoCmd);
             }
             // sudo with subshell to cover redirects into a file with root privileges
-            if (withSudo|| hasEnv) {
+            if (withSudo || hasEnv) {
                 exec.append("sh -c ");
                 exec.append(ESCAPE_ARG.translate(escapedCommand));
             } else {
