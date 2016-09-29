@@ -533,9 +533,19 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
             waitForStartPorts(Config.Node.Shared.BOOT_SCRIPT_WAIT_FOR_PORTS_PREFIX);
             LOGGER.debug("Script from file '{}' will be run on node '{}'", scriptPath, getName());
             try {
-                String remoteScriptPath = "/tmp/onBootScript.sh";
-                this.copyFileToNode(scriptPath, remoteScriptPath);
-                ExecResult result = ExecBuilder.fromCommand("sh", remoteScriptPath).withSudo().exec(this);
+                final String remotePathPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                        Config.Node.Shared.BOOT_SCRIPT_REMOTE_PATH);
+                final String remotePath = objectProperties.getProperty(remotePathPropertyName, "/tmp/onBootScript.sh");
+                this.copyFileToNode(scriptPath, remotePath);
+                final ExecBuilder execBuilder = ExecBuilder.fromCommand("sh", remotePath);
+
+                final String withSudoPropertyName = cloudProvider.getProviderSpecificPropertyName(objectProperties,
+                        Config.Node.Shared.BOOT_SCRIPT_WITH_SUDO);
+                final boolean withSudo = objectProperties.getPropertyAsBoolean(withSudoPropertyName, true);
+                if (withSudo) {
+                    execBuilder.withSudo();
+                }
+                ExecResult result = execBuilder.exec(this);
                 LOGGER.trace("BootScript execution result on node '{}': {}", getName(), result);
             } catch (IOException e) {
                 throw new IllegalArgumentException("Error opening user data file " + scriptPath, e);

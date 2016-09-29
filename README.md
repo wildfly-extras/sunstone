@@ -188,12 +188,15 @@ List of general `Node` properties:
 |:-----------------|:-----------------------------------------------------------------------------------------|:------------------|
 | waitForPorts     | What ports (comma separated list) to wait for. SSH port is recommended, since you'll likely want to run some commands through ssh on the Node. | [None. Optional.] |
 | waitForPorts.timeoutSec | How long to wait for ports to open after the instance is started (in seconds).    | 60                |
-| bootScript       | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| bootScript       | Allows you to specify a script that is to be run on boot.                                | [None. Optional.] |
 | bootScript.file  | As `bootScript`, but allows you to specify a path to a file that contains the script. Only one of `bootScript` and `bootScript.file` can be specified at a time. | [None. Optional.] |
+| bootScript.withSudo | Flag (`true`/`false`) which controls if the boot script runs with sudo.               | `true`            |
+| bootScript.remotePath | Path on the Node, where the bootScript should be stored.                            | `"/tmp/onBootScript.sh"` |
 | bootScript.waitForPorts | What ports (comma separated list) to wait for **before** the executing `bootScript`. This property is not used if no `bootScript` (or `bootScript.file`) is provided. | [None. Optional.] |
-| bootScript.waitForPorts.timeoutSec | How long to wait for ports to open before the bootscript is executed (in seconds). | 60     |
+| bootScript.waitForPorts.timeoutSec | How long to wait for ports to open before the bootscript is executed (in seconds). | 60    |
 | start.timeoutSec | How long to wait for node start (in seconds).                                            | 300               |
 | stop.timeoutSec  | How long to wait for node stop (in seconds).                                             | 300               |
+| sudo.command     | Sudo command to be used for `ExecBuilder` executions when `withSudo()` is used.          | `sudo -S`         |
 
 These properties can be overriden on cloud provider level by appending provider name prefix (e.g. `docker.bootScript`).
 

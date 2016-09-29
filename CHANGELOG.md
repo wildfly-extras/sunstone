@@ -3,11 +3,15 @@
 ## 0.10.0 (not yet released)
 
 - unified `waitForPorts` and `waitForPorts.timeoutSec` properties across providers
-- added possibility to wait for ports before a boot script is executed; it's configured by
-  `bootScript.waitForPorts` and `bootScript.waitForPorts.timeoutSec` properties
+- extended `bootScript.*` configuration
+  - added possibility to wait for ports before a boot script is executed; it's configured
+    by `bootScript.waitForPorts` and `bootScript.waitForPorts.timeoutSec` properties
+  - added `bootScript.withSudo` property which allows to disable sudo for the bootScript
+  - remote script path on Node made configurable through `bootScript.remotePath` property
 - removed support for deprecated Azure Node properties `azure.userData`
   and `azure.userData.file`; use the `bootScript` and `bootScript.file` instead
-
+- added `sudo.command` Node property which allows to redefine sudo command used
+  in `ExecBuilder`
 
 ## 0.9.0 (2016-09-06)
 
