@@ -120,6 +120,46 @@ public class DockerBootScriptTest {
         }
     }
 
+    @Test
+    public void testWithSudo() {
+        try (DockerNode node = (DockerNode) dockerProvider.createNode("alpine-ssh",
+                ImmutableMap.of("bootScript", "touch /tmp/`whoami`.test", "bootScript.withSudo", "true"))) {
+            node.exec("test", "-f", "/tmp/root.test").assertSuccess();
+        }
+    }
+
+    @Test
+    public void testWithoutSudo() {
+        try (DockerNode node = (DockerNode) dockerProvider.createNode("alpine-ssh",
+                ImmutableMap.of("bootScript", "touch /tmp/`whoami`.test", "bootScript.withSudo", "false"))) {
+            node.exec("test", "-f", "/tmp/alpine.test").assertSuccess();
+        }
+    }
+
+    @Test
+    public void testDefaultSudo() {
+        try (DockerNode node = (DockerNode) dockerProvider.createNode("alpine-ssh",
+                ImmutableMap.of("bootScript", "touch /tmp/`whoami`.test"))) {
+            node.exec("test", "-f", "/tmp/root.test").assertSuccess();
+        }
+    }
+
+    @Test
+    public void testCustomSudoCommand() {
+        try (DockerNode node = (DockerNode) dockerProvider.createNode("alpine-ssh",
+                ImmutableMap.of("bootScript", "touch /tmp/`whoami`.test", "sudo.command", "time"))) {
+            node.exec("test", "-f", "/tmp/alpine.test").assertSuccess();
+        }
+    }
+
+    @Test
+    public void testEmptySudoCommand() {
+        try (DockerNode node = (DockerNode) dockerProvider.createNode("alpine-ssh",
+                ImmutableMap.of("bootScript", "touch /tmp/`whoami`.test", "sudo.command", ""))) {
+            node.exec("test", "-f", "/tmp/alpine.test").assertSuccess();
+        }
+    }
+
     /**
      * Starts SSH-able docker Node with values of given bootScript properties configured and checks if the expected one is used
      * (or exception is thrown when {@code expectedProperty == null}).
