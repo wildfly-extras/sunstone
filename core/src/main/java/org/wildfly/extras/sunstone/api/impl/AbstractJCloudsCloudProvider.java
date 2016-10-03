@@ -98,9 +98,11 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
                         + "You are not allowed to create two nodes with the same name under same provider");
             } else {
                 final AbstractJCloudsNode<?> createdNode = (AbstractJCloudsNode<?>) createNodeInternal(name, overrides);
+                LOGGER.debug("Node '{}' can be reached now on address {}", createdNode.getName(), createdNode.getPublicAddress());
                 try {
                     createdNode.handleBootScript();
                     createdNode.waitForStartPorts(null);
+                    LOGGER.debug("Node '{}' is succesfully started", createdNode.getName());
                 } catch (Exception e) {
                     if (nodeRequiresDestroy()) {
                         computeServiceContext.getComputeService().destroyNode(createdNode.getInitialNodeMetadata().getId());

@@ -548,7 +548,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
                 ExecResult result = execBuilder.exec(this);
                 LOGGER.trace("BootScript execution result on node '{}': {}", getName(), result);
             } catch (IOException e) {
-                throw new IllegalArgumentException("Error opening user data file " + scriptPath, e);
+                throw new IllegalArgumentException("Error opening bootScript file " + scriptPath, e);
             }
         }
     }
