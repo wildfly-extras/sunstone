@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Sunstone by wildfly-extras</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Sunstone</h1>
+        <h2>Simple library which helps to control virtual machines in cloud environments. It&#39;s aimed mainly to testing WildFly application server.</h2>
+        <a href="https://github.com/wildfly-extras/sunstone" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <blockquote>
+<p>Name: <a href="https://en.wikipedia.org/wiki/Sunstone_(medieval)">Sunstone</a>
+is a crystal that was supposedly used by Vikings to navigate in cloudy weather.</p>
+</blockquote>
+
+<p><a href="https://travis-ci.org/wildfly-extras/sunstone"><img src="https://travis-ci.org/wildfly-extras/sunstone.svg?branch=master" alt="Build Status"></a></p>
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motivation</h2>
+
+<h3>
+<a id="why" class="anchor" href="#why" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why?</h3>
+
+<p><em>Why yet another library?</em><br>
+<em>Because clouds exist. And they are many! Moreover, everybody loves new libraries, of course.</em></p>
+
+<p>The library is here to simplify test development for new clouds. One set of test can be reused for different kind of providers.</p>
+
+<h3>
+<a id="what" class="anchor" href="#what" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What?</h3>
+
+<p><em>What does it bring to me?</em><br>
+<em>One view to rule them all.</em></p>
+
+<ul>
+<li>single Java API for all supported cloud providers</li>
+<li>possibility to control WildFly nodes with <a href="https://github.com/wildfly-extras/creaper">Creaper</a>
+</li>
+<li>Arquillian test framework support</li>
+</ul>
+
+<h3>
+<a id="how" class="anchor" href="#how" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How?</h3>
+
+<p><em>It's so cool. Now, show me the code!</em></p>
+
+<p>Add the maven dependency to your project:</p>
+
+<div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+    &lt;<span class="pl-ent">groupId</span>&gt;org.wildfly.extras.sunstone&lt;/<span class="pl-ent">groupId</span>&gt;
+    &lt;<span class="pl-ent">artifactId</span>&gt;sunstone-core&lt;/<span class="pl-ent">artifactId</span>&gt;
+    &lt;<span class="pl-ent">version</span>&gt;${version.org.wildfly.extras.sunstone}&lt;/<span class="pl-ent">version</span>&gt;
+&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
+
+<p>Define cloud configuration in <code>my-cloud.properties</code> property file:</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-c"># Cloud provider - an entrypoint to given cloud</span>
+<span class="pl-k">cloud.provider.my-provider.type</span>=docker
+<span class="pl-k">cloud.provider.my-provider.docker.endpoint</span>=http://dockerhost0.acme.com:2375/
+
+<span class="pl-c"># Node - a single virtual machine in the cloud </span>
+<span class="pl-k">node.wildfly-node.docker.image</span>=jboss/wildfly:10.0.0.Final
+<span class="pl-k">node.wildfly-node.docker.waitForPorts</span>=8080,9990
+<span class="pl-k">node.wildfly-node.docker.waitForPorts.timeoutSec</span>=30</pre></div>
+
+<p>Then use your favorite Java 8 to do the stuff in the cloud:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">import</span> <span class="pl-smi">java.io.IOException</span>;
+<span class="pl-k">import</span> <span class="pl-smi">java.net.URL</span>;
+
+<span class="pl-k">import</span> <span class="pl-smi">org.wildfly.extras.sunstone.api.CloudProperties</span>;
+<span class="pl-k">import</span> <span class="pl-smi">org.wildfly.extras.sunstone.api.CloudProvider</span>;
+<span class="pl-k">import</span> <span class="pl-smi">org.wildfly.extras.sunstone.api.Node</span>;
+
+<span class="pl-k">import</span> <span class="pl-smi">com.squareup.okhttp.OkHttpClient</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.squareup.okhttp.Request</span>;
+
+<span class="pl-c">/**</span>
+<span class="pl-c"> * Sunstone quick-start. It creates cloud provider, starts a single node in it and</span>
+<span class="pl-c"> * makes HTTP request (port 8080) against the node.</span>
+<span class="pl-c"> */</span>
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">App</span> {
+
+    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-k">void</span> <span class="pl-en">main</span>(<span class="pl-k">String</span>[] <span class="pl-v">args</span>) <span class="pl-k">throws</span> <span class="pl-smi">IOException</span> {
+        <span class="pl-smi">CloudProperties</span><span class="pl-k">.</span>getInstance()<span class="pl-k">.</span>load(<span class="pl-s"><span class="pl-pds">"</span>my-cloud.properties<span class="pl-pds">"</span></span>);
+        <span class="pl-k">try</span> (<span class="pl-smi">CloudProvider</span> cloudProvider <span class="pl-k">=</span> <span class="pl-smi">CloudProvider</span><span class="pl-k">.</span>create(<span class="pl-s"><span class="pl-pds">"</span>my-provider<span class="pl-pds">"</span></span>)) {
+            <span class="pl-k">try</span> (<span class="pl-smi">Node</span> node <span class="pl-k">=</span> cloudProvider<span class="pl-k">.</span>createNode(<span class="pl-s"><span class="pl-pds">"</span>wildfly-node<span class="pl-pds">"</span></span>)) {
+                <span class="pl-k">final</span> <span class="pl-smi">URL</span> url <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">URL</span>(<span class="pl-s"><span class="pl-pds">"</span>http<span class="pl-pds">"</span></span>, node<span class="pl-k">.</span>getPublicAddress(), <span class="pl-c1">8080</span>, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
+                <span class="pl-k">final</span> <span class="pl-smi">OkHttpClient</span> client <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">OkHttpClient</span>();
+                <span class="pl-k">final</span> <span class="pl-smi">Request</span> nodeNameRequest <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">Request</span>.<span class="pl-smi">Builder</span>()<span class="pl-k">.</span>url(url)<span class="pl-k">.</span>build();
+                <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>Response from <span class="pl-pds">"</span></span> <span class="pl-k">+</span> url);
+                <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(client<span class="pl-k">.</span>newCall(nodeNameRequest)<span class="pl-k">.</span>execute()<span class="pl-k">.</span>body()<span class="pl-k">.</span>string());
+            }
+        }
+    }
+}</pre></div>
+
+<h2>
+<a id="clouds-support" class="anchor" href="#clouds-support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Clouds support</h2>
+
+<p>Available:</p>
+
+<ul>
+<li><a href="docker-README.md">Docker</a></li>
+<li>
+<a href="azure-README.md">Microsoft Azure</a> and, as a technical preview, <a href="azure-arm-README.md">Microsoft Azure (ARM)</a>
+</li>
+<li><a href="ec2-README.md">Amazon EC2</a></li>
+<li><a href="openstack-README.md">OpenStack</a></li>
+<li>
+<a href="baremetal-README.md">Bare Metal</a> (not really a cloud provider per se, but useful anyway)</li>
+</ul>
+
+<h2>
+<a id="wildflyeap-support" class="anchor" href="#wildflyeap-support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WildFly/EAP support</h2>
+
+<ul>
+<li><a href="wildfly-README.md">WildFlyNode wrapper</a></li>
+<li><a href="arquillian-README.md">Arquillian extension</a></li>
+</ul>
+
+<h2>
+<a id="logging" class="anchor" href="#logging" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Logging</h2>
+
+<p>SLF4J is used as a logging facade, so you have to have the appropriate adapter on the classpath. If you use Logback,
+you don't have to do anything. For other loggers, see <a href="http://www.slf4j.org/manual.html">the SLF4J manual</a>.</p>
+
+<p>The loggers are called <code>sunstone.*</code>, short and clear. (For example: <code>sunstone.core</code>, <code>sunstone.core.ssh</code> etc.)</p>
+
+<h2>
+<a id="abstraction-levels" class="anchor" href="#abstraction-levels" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Abstraction levels</h2>
+
+<p>The library is build around 2 main interfaces:</p>
+
+<ul>
+<li>
+<code>CloudProvider</code> - represents an entry point to given cloud and is able to control Nodes in it</li>
+<li>
+<code>Node</code> - virtual machines (or containers) in the given cloud</li>
+</ul>
+
+<h3>
+<a id="cloud-provider" class="anchor" href="#cloud-provider" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cloud provider</h3>
+
+<p>Cloud providers are controllers of (or entrypoints to) the given cloud. They are configured through properties prefixed with
+<strong><code>cloud.provider.[name].</code></strong></p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-k">cloud.provider.provider0.type</span>=docker
+<span class="pl-k">cloud.provider.provider0.docker.endpoint</span>=http://127.0.0.1:2375/</pre></div>
+
+<p>A new cloud provider is created by using a factory class. 
+The <code>CloudProvider</code> interface extends <code>AutoCloseable</code> so it's a good practice to use it in the try-with-resource block.</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">import</span> <span class="pl-smi">org.wildfly.extras.sunstone.api.CloudProvider</span>;
+
+<span class="pl-k">try</span> (<span class="pl-smi">CloudProvider</span> cloudProvider <span class="pl-k">=</span> <span class="pl-smi">CloudProvider</span><span class="pl-k">.</span>create(<span class="pl-s"><span class="pl-pds">"</span>provider0<span class="pl-pds">"</span></span>)) {
+    <span class="pl-c">// work with the cloudProvider here</span>
+}</pre></div>
+
+<p>The most important feature of cloud providers is their ability to control nodes (virtual machines) in the cloud.</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">import</span> <span class="pl-smi">org.wildfly.extras.sunstone.api.Node</span>;
+
+
+<span class="pl-c">// create nodes</span>
+<span class="pl-smi">Node</span> nodeA <span class="pl-k">=</span> cloudProvider<span class="pl-k">.</span>createNode(<span class="pl-s"><span class="pl-pds">"</span>myNodeName<span class="pl-pds">"</span></span>);
+<span class="pl-smi">Node</span> nodeB <span class="pl-k">=</span> cloudProvider<span class="pl-k">.</span>createNode(<span class="pl-s"><span class="pl-pds">"</span>anotherNodeName<span class="pl-pds">"</span></span>);
+
+<span class="pl-c">// or list nodes</span>
+<span class="pl-k">List&lt;<span class="pl-smi">Node</span>&gt;</span> allNodes <span class="pl-k">=</span> cloudProvider<span class="pl-k">.</span>getNodes();</pre></div>
+
+<p>There is one general configuration option for cloud providers - <strong><code>cloud.provider.[name].type</code></strong> which selects cloud provider implementation.
+For more configuration options consult documentation of specific cloud implementation. </p>
+
+<h3>
+<a id="node" class="anchor" href="#node" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Node</h3>
+
+<p>The <code>Node</code> interface represents a single virtual machine in the cloud. Nodes are configured through properties prefixed with
+<strong><code>node.[name].</code></strong>. For instance</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-k">node.node0.docker.image</span>=jboss/wildfly:10.0.0.Final
+<span class="pl-k">node.node0.docker.waitForPorts</span>=8080
+<span class="pl-k">node.node0.docker.waitForPorts.timeoutSec</span>=30</pre></div>
+
+<p>Node creation is controlled by cloud providers. 
+The <code>Node</code> interface also extends <code>AutoCloseable</code> so it's again a good practice to use it in the try-with-resource block.</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">try</span> (<span class="pl-smi">Node</span> node <span class="pl-k">=</span> cloudProvider<span class="pl-k">.</span>createNode(<span class="pl-s"><span class="pl-pds">"</span>node0<span class="pl-pds">"</span></span>)) {
+    <span class="pl-c">// work with the node here</span>
+}</pre></div>
+
+<p>The Node interface provides set of methods to work with it. It supports for instance:</p>
+
+<ul>
+<li>executing commands on the node</li>
+<li>copying files from/to node</li>
+<li>controlling running state of the node (<code>start</code>, <code>stop</code>, <code>kill</code>)</li>
+<li>retrieving the node address</li>
+<li>checking if a port is open on the node</li>
+</ul>
+
+<p>List of general <code>Node</code> properties:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Property name</th>
+<th align="left">Description</th>
+<th align="left">Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">waitForPorts</td>
+<td align="left">What ports (comma separated list) to wait for. SSH port is recommended, since you'll likely want to run some commands through ssh on the Node.</td>
+<td align="left">[None. Optional.]</td>
+</tr>
+<tr>
+<td align="left">waitForPorts.timeoutSec</td>
+<td align="left">How long to wait for ports to open after the instance is started (in seconds).</td>
+<td align="left">60</td>
+</tr>
+<tr>
+<td align="left">bootScript</td>
+<td align="left">Allows you to specify a script that is to be run on boot.</td>
+<td align="left">[None. Optional.]</td>
+</tr>
+<tr>
+<td align="left">bootScript.file</td>
+<td align="left">As <code>bootScript</code>, but allows you to specify a path to a file that contains the script. Only one of <code>bootScript</code> and <code>bootScript.file</code> can be specified at a time.</td>
+<td align="left">[None. Optional.]</td>
+</tr>
+<tr>
+<td align="left">bootScript.withSudo</td>
+<td align="left">Flag (<code>true</code>/<code>false</code>) which controls if the boot script runs with sudo.</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left">bootScript.remotePath</td>
+<td align="left">Path on the Node, where the bootScript should be stored.</td>
+<td align="left"><code>"/tmp/onBootScript.sh"</code></td>
+</tr>
+<tr>
+<td align="left">bootScript.waitForPorts</td>
+<td align="left">What ports (comma separated list) to wait for <strong>before</strong> the executing <code>bootScript</code>. This property is not used if no <code>bootScript</code> (or <code>bootScript.file</code>) is provided.</td>
+<td align="left">[None. Optional.]</td>
+</tr>
+<tr>
+<td align="left">bootScript.waitForPorts.timeoutSec</td>
+<td align="left">How long to wait for ports to open before the bootscript is executed (in seconds).</td>
+<td align="left">60</td>
+</tr>
+<tr>
+<td align="left">start.timeoutSec</td>
+<td align="left">How long to wait for node start (in seconds).</td>
+<td align="left">300</td>
+</tr>
+<tr>
+<td align="left">stop.timeoutSec</td>
+<td align="left">How long to wait for node stop (in seconds).</td>
+<td align="left">300</td>
+</tr>
+<tr>
+<td align="left">sudo.command</td>
+<td align="left">Sudo command to be used for <code>ExecBuilder</code> executions when <code>withSudo()</code> is used.</td>
+<td align="left"><code>sudo -S</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>These properties can be overriden on cloud provider level by appending provider name prefix (e.g. <code>docker.bootScript</code>).</p>
+
+<p>Consult documentation of specific cloud implementation for Node configuration options. </p>
+
+<h4>
+<a id="node-api-example" class="anchor" href="#node-api-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Node API example</h4>
+
+<p>Tar a folder on a Node and copy it to local filesystem:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">ExecResult</span> execResult <span class="pl-k">=</span> node<span class="pl-k">.</span>exec(
+        <span class="pl-s"><span class="pl-pds">"</span>tar<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>-czvf<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>/tmp/wildfly-logs.tgz<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>/opt/jboss/wildfly/standalone/log<span class="pl-pds">"</span></span>);
+
+<span class="pl-k">if</span> (execResult<span class="pl-k">.</span>getExitCode() <span class="pl-k">==</span> <span class="pl-c1">0</span>) {
+    node<span class="pl-k">.</span>copyFileFromNode(<span class="pl-s"><span class="pl-pds">"</span>/tmp/wildfly-logs.tgz<span class="pl-pds">"</span></span>, <span class="pl-smi">Paths</span><span class="pl-k">.</span>get(<span class="pl-s"><span class="pl-pds">"</span>wildfly-logs.tgz<span class="pl-pds">"</span></span>));
+}</pre></div>
+
+<h3>
+<a id="nodewrapper" class="anchor" href="#nodewrapper" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>NodeWrapper</h3>
+
+<p>Special implementation of the <code>Node</code> interface is the <code>NodeWrapper</code> class. </p>
+
+<p>It provides a convenient implementation of the Node interface that can be subclassed by developers wishing to adapt behavior or
+provide additional functionality. This class implements the Wrapper or Decorator pattern. Methods default to calling through
+to the wrapped request object.</p>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>Singleton <code>CloudProperties</code> is used to hold library configuration. It allows to load properties from files on system path or classpath.
+If a classpath resource <code>/sunstone.properties</code> exists, it is loaded by default.</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">import</span> <span class="pl-smi">org.wildfly.extras.sunstone.api.CloudProperties</span>;
+
+<span class="pl-smi">CloudProperties</span><span class="pl-k">.</span>getInstance()<span class="pl-k">.</span>load(<span class="pl-s"><span class="pl-pds">"</span>/org/jboss/cloud.properties<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>load(<span class="pl-s"><span class="pl-pds">"</span>/opt/sunstone/wildfly-nodes.properties<span class="pl-pds">"</span></span>);
+
+<span class="pl-c">// TODO work with sunstone </span>
+
+<span class="pl-smi">CloudProperties</span><span class="pl-k">.</span>getInstance()<span class="pl-k">.</span>reset();</pre></div>
+
+<p>Properties configured in <code>CloudProperties</code> can be overridden in several ways. Users can choose their preferred way.</p>
+
+<h3>
+<a id="configuration-templates" class="anchor" href="#configuration-templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration templates</h3>
+
+<p>You can use existing object configuration as a template for new objects of the same type.</p>
+
+<p>Use property name <strong><code>[objectType].[objectName].template</code></strong> to reference the template.</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-c"># define a node</span>
+<span class="pl-k">node.nodeA.docker.image</span>=jboss/wildfly
+<span class="pl-k">node.nodeA.docker.waitForPorts</span>=8080
+<span class="pl-k">node.nodeA.docker.waitForPorts.timeoutSec</span>=30
+
+<span class="pl-c"># use the nodeA configuration as a template for a new node</span>
+<span class="pl-k">node.nodeB.template</span>=nodeA
+<span class="pl-k">node.nodeB.docker.cmd</span>=/opt/jboss/wildfly/bin/standalone.sh,-b,0.0.0.0
+
+<span class="pl-c"># it's possible to use more template levels and override properties from template</span>
+<span class="pl-k">node.nodeC.template</span>=nodeB
+<span class="pl-k">node.nodeC.docker.waitForPorts</span>=9990</pre></div>
+
+<h3>
+<a id="single-object-properties" class="anchor" href="#single-object-properties" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Single object properties</h3>
+
+<p>Properties for a single object can also be provided in a property file which contains entries without <code>[objectType].[objectName].</code>
+prefix. This file is then referenced from <code>[objectType].[objectName].properties</code> entry.</p>
+
+<p>For instance you can have a property file <code>/home/test/wildfly-node.properties</code> which contains:</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-k">docker.image</span>=jboss/wildfly
+<span class="pl-k">docker.waitForPorts</span>=8080
+<span class="pl-k">docker.waitForPorts.timeoutSec</span>=30</pre></div>
+
+<p>Then property file used in <code>CloudProperties</code> configuration could contain:</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-c"># reference external configuration file</span>
+<span class="pl-k">node.node0.properties</span>=/home/test/wildfly-node.properties
+
+<span class="pl-c"># use external configuration and override some values</span>
+<span class="pl-k">node.node1.properties</span>=/home/test/wildfly-node.properties
+<span class="pl-k">node.node1.waitForPorts</span>=9990</pre></div>
+
+<h3>
+<a id="overriding-properties" class="anchor" href="#overriding-properties" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overriding properties</h3>
+
+<p>When the library searches a configuration entry, it goes through following levels.</p>
+
+<ol>
+<li>lookup entry with given name in <strong>System Properties</strong>
+</li>
+<li>lookup entry with given name in <strong><code>CloudProperties</code></strong>
+</li>
+<li>lookup entry located in property file referenced through single object properties <code>[objectType].[objectName].properties</code>
+</li>
+<li>lookup entry located in the object template (go through the all levels from the beginning)</li>
+</ol>
+
+<p>Once the entry is found it's used (i.e. following levels are skipped).</p>
+
+<p>For instance if properties for your tests contains </p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-k">node.nodeA.docker.image</span>=jboss/wildfly
+<span class="pl-k">node.nodeA.docker.waitForPorts</span>=8080
+<span class="pl-k">node.nodeA.docker.waitForPorts.timeoutSec</span>=30</pre></div>
+
+<p>then you can use system property to quickly override some value:</p>
+
+<div class="highlight highlight-source-shell"><pre>mvn <span class="pl-c1">test</span> <span class="pl-s"><span class="pl-pds">"</span>-Dnode.nodeA.docker.image=jboss/wildfly:10.0.0.Final<span class="pl-pds">"</span></span></pre></div>
+
+<h3>
+<a id="property-replacement" class="anchor" href="#property-replacement" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Property replacement</h3>
+
+<p>You can also use system-properties replacement directly in property values.
+The system property name and default value are separated by a colon <code>:</code>. </p>
+
+<p>It means you can refer system properties directly in property file:</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-c"># try to find the value in "wildfly.image" system property. If it doesn't exist, then use default value "jboss/wildfly"</span>
+<span class="pl-k">node.nodeA.docker.image</span>=${wildfly.image:jboss/wildfly}</pre></div>
+
+<h3>
+<a id="file-paths" class="anchor" href="#file-paths" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>File paths</h3>
+
+<p>Some properties are expected to contain file paths. This is typical e.g. for SSH private keys:</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-k">node.nodeA.openstack.ssh.privateKeyFile</span>=/home/me/.ssh/id_rsa</pre></div>
+
+<p>In such cases, it is possible to load data also from classpath, using the <code>classpath:</code> prefix:</p>
+
+<div class="highlight highlight-source-ini"><pre><span class="pl-k">node.nodeA.openstack.ssh.privateKeyFile</span>=classpath:org/jboss/test/openstack/ssh-private-key.pem</pre></div>
+
+<p>The classpath resource path must be absolute. It must <em>not</em> begin with <code>/</code> (see the javadoc of <code>Class.getResource</code>
+and <code>ClassLoader.getResource</code> to see the difference). Note that these classpath resources are actually copied
+to the filesystem and the resulting temporary files are scheduled to be deleted at JVM exit.
+This shouldn't be a concern typically.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<ul>
+<li><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a></li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/wildfly-extras/sunstone/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/wildfly-extras/sunstone/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/wildfly-extras/sunstone"></a> is maintained by <a href="https://github.com/wildfly-extras">wildfly-extras</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
