@@ -118,7 +118,8 @@ List of Docker `Node` properties:
 | docker.ssh.port        | SSH port number if SSH is installed (not-mapped - i.e. in-container value) |                           |
 | docker.ssh.user        | SSH username                                                      |                                    |
 | docker.ssh.password    | SSH user password                                                 |                                    |
-| docker.ssh.privateKey  | SSH user private key                                              |                                    |
+| docker.ssh.privateKey  | PEM encoded PKCS#8 private key which should be used to connect to the instance. | [None. Optional. One of `docker.ssh.password`, `docker.ssh.privateKey` or `docker.ssh.privateKeyFile` should be set.] |
+| docker.ssh.privateKeyFile | The path to the private key file which should be used to connect to the instance. If special value `default` is used, then private key is loaded from `~/.ssh/id_rsa`. This property is only used when the `docker.ssh.privateKey` property is empty.| [None. Optional. One of `docker.ssh.password`, `docker.ssh.privateKey` or `docker.ssh.privateKeyFile` should be set.] |
 | docker.volumeBindings  | Comma separated list of volume bindings in form `/hostDir:/containerDir`  |                               |
 | docker.cpuShares       | [CPU shares](https://docs.docker.com/engine/reference/run/#cpu-share-constraint) (relative weight) |   |
 | docker.memoryInMb      | [Memory limit](https://docs.docker.com/engine/reference/run/#runtime-constraints-on-resources) in megabytes | |

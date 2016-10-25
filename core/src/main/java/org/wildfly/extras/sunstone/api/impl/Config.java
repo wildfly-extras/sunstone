@@ -172,6 +172,7 @@ public final class Config {
             public static final String SSH_USER = "docker.ssh.user";
             public static final String SSH_PASSWORD = "docker.ssh.password";
             public static final String SSH_PRIVATE_KEY = "docker.ssh.privateKey";
+            public static final String SSH_PRIVATE_KEY_FILE = "docker.ssh.privateKeyFile";
             public static final String SSH_PORT = "docker.ssh.port";
 
             public static final String ENV_NAME_SSH_PORT = "DOCKER_SSH_PORT";

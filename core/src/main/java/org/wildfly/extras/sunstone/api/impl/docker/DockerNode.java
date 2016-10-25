@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.io.FileUtils;
 import org.jboss.shrinkwrap.impl.base.io.tar.TarInputStream;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -39,6 +40,7 @@ import org.jclouds.docker.features.MiscApi;
 import org.jclouds.docker.options.CreateImageOptions;
 import org.jclouds.docker.util.DockerInputStream;
 import org.jclouds.docker.util.StdStreamData;
+import org.jclouds.domain.LoginCredentials;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.ExecResult;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
@@ -67,6 +69,7 @@ import com.google.gson.stream.JsonToken;
  */
 public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
+    private static final String SPECIAL_VALUE_DEFAULT = "default";
 
     private final String imageName;
     private final NodeMetadata initialNodeMetadata;
@@ -209,18 +212,44 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
             hostConfBuilder.binds(Splitter.on(',').trimResults().omitEmptyStrings().splitToList(volumeBindings));
         }
 
-        final String sshUser = objectProperties.getProperty(Config.Node.Docker.SSH_USER);
-        if (!Strings.isNullOrEmpty(sshUser)) {
-            templateOptions.overrideLoginUser(sshUser);
+        LoginCredentials.Builder loginCredsBuilder = LoginCredentials.builder();
+        final String userName = objectProperties.getProperty(Config.Node.Docker.SSH_USER);
+        if (!Strings.isNullOrEmpty(userName)) {
+            loginCredsBuilder.user(userName);
         }
-        final String sshPass = objectProperties.getProperty(Config.Node.Docker.SSH_PASSWORD);
-        if (!Strings.isNullOrEmpty(sshPass)) {
-            templateOptions.overrideLoginPassword(sshPass);
+
+        final String privateKey = objectProperties.getProperty(Config.Node.Docker.SSH_PRIVATE_KEY);
+        if (!Strings.isNullOrEmpty(privateKey)) {
+            loginCredsBuilder.privateKey(privateKey);
+        } else {
+            final Path pkFilePath = objectProperties.getPropertyAsPath(Config.Node.Docker.SSH_PRIVATE_KEY_FILE, null);
+            if (pkFilePath != null) {
+                File pkFile = pkFilePath.toFile();
+                if (!pkFile.exists() && SPECIAL_VALUE_DEFAULT.equals(pkFilePath.toString())) {
+                    pkFile = new File(System.getProperty("user.home") + "/.ssh/id_rsa");
+                }
+                if (pkFile.canRead()) {
+                    try {
+                        loginCredsBuilder.privateKey(FileUtils.readFileToString(pkFile));
+                    } catch (IOException e) {
+                        throw new RuntimeException("Problem during reading private key from path " + pkFile, e);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Unable to read private key from path " + pkFilePath);
+                }
+            }
         }
-        final String sshPrivKey = objectProperties.getProperty(Config.Node.Docker.SSH_PRIVATE_KEY);
-        if (!Strings.isNullOrEmpty(sshPrivKey)) {
-            templateOptions.overrideLoginPrivateKey(sshPrivKey);
+
+        final String password = objectProperties.getProperty(Config.Node.Docker.SSH_PASSWORD);
+        if (!Strings.isNullOrEmpty(password)) {
+            loginCredsBuilder.password(password);
         }
+
+        LoginCredentials loginCredentials = loginCredsBuilder.build();
+        if (loginCredentials != null) {
+            templateOptions.overrideLoginCredentials(loginCredsBuilder.build());
+        }
+
         final String sshPort = objectProperties.getProperty(Config.Node.Docker.SSH_PORT);
         if (!Strings.isNullOrEmpty(sshPort)) {
             envConf.add(Config.Node.Docker.ENV_NAME_SSH_PORT + "=" + sshPort);
