@@ -12,6 +12,8 @@
   and `azure.userData.file`; use the `bootScript` and `bootScript.file` instead
 - added `sudo.command` Node property which allows to redefine sudo command used
   in `ExecBuilder`
+- added `docker.ssh.privateKeyFile` which allows to specify path to the private key file
+  which is used to connect to the instance via ssh.
 
 ## 0.9.0 (2016-09-06)
 
