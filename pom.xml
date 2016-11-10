@@ -99,10 +99,14 @@
                     <configuration>
                         <source>8</source>
                         <target>8</target>
+<!--
                         <compilerId>javac-with-errorprone</compilerId>
                         <forceJavacCompilerUse>true</forceJavacCompilerUse>
                         <showWarnings>true</showWarnings>
+-->
                     </configuration>
+<!--
+
                     <dependencies>
                         <dependency>
                             <groupId>org.codehaus.plexus</groupId>
@@ -115,6 +119,7 @@
                             <version>2.0.14</version>
                         </dependency>
                     </dependencies>
+-->
                 </plugin>
 
                 <plugin>
