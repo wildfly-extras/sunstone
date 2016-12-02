@@ -1,18 +1,19 @@
 package org.wildfly.extras.sunstone.api.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+
 import org.jclouds.compute.domain.ExecChannel;
 import org.jclouds.compute.domain.ExecResponse;
+import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.io.Payload;
 import org.jclouds.io.Payloads;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.ssh.CommandExecution;
 import org.wildfly.extras.sunstone.api.ssh.SshClient;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public final class JCloudsSshClient implements SshClient {
     private static final Logger LOGGER = SunstoneCoreLogger.SSH;
@@ -23,8 +24,7 @@ public final class JCloudsSshClient implements SshClient {
      * @throws OperationNotSupportedException when connecting to SSH fails, presumably because there's no SSH server
      * @throws InterruptedException when interrupted while waiting for SSH to connect
      */
-    public JCloudsSshClient(String node, Supplier<org.jclouds.ssh.SshClient> jcloudsSshClientSupplier)
-            throws OperationNotSupportedException, InterruptedException {
+    public JCloudsSshClient(AbstractJCloudsNode<?> node) throws OperationNotSupportedException, InterruptedException {
 
         org.jclouds.ssh.SshClient jcloudsSshClient = null;
         boolean connected = false;
@@ -33,7 +33,8 @@ public final class JCloudsSshClient implements SshClient {
         long endTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1);
         int count = 1;
         while (System.currentTimeMillis() < endTime) {
-            jcloudsSshClient = jcloudsSshClientSupplier.get();
+            NodeMetadata nodeMetadata = node.getFreshNodeMetadata();
+            jcloudsSshClient = node.getCloudProvider().getComputeServiceContext().utils().sshForNode().apply(nodeMetadata);
 
             if (jcloudsSshClient != null) {
                 try {
@@ -41,8 +42,8 @@ public final class JCloudsSshClient implements SshClient {
                     connected = true;
                     break;
                 } catch (Exception e) {
-                    SunstoneCoreLogger.SSH.debug("Failed to establish SSH connection to node '{}' (attempt {})",
-                            node, count, e);
+                    SunstoneCoreLogger.SSH.debug("Failed to establish SSH connection to node '{}' (attempt {})", node.getName(),
+                            count, e);
 
                     try {
                         jcloudsSshClient.disconnect();
@@ -58,16 +59,15 @@ public final class JCloudsSshClient implements SshClient {
         }
 
         if (jcloudsSshClient == null || !connected) {
-            SunstoneCoreLogger.SSH.warn("Failed to establish SSH connection to node '{}'", node);
-            throw new OperationNotSupportedException("Failed to establish SSH connection to node '" + node + "'");
+            SunstoneCoreLogger.SSH.warn("Failed to establish SSH connection to node '{}'", node.getName());
+            throw new OperationNotSupportedException("Failed to establish SSH connection to node '" + node.getName() + "'");
         }
 
-        ExecResponse sudoersResult = jcloudsSshClient.exec("sh -c '" + SshUtils.FileType.getShellTestStr("/etc/sudoers") + "'");
-        SshUtils.FileType sudoersFile = SshUtils.FileType.fromExitCode(sudoersResult.getExitStatus());
-        if (sudoersFile == SshUtils.FileType.FILE) {
+        if (isSudoersFixRequired(node, jcloudsSshClient)) {
             // see https://bugzilla.redhat.com/show_bug.cgi?id=1020147
             LOGGER.trace("Removing 'Defaults requiretty' from /etc/sudoers so that sudo works without a PTY");
-            ExecResponse result = jcloudsSshClient.exec("sudo sed -i -e 's/Defaults    requiretty/#Defaults    requiretty/' /etc/sudoers");
+            ExecResponse result = jcloudsSshClient
+                    .exec("sudo -n sed -i -e 's/^Defaults[ ]\\+requiretty/#Defaults requiretty/' /etc/sudoers");
             if (result.getExitStatus() != 0) {
                 LOGGER.warn("Failed removing 'Defaults requiretty' from /etc/sudoers, running with sudo might not work");
                 LOGGER.debug("stdout: {}", result.getOutput());
@@ -101,4 +101,29 @@ public final class JCloudsSshClient implements SshClient {
             jclouds.disconnect();
         }
     }
+
+    /**
+     * Returns true if fixing /etc/sudoers (disabling "Defaults requiretty" configuration option) is required for given Node.
+     *
+     * @param node Node to check
+     * @param jcloudsSshClient SSH client instance
+     * @return true if fix is required by node configuration and "/etc/sudoers" file exists, false otherwise
+     */
+    private boolean isSudoersFixRequired(AbstractJCloudsNode<?> node, org.jclouds.ssh.SshClient jcloudsSshClient) {
+        final String fixSudoersPropertyName = node.getCloudProvider().getProviderSpecificPropertyName(node.config(),
+                Config.Node.Shared.SSH_FIX_SUDOERS);
+
+        // check if fixing /etc/sudoers is requested in Node configuration
+        if (node.config().getPropertyAsBoolean(fixSudoersPropertyName, false)) {
+            // check if /etc/sudoers exists on the Node
+            ExecResponse sudoersResult = jcloudsSshClient
+                    .exec("sh -c '" + SshUtils.FileType.getShellTestStr("/etc/sudoers") + "'");
+            SshUtils.FileType sudoersFile = SshUtils.FileType.fromExitCode(sudoersResult.getExitStatus());
+            if (sudoersFile == SshUtils.FileType.FILE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

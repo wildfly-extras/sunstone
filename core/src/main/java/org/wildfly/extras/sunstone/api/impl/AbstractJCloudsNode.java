@@ -354,10 +354,7 @@ public abstract class AbstractJCloudsNode<CP extends AbstractJCloudsCloudProvide
 
     @Override
     public org.wildfly.extras.sunstone.api.ssh.SshClient ssh() throws InterruptedException {
-        return new JCloudsSshClient(getName(), () -> {
-            NodeMetadata nodeMetadata = getFreshNodeMetadata();
-            return cloudProvider.getComputeServiceContext().utils().sshForNode().apply(nodeMetadata);
-        });
+        return new JCloudsSshClient(this);
     }
 
     /**

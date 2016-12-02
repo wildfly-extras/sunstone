@@ -194,6 +194,7 @@ List of general `Node` properties:
 | bootScript.remotePath | Path on the Node, where the bootScript should be stored.                            | `"/tmp/onBootScript.sh"` |
 | bootScript.waitForPorts | What ports (comma separated list) to wait for **before** the executing `bootScript`. This property is not used if no `bootScript` (or `bootScript.file`) is provided. | [None. Optional.] |
 | bootScript.waitForPorts.timeoutSec | How long to wait for ports to open before the bootscript is executed (in seconds). | 60    |
+| ssh.fixSudoers   | Flag (`true`/`false`) which controls if disabling `requiretty` option is requested for `/etc/sudoers` file. | false  |
 | start.timeoutSec | How long to wait for node start (in seconds).                                            | 300               |
 | stop.timeoutSec  | How long to wait for node stop (in seconds).                                             | 300               |
 | sudo.command     | Sudo command to be used for `ExecBuilder` executions when `withSudo()` is used.          | `sudo -S`         |

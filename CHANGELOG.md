@@ -14,6 +14,9 @@
   in `ExecBuilder`
 - added `docker.ssh.privateKeyFile` which allows to specify path to the private key file
   which is used to connect to the instance via ssh.
+- removed automatic fixing `/etc/sudoers` file when an SSH client instance is requested from Node
+  - added `ssh.fixSudoers` Node property which enables the logic 
+- use public JClouds release `2.0.0`
 
 ## 0.9.0 (2016-09-06)
 
