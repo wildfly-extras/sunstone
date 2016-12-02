@@ -1,21 +1,21 @@
 # Changelog
 
-## 0.10.0 (not yet released)
+## 0.10.0 (2016-12-05)
 
+- added `sudo.command` Node property which allows to redefine sudo command used
+  in `ExecBuilder`
+- removed automatic fixing `/etc/sudoers` file when an SSH client instance is requested from Node
+  - added `ssh.fixSudoers` Node property which enables the logic
+- removed support for deprecated Azure Node properties `azure.userData`
+  and `azure.userData.file`; use the `bootScript` and `bootScript.file` instead
 - unified `waitForPorts` and `waitForPorts.timeoutSec` properties across providers
 - extended `bootScript.*` configuration
   - added possibility to wait for ports before a boot script is executed; it's configured
     by `bootScript.waitForPorts` and `bootScript.waitForPorts.timeoutSec` properties
   - added `bootScript.withSudo` property which allows to disable sudo for the bootScript
   - remote script path on Node made configurable through `bootScript.remotePath` property
-- removed support for deprecated Azure Node properties `azure.userData`
-  and `azure.userData.file`; use the `bootScript` and `bootScript.file` instead
-- added `sudo.command` Node property which allows to redefine sudo command used
-  in `ExecBuilder`
 - added `docker.ssh.privateKeyFile` which allows to specify path to the private key file
   which is used to connect to the instance via ssh.
-- removed automatic fixing `/etc/sudoers` file when an SSH client instance is requested from Node
-  - added `ssh.fixSudoers` Node property which enables the logic 
 - use public JClouds release `2.0.0`
 
 ## 0.9.0 (2016-09-06)
