@@ -137,6 +137,8 @@ public final class Config {
             public static final String START_TIMEOUT_SEC = "start.timeoutSec";
 
             public static final String SUDO_COMMAND = "sudo.command";
+
+            public static final String SSH_FIX_SUDOERS = "ssh.fixSudoers";
         }
 
         /**
