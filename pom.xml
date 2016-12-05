@@ -107,6 +107,7 @@
                     <version>${version.surefire}</version>
                     <configuration>
                         <redirectTestOutputToFile>${testLogToFile}</redirectTestOutputToFile>
+                        <trimStackTrace>false</trimStackTrace>
                         <threadCount>1</threadCount>
                         <workingDirectory>${project.build.directory}</workingDirectory>
                         <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
