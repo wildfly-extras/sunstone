@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 (not yet released)
+
+- updated `RELEASE_PROCEDURE.md` to reflect Sonatype deployments
+
+
 ## 0.10.0 (2016-12-05)
 
 - added `sudo.command` Node property which allows to redefine sudo command used
