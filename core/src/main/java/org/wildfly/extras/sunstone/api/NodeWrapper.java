@@ -105,10 +105,6 @@ public class NodeWrapper implements Node {
         return delegate.getImageName();
     }
 
-    public String getProperty(String propertyName, String defaultValue) {
-        return delegate.getProperty(propertyName, defaultValue);
-    }
-
     @Override
     public ConfigProperties config() {
         return delegate.config();

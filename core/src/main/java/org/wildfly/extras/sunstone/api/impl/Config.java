@@ -12,18 +12,6 @@ public final class Config {
     public static final String DEFAULT_PROPERTIES = "/sunstone.properties";
 
     /**
-     * @deprecated older variant of {@link #DEFAULT_PROPERTIES}, kept only for backwards compatibility
-     */
-    @Deprecated
-    public static final String OLD_DEFAULT_PROPERTIES_2 = "/clouds.properties";
-
-    /**
-     * @deprecated old variant of {@link #DEFAULT_PROPERTIES}, kept only for backwards compatibility
-     */
-    @Deprecated
-    public static final String OLD_DEFAULT_PROPERTIES_1 = "/org/wildfly/extras/clouds/default.properties";
-
-    /**
      * Key suffix for {@link ObjectProperties} inheritance implementation.<br/>
      * E.g.
      *
@@ -217,11 +205,6 @@ public final class Config {
             public static final String PROVISION_GUEST_AGENT = "azure.provisionGuestAgent";
             public static final String VIRTUAL_NETWORK = "azure.virtualNetwork";
             public static final String SUBNET = "azure.subnet";
-
-            @Deprecated
-            public static final String LOGIN_NAME = "azure.login.name";
-            @Deprecated
-            public static final String LOGIN_PASSWORD = "azure.login.password";
         }
 
         /**

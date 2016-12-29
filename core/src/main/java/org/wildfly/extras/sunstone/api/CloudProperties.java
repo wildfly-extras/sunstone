@@ -69,26 +69,6 @@ public final class CloudProperties {
                 } catch (IOException e) {
                     LOGGER.error("Unable to load default properties", e);
                 }
-            } else if (CloudProperties.class.getResource(Config.OLD_DEFAULT_PROPERTIES_2) != null) {
-                // OLD_DEFAULT_PROPERTIES_2 will be removed in a future version
-                try (InputStream is = CloudProperties.class.getResourceAsStream(Config.OLD_DEFAULT_PROPERTIES_2)) {
-                    if (is != null) {
-                        properties.load(is);
-                        LOGGER.debug("CloudProperties reset to default settings from {}", Config.OLD_DEFAULT_PROPERTIES_2);
-                    }
-                } catch (IOException e) {
-                    LOGGER.error("Unable to load default properties", e);
-                }
-            } else if (CloudProperties.class.getResource(Config.OLD_DEFAULT_PROPERTIES_1) != null) {
-                // OLD_DEFAULT_PROPERTIES_1 will be removed in a future version
-                try (InputStream is = CloudProperties.class.getResourceAsStream(Config.OLD_DEFAULT_PROPERTIES_1)) {
-                    if (is != null) {
-                        properties.load(is);
-                        LOGGER.debug("CloudProperties reset to default settings from {}", Config.OLD_DEFAULT_PROPERTIES_1);
-                    }
-                } catch (IOException e) {
-                    LOGGER.error("Unable to load default properties", e);
-                }
             }
         }
         return this;

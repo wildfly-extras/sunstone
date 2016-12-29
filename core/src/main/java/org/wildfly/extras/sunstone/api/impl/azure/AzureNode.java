@@ -92,17 +92,11 @@ public class AzureNode extends AbstractJCloudsNode<AzureCloudProvider> {
 
         String loginName = objectProperties.getProperty(Config.Node.Azure.SSH_USER);
         if (Strings.isNullOrEmpty(loginName)) {
-            loginName = objectProperties.getProperty(Config.Node.Azure.LOGIN_NAME);
-        }
-        if (Strings.isNullOrEmpty(loginName)) {
             throw new IllegalArgumentException("SSH user name for Azure virtual machine must be set");
         }
         templateOptions.overrideLoginUser(loginName);
 
         String loginPassword = objectProperties.getProperty(Config.Node.Azure.SSH_PASSWORD);
-        if (Strings.isNullOrEmpty(loginPassword)) {
-            loginPassword = objectProperties.getProperty(Config.Node.Azure.LOGIN_PASSWORD);
-        }
         if (Strings.isNullOrEmpty(loginPassword)) {
             throw new IllegalArgumentException("SSH password for Azure virtual machine must be set");
         }

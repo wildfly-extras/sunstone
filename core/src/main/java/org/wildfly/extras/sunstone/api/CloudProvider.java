@@ -111,15 +111,6 @@ public interface CloudProvider extends AutoCloseable {
      */
     List<Node> getNodes();
 
-    /**
-     * Returns the cloud provider configuration entry with given name. If such entry is not found, then given
-     * default value is returned.
-     *
-     * @deprecated use {@link #config()} instead
-     */
-    @Deprecated
-    String getProperty(String propertyName, String defaultValue);
-
     /** Returns the {@link ConfigProperties configuration properties} of this cloud provider. */
     ConfigProperties config();
 
@@ -171,22 +162,6 @@ public interface CloudProvider extends AutoCloseable {
                 return new BareMetalCloudProvider(providerName, overrideMap);
             default:
                 throw new IllegalArgumentException("Unknown cloud provider type: " + type);
-        }
-    }
-
-    /** @deprecated use {@link #create(String)} or {@link #create(String, Map)} */
-    @Deprecated
-    final class Factory {
-        /** @deprecated use {@link #create(String)} */
-        @Deprecated
-        public static CloudProvider createCloudProvider(String providerName) {
-            return CloudProvider.create(providerName);
-        }
-
-        /** @deprecated use {@link #create(String, Map)} */
-        @Deprecated
-        public static CloudProvider createCloudProvider(String providerName, Map<String, String> overrideMap) {
-            return CloudProvider.create(providerName, overrideMap);
         }
     }
 }
