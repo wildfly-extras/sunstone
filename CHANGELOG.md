@@ -3,6 +3,7 @@
 ## 0.11.0 (not yet released)
 
 - updated `RELEASE_PROCEDURE.md` to reflect Sonatype deployments
+- removed properties and methods which were marked as depracated
 
 
 ## 0.10.0 (2016-12-05)

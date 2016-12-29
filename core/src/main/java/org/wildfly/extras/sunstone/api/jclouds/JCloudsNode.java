@@ -7,10 +7,6 @@ import org.wildfly.extras.sunstone.api.Node;
  * Interface extending {@link Node} which gives access to its JClouds representation.
  */
 public interface JCloudsNode extends Node {
-    @Deprecated
-    default NodeMetadata getJCloudsImpl() {
-        return getFreshNodeMetadata();
-    }
 
     /**
      * Returns the JClouds {@link NodeMetadata} that reflect the node state as of the time of calling this method.
