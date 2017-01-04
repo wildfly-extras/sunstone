@@ -169,13 +169,10 @@ public class BareMetalNodeTest {
 
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testGetProperty() {
-        assertEquals("8822", bareMetalNode.getProperty(Config.Node.BareMetal.SSH_PORT, "foobar"));
         assertEquals("8822", bareMetalNode.config().getProperty(Config.Node.BareMetal.SSH_PORT, "foobar"));
 
-        assertEquals("foobar", bareMetalNode.getProperty("nonexisting.property", "foobar"));
         assertEquals("foobar", bareMetalNode.config().getProperty("nonexisting.property", "foobar"));
     }
 

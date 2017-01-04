@@ -130,10 +130,7 @@ public class DockerCloudProviderTest {
     @Test
     public void testGetProperty() {
         try (CloudProvider cloudProvider = CloudProvider.create("provider3")) {
-            assertEquals("1.18", cloudProvider.getProperty(Config.CloudProvider.Docker.API_VERSION, "foobar"));
             assertEquals("1.18", cloudProvider.config().getProperty(Config.CloudProvider.Docker.API_VERSION, "foobar"));
-
-            assertEquals("foobar", cloudProvider.getProperty("nonexisting.property", "foobar"));
             assertEquals("foobar", cloudProvider.config().getProperty("nonexisting.property", "foobar"));
         }
     }
