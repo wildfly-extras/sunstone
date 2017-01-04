@@ -566,10 +566,7 @@ public class DockerNodeTest {
 
     @Test
     public void testGetProperty() {
-        assertEquals("kwart/alpine-ext:3.2-bash", alpineNode.getProperty(Config.Node.Docker.IMAGE, "foobar"));
         assertEquals("kwart/alpine-ext:3.2-bash", alpineNode.config().getProperty(Config.Node.Docker.IMAGE, "foobar"));
-
-        assertEquals("foobar", alpineNode.getProperty("nonexisting.property", "foobar"));
         assertEquals("foobar", alpineNode.config().getProperty("nonexisting.property", "foobar"));
     }
 }

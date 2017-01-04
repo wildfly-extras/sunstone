@@ -149,14 +149,6 @@ public interface Node extends AutoCloseable {
      */
     SshClient ssh() throws OperationNotSupportedException, InterruptedException;
 
-    /**
-     * Returns the node configuration entry with given name. If such entry is not found, then given default value
-     * is returned.
-     *
-     * @deprecated use {@link #config()} instead
-     */
-    @Deprecated
-    String getProperty(String propertyName, String defaultValue);
 
     /** Returns the {@link ConfigProperties configuration properties} of this node. */
     ConfigProperties config();

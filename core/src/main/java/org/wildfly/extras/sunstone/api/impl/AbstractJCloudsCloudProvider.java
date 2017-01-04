@@ -186,12 +186,6 @@ public abstract class AbstractJCloudsCloudProvider implements JCloudsCloudProvid
     }
 
     @Override
-    @Deprecated
-    public final String getProperty(String propertyName, String defaultValue) {
-        return objectProperties.getProperty(propertyName, defaultValue);
-    }
-
-    @Override
     public final ConfigProperties config() {
         return objectProperties;
     }
