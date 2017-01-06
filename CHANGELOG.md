@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0 (not yet released)
+## 1.0.0 (2017-01-06)
 
 - removed properties and methods which were marked as deprecated
 - updated `RELEASE_PROCEDURE.md` to reflect Sonatype deployments
