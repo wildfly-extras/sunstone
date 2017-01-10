@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.1.0 (not yet released)
+
 ## 1.0.0 (2017-01-06)
 
 - removed properties and methods which were marked as deprecated
