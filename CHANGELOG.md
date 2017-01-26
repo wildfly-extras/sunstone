@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.1.0 (not yet released)
+- added `ExecBuilderFactory` that allows to create preconfigured `ExecBuilder`
 
 ## 1.0.0 (2017-01-06)
 

@@ -38,6 +38,8 @@ import org.wildfly.extras.sunstone.api.Node;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.PortOpeningException;
 import org.wildfly.extras.sunstone.api.process.ExecBuilder;
+import org.wildfly.extras.sunstone.api.process.ExecBuilderFactory;
+import org.wildfly.extras.sunstone.api.process.ExecBuilderOptions;
 
 /**
  * Subclasses must be acompanied by a {@code .properties} classpath resource that defines the tested cloud provider.
@@ -189,6 +191,7 @@ public abstract class AbstractCloudProviderTest {
                 testPorts(node);
                 testCommandExecution(node);
                 testExecBuilder(node);
+                testExecBuilderFactory(node);
                 testLifecycleControl(node);
                 testFileCopying(node);
 
@@ -299,6 +302,47 @@ public abstract class AbstractCloudProviderTest {
                 Duration.between(start, end).getSeconds(), lessThan(sleepInSecs));
         assertSame("ExecBuilder.asDaemon().exec() should return the constant", ExecBuilder.EXEC_RESULT_DAEMON, result);
         assertEquals("Running 'sleep' process should be found", 0, node.exec("pgrep","sleep").getExitCode());
+    }
+
+    private void testExecBuilderFactory(Node node) throws IOException, InterruptedException {
+        if (!testedCloudProvider.execBuilderSupported()) {
+            return;
+        }
+        ExecBuilderOptions opts = ExecBuilderOptions.defaultOptions();
+        ExecBuilderFactory execBuilderFactory = new ExecBuilderFactory(opts);
+        ExecResult result =  execBuilderFactory.fromCommand("id").withSudo().exec(node);
+        assertEquals(0, result.getExitCode());
+        assertThat(result.getOutput(), containsString("root"));
+
+        opts = ExecBuilderOptions.custom().redirectOut("/tmp/my-id.txt").build();
+        execBuilderFactory = new ExecBuilderFactory(opts);
+        result = execBuilderFactory.fromCommand("id").exec(node);
+        assertEquals(0, result.getExitCode());
+        assertThat(node.exec("cat", "/tmp/my-id.txt").getOutput(), not(containsString("root")));
+
+        opts = ExecBuilderOptions.custom().redirectOut("/tmp/my-sudo-id.txt").withSudo().build();
+        execBuilderFactory = new ExecBuilderFactory(opts);
+        result = execBuilderFactory.fromCommand("id").exec(node);
+        assertEquals(0, result.getExitCode());
+        assertThat(node.exec("cat", "/tmp/my-sudo-id.txt").getOutput(), containsString("root"));
+
+        long sleepInSecs = 60;
+        result = node.exec("pgrep","sleep");
+        // there is sleep process running from previous test
+        assertEquals("'sleep' process should be found", 0, result.getExitCode());
+        assertEquals("Only one sleep process should be running", 1, result.getOutput().split("\\n").length);
+        System.out.println(result.getOutput().split("\\n"));
+        Instant start = Instant.now();
+        opts = ExecBuilderOptions.custom().asDaemon().build();
+        execBuilderFactory = new ExecBuilderFactory(opts);
+        result = execBuilderFactory.fromCommand("sh", "-c", "sleep " + sleepInSecs).asDaemon().exec(node);
+        Instant end = Instant.now();
+        assertThat("ExecBuilder.asDaemon().exec() should return immediatelly",
+                Duration.between(start, end).getSeconds(), lessThan(sleepInSecs));
+        assertSame("ExecBuilder.asDaemon().exec() should return the constant", ExecBuilder.EXEC_RESULT_DAEMON, result);
+        result = node.exec("pgrep","sleep");
+        assertEquals("'sleep' process should be found", 0, result.getExitCode());
+        assertEquals("Two running 'sleep' processes should be found", 2, result.getOutput().split("\\n").length);
     }
 
     private void testLifecycleControl(Node node) {

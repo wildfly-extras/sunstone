@@ -47,7 +47,7 @@ public class ExecBuilder {
 
     private static final Logger LOGGER = SunstoneCoreLogger.SSH;
 
-    private static final CharSequenceTranslator ESCAPE_ARG = new ArgumentEscaper();
+    static final CharSequenceTranslator DEFAULT_ESCAPE_ARG = new ArgumentEscaper();
 
     public static final ExecResult EXEC_RESULT_DAEMON = DaemonExecResult.INSTANCE;
 
@@ -60,17 +60,31 @@ public class ExecBuilder {
     private String redirectOut;
     private RedirectMode redirectModeOut;
     private final Map<String, String> environmentVariables = new HashMap<String, String>();
+    private final CharSequenceTranslator argumentEscaper;
 
     /**
-     * Private constructor.
+     * Constructor.
      *
+     * @param properties configuration that is used with every executed command
      * @param command mandatory command (with optional arguments) to be executed
      * @throws IllegalArgumentException the provided command is empty or null
      */
-    private ExecBuilder(String... command) throws IllegalArgumentException {
+    ExecBuilder(ExecBuilderOptions properties, String... command) throws IllegalArgumentException {
+        if (properties == null) {
+            throw new IllegalArgumentException("Properties has to be provided.");
+        }
         if (command == null || command.length == 0) {
             throw new IllegalArgumentException("Command for execution has to be provided.");
         }
+        withSudo = properties.isWithSudo();
+        asDaemon = properties.isAsDaemon();
+        redirectErr = properties.getRedirectErr();
+        redirectModeErr = properties.getRedirectModeErr();
+        redirectOut = properties.getRedirectOut();
+        redirectModeOut = properties.getRedirectModeOut();
+        if (properties.getEnvironmentVariables() != null)
+            environmentVariables.putAll(properties.getEnvironmentVariables());
+        argumentEscaper = properties.getArgumentEscaper() != null ? properties.getArgumentEscaper() : DEFAULT_ESCAPE_ARG;
         this.command = new ArrayList<>(command.length);
         for (String arg : command)
             this.command.add(arg);
@@ -83,7 +97,7 @@ public class ExecBuilder {
      * @param command mandatory command with optional arguments
      */
     public static ExecBuilder fromCommand(String... command) {
-        return new ExecBuilder(command);
+        return new ExecBuilder(ExecBuilderOptions.defaultOptions(), command);
     }
 
     /**
@@ -92,7 +106,7 @@ public class ExecBuilder {
      * @param script shell script to be executed (must be not-{@code null})
      */
     public static ExecBuilder fromShellScript(String script) {
-        return new ExecBuilder("sh", "-c", Objects.requireNonNull(script, "Shell script has to be provided"));
+        return new ExecBuilder(ExecBuilderOptions.defaultOptions(), "sh", "-c", Objects.requireNonNull(script, "Shell script has to be provided"));
     }
 
     /**
@@ -256,7 +270,7 @@ public class ExecBuilder {
 
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             escapedCommand.append("export ").append(entry.getKey()).append("=")
-            .append(ESCAPE_ARG.translate(entry.getValue())).append("; ");
+            .append(argumentEscaper.translate(entry.getValue())).append("; ");
             hasEnv = true;
         }
 
@@ -267,34 +281,34 @@ public class ExecBuilder {
             } else {
                 addSpace = true;
             }
-            escapedCommand.append(ESCAPE_ARG.translate(arg));
+            escapedCommand.append(argumentEscaper.translate(arg));
         }
 
         StringBuilder exec = new StringBuilder();
         if (asDaemon) {
             final String stdOut = StringUtils.defaultIfEmpty(redirectOut, "/dev/null");
             final String stdErr = StringUtils.defaultIfEmpty(redirectErr, "/dev/null");
-            escapedCommand.append(" 1").append(redirectStr(redirectModeOut)).append(ESCAPE_ARG.translate(stdOut));
+            escapedCommand.append(" 1").append(redirectStr(redirectModeOut)).append(argumentEscaper.translate(stdOut));
             escapedCommand.append(" 2").append(redirectStr(redirectModeErr))
-                    .append(stdOut.equals(stdErr) ? "&1" : ESCAPE_ARG.translate(stdErr));
+                    .append(stdOut.equals(stdErr) ? "&1" : argumentEscaper.translate(stdErr));
             escapedCommand.append(" &");
             if (withSudo) {
                 exec.append("nohup ").append(sudoCmd).append("sh -c ");
             } else {
                 exec.append("nohup sh -c ");
             }
-            exec.append(ESCAPE_ARG.translate(escapedCommand));
+            exec.append(argumentEscaper.translate(escapedCommand));
             exec.append(" 1>/dev/null 2>/dev/null </dev/null");
         } else {
             if (StringUtils.isNotEmpty(redirectOut)) {
-                escapedCommand.append(" 1").append(redirectStr(redirectModeOut)).append(ESCAPE_ARG.translate(redirectOut));
+                escapedCommand.append(" 1").append(redirectStr(redirectModeOut)).append(argumentEscaper.translate(redirectOut));
             }
             if (StringUtils.isNotEmpty(redirectErr)) {
                 escapedCommand.append(" 2").append(redirectStr(redirectModeErr));
                 if (redirectErr.equals(redirectOut)) {
                     escapedCommand.append("&1");
                 } else {
-                    escapedCommand.append(ESCAPE_ARG.translate(redirectErr));
+                    escapedCommand.append(argumentEscaper.translate(redirectErr));
                 }
             }
             if (withSudo) {
@@ -303,7 +317,7 @@ public class ExecBuilder {
             // sudo with subshell to cover redirects into a file with root privileges
             if (withSudo || hasEnv) {
                 exec.append("sh -c ");
-                exec.append(ESCAPE_ARG.translate(escapedCommand));
+                exec.append(argumentEscaper.translate(escapedCommand));
             } else {
                 exec.append(escapedCommand);
             }
