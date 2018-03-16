@@ -51,6 +51,7 @@ public final class AzureCloudProvider extends AbstractJCloudsCloudProvider {
         // suspend shouldn't deallocate, that makes both suspend and resume very very slow
         defaultPropertyOverrides.setProperty(AzureComputeProperties.DEALLOCATE_WHEN_SUSPENDING, "false");
 
+        // TODO: configurable endpoint, this can be a sensible default
         return ContextBuilder.newBuilder("azurecompute")
                 .endpoint("https://management.core.windows.net/" + subscriptionId)
                 .credentials(privateKeyFile.toString(), privateKeyPassword)

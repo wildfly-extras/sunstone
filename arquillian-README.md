@@ -124,7 +124,7 @@ arquillian.suite.allNodes.start.nodes=node0,node1,node2
 and select one through the system property during test execution 
 
 ```bash
-mvn test -Dclouds.arquillian.suite=allNodes
+mvn test -Dsunstone.arquillian.suite=allNodes
 ```
 
 **`sunstone.arquillian.disable`**
@@ -134,7 +134,7 @@ If set then the logic provided by this extension is disabled.
 It can be used in cases when you have the extension on classpath, but you don't want it to be active.
 
 ```bash
-mvn test -Dclouds.arquillian.disable
+mvn test -Dsunstone.arquillian.disable
 ```
 
 
