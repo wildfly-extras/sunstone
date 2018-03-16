@@ -26,12 +26,19 @@ import com.google.common.io.Resources;
 /**
  * Object which holds an {@link ObjectPropertiesType}, a name and object properties.
  *
+ * TODO: better documentation for this class, there are many public methods which are not intuitive and may not be meant to used by public
+ * TODO: e.g. applyOverrides, applyMissing, getArray
  */
 public class ObjectProperties implements ConfigProperties {
     private static final Logger LOGGER = SunstoneCoreLogger.DEFAULT;
 
     public static final String PROPERTIES_FILE_KEY = "properties";
+    /**
+     * Replaced by {@link ObjectProperties#SYSTEM_PROPERTY_VALUE_DELIMITER_SST}.
+     */
+    @Deprecated
     public static final String SYSTEM_PROPERTY_VALUE_DELIMITER = "clouds.sysprop.value.delimiter";
+    public static final String SYSTEM_PROPERTY_VALUE_DELIMITER_SST = "sunstone.sysprop.value.delimiter";
     public static final String SYSTEM_PROPERTY_VALUE_DELIMITER_DEFAULT = ":";
 
     private final Properties properties;
@@ -340,8 +347,15 @@ public class ObjectProperties implements ConfigProperties {
      */
     public static String replaceSystemProperties(final Object source) {
         final StrSubstitutor strSubstitutor = new StrSubstitutor(StrLookup.systemPropertiesLookup());
-        strSubstitutor.setValueDelimiter(
-                System.getProperty(SYSTEM_PROPERTY_VALUE_DELIMITER, SYSTEM_PROPERTY_VALUE_DELIMITER_DEFAULT));
+        String delimiter = System.getProperty(SYSTEM_PROPERTY_VALUE_DELIMITER_SST);
+        if (Strings.isNullOrEmpty(delimiter)) {
+            LOGGER.debug("Delimiter is not specified via property {}", SYSTEM_PROPERTY_VALUE_DELIMITER_SST);
+            delimiter = System.getProperty(SYSTEM_PROPERTY_VALUE_DELIMITER, SYSTEM_PROPERTY_VALUE_DELIMITER_DEFAULT);
+            if (!delimiter.equals(SYSTEM_PROPERTY_VALUE_DELIMITER_DEFAULT)) {
+                LOGGER.warn("Property {} is deprecated, use {} instead", SYSTEM_PROPERTY_VALUE_DELIMITER, SYSTEM_PROPERTY_VALUE_DELIMITER_SST);
+            }
+        }
+        strSubstitutor.setValueDelimiter(delimiter);
         return strSubstitutor.replace(source);
     }
 
