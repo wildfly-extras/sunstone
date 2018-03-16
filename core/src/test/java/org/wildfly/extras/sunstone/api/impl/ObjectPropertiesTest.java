@@ -169,10 +169,10 @@ public class ObjectPropertiesTest {
     @Test
     public void testPropertyReplacementsCustomDelimiter() {
         try {
-            System.setProperty(ObjectProperties.SYSTEM_PROPERTY_VALUE_DELIMITER, ":-");
+            System.setProperty(ObjectProperties.SYSTEM_PROPERTY_VALUE_DELIMITER_SST, ":-");
             testPropertyReplacementInternal("customdelimiter");
         } finally {
-            System.clearProperty(ObjectProperties.SYSTEM_PROPERTY_VALUE_DELIMITER);
+            System.clearProperty(ObjectProperties.SYSTEM_PROPERTY_VALUE_DELIMITER_SST);
         }
     }
 

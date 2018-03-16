@@ -1,12 +1,13 @@
 package org.wildfly.extras.sunstone.api.impl;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import org.jclouds.ssh.config.ConfiguresSshClient;
 import org.jclouds.ssh.jsch.config.JschSshClientModule;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.slf4j.Logger;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @ConfiguresSshClient
 public final class DynamicSshClientModule extends AbstractModule {
@@ -22,7 +23,15 @@ public final class DynamicSshClientModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        String sshImpl = System.getProperty("clouds.ssh");
+        final String oldSshClientProperty = "clouds.ssh";
+        final String sshClientProperty = "sunstone.ssh";
+        String sshImpl = System.getProperty(sshClientProperty);
+        if (Strings.isNullOrEmpty(sshImpl)) {
+            sshImpl = System.getProperty(oldSshClientProperty);
+            if (!Strings.isNullOrEmpty(sshImpl)) {
+                LOG.warn("Property {} is deprecated, use {} instead", oldSshClientProperty, sshClientProperty);
+            }
+        }
 
         if ("sshj".equalsIgnoreCase(sshImpl)) {
             logOnce("SSHJ");
