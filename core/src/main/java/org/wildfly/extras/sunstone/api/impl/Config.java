@@ -23,6 +23,21 @@ public final class Config {
     public static final String TEMPLATE = "template";
 
     /**
+     * Key suffix for {@link ObjectProperties} inheritance implementation. Inverted approach to
+     * {@link Config#TEMPLATE}. <br/>
+     * E.g.
+     *
+     * <pre>
+     * node.node1.stuff=stuff
+     * node.node1.moreStuff=moreStuff
+     * node.node1.templateTo=node2,node3,node4
+     *
+     * node.node2.stuff=differentStuff
+     * </pre>
+     */
+    public static final String TEMPLATE_TO = "templateTo";
+
+    /**
      * Key suffix for {@link ObjectProperties} to specify a node group, both for node configuration
      * and cloud provider configuration. This typically doesn't have to be used, there's a sensible default.
      */
