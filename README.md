@@ -6,6 +6,7 @@ It's aimed mainly to testing WildFly application server.
 > Name: [Sunstone](https://en.wikipedia.org/wiki/Sunstone_\(medieval\))
 > is a crystal that was supposedly used by Vikings to navigate in cloudy weather.
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/29c4f841338e4096bd76c5369373044b)](https://www.codacy.com/app/LittleJohnII/sunstone?utm_source=github.com&utm_medium=referral&utm_content=wildfly-extras/sunstone&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/wildfly-extras/sunstone.svg?branch=master)](https://travis-ci.org/wildfly-extras/sunstone)
 
 ## Motivation
