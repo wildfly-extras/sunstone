@@ -265,6 +265,26 @@ node.nodeC.template=nodeB
 node.nodeC.docker.waitForPorts=9990
 ```
 
+Another way to define templates is via the property **`[objectType].[objectName].templateTo`**:
+
+```properties
+node.nodeA.docker.image=jboss/wildfly
+node.nodeA.docker.waitForPorts=8080
+node.nodeA.docker.waitForPorts.timeoutSec=30
+node.nodeA.templateTo=nodeB,nodeC
+
+# it is still possible to override properties from the template
+node.nodeB.docker.waitForPorts=9990
+```
+
+This approach creates `template` properties for all nodes in the `templateTo` property. That is, at runtime, you would
+find these properties in your `CloudProperties` instance (in addition to the properties you specified):
+
+```properties
+node.nodeB.template=nodeA
+node.nodeC.template=nodeA
+```
+
 ### Single object properties
 
 Properties for a single object can also be provided in a property file which contains entries without `[objectType].[objectName].`
@@ -326,6 +346,12 @@ It means you can refer system properties directly in property file:
 node.nodeA.docker.image=${wildfly.image:jboss/wildfly}
 ```
 
+In case you want to use a different separator, you can use the property:
+
+```properties
+sunstone.sysprop.value.delimiter=:-
+```
+
 ### File paths
 
 Some properties are expected to contain file paths. This is typical e.g. for SSH private keys:
@@ -344,6 +370,15 @@ The classpath resource path must be absolute. It must _not_ begin with `/` (see 
 and `ClassLoader.getResource` to see the difference). Note that these classpath resources are actually copied
 to the filesystem and the resulting temporary files are scheduled to be deleted at JVM exit.
 This shouldn't be a concern typically.
+
+### Miscellaneous
+
+#### Switching default ssh client implementation
+
+By default, Sunstone uses the `JschSshClient` implementation. Using the property `sunstone.ssh=sshj`, you can switch
+the ssh client implementation to `SshjSshClient`.
+
+See class `org.wildfly.extras.sunstone.api.impl.DynamicSshClientModule` for more information.
 
 ## License
 
