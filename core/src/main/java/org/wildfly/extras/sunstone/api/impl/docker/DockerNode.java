@@ -156,10 +156,10 @@ public class DockerNode extends AbstractJCloudsNode<DockerCloudProvider> {
                     });
         }
 
-        Map<String, Object> exposedPorts = null;
+        Map<String, Object> exposedPorts;
         final int[] inboundPorts = Pattern.compile(",")
-                .splitAsStream(objectProperties.getProperty(Config.Node.Docker.INBOUND_PORTS, "")).mapToInt(Integer::parseInt)
-                .toArray();
+                .splitAsStream(objectProperties.getProperty(Config.Node.Docker.INBOUND_PORTS, ""))
+                .filter(match -> !match.isEmpty()).mapToInt(Integer::parseInt).toArray();
         if (inboundPorts.length > 0) {
             templateOptions.inboundPorts(inboundPorts);
             exposedPorts = Maps.newHashMap();
