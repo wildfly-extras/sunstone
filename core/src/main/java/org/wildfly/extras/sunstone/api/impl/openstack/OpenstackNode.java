@@ -147,6 +147,11 @@ public class OpenstackNode extends AbstractJCloudsNode<OpenstackCloudProvider> {
             templateOptions.securityGroups(securityGroups.split(","));
         }
 
+        final String networks = objectProperties.getProperty(Config.Node.Openstack.NETWORKS);
+        if (!Strings.isNullOrEmpty(networks)) {
+            templateOptions.networks(networks.split(","));
+        }
+
         byte[] userData = null;
         final String userDataStr = objectProperties.getProperty(Config.Node.Openstack.USER_DATA);
         final Path userDataFile = objectProperties.getPropertyAsPath(Config.Node.Openstack.USER_DATA_FILE, null);

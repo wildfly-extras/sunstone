@@ -64,22 +64,23 @@ List of OpenStack `CloudProvider` properties:
 
 List of OpenStack `Node` properties:
 
-| Property name               | Description                                                       | Default value                      |
-|:----------------------------|:------------------------------------------------------------------|:-----------------------------------|
-| nodegroup                   | Name of the node group for this node. Default value should typically be satisfactory. | The `nodegroup` value from the cloud provider. |
-| openstack.instance.type     | Instance type for the node (Flavor). This defines the computing/networking/... capabilities of the node. | [None. Mandatory.] |
-| openstack.image             | Name of the image for the node. If ambiguous or missing, `openstack.image.id` will be used. | [None. Mandatory. (Well techinically, it's optional, but it's recommended to treat is as mandatory.)] |
-| openstack.image.id          | ID of the image for the node. Used when `openstack.image` is ambiguous or missing. | [None. Mandatory when `openstack.image` is missing or ambiguous.] |
-| openstack.bootScript        | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
-| openstack.bootScript.file   | As `openstack.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `openstack.bootScript` and `openstack.bootScript.file` can be specified at a time. | [None. Optional.] |
-| openstack.floatingIpPools   | Comma separated list of floating IP pool names. If the value is not provided, then all available pool names are used. | [None. Optional.] |
-| openstack.keyPair           | The key pair name (for public key) to be imported into this instance as an `authorized_key`. You can import a public key in the OpenStack dashboard. | [None. Optional.] |
-| openstack.inboundPorts      | Comma separated list of ports that can be used to access the instance. You will usually require at least port 22 for ssh access. | [None. Optional.] |
-| openstack.region            | OpenStack Location/Region name. If there is only one region, then the property config is optional. | [None. Mandatory when more regions.] |
-| openstack.securityGroups    | The comma separated security group names for the instance.        | [None. Optional.] |
-| openstack.ssh.user          | The user name for accessing the instance via SSH. See [http://docs.openstack.org/image-guide/obtain-images.html](http://docs.openstack.org/image-guide/obtain-images.html) for typical user names for images of various operating systems. | [None. Optional.] |
-| openstack.ssh.password      | Overrides the user password for accessing the instance.           | [None. Optional. One of `openstack.ssh.password`, `openstack.ssh.privateKey` or `openstack.ssh.privateKeyFile` should be set.] |
-| openstack.ssh.privateKey    | PEM encoded PKCS#8 private key which should be used to connect to the instance. | [None. Optional. One of `openstack.ssh.password`, `openstack.ssh.privateKey` or `openstack.ssh.privateKeyFile` should be set.] |
+| Property name                | Description                                                       | Default value                      |
+|:-----------------------------|:------------------------------------------------------------------|:-----------------------------------|
+| nodegroup                    | Name of the node group for this node. Default value should typically be satisfactory. | The `nodegroup` value from the cloud provider. |
+| openstack.instance.type      | Instance type for the node (Flavor). This defines the computing/networking/... capabilities of the node. | [None. Mandatory.] |
+| openstack.image              | Name of the image for the node. If ambiguous or missing, `openstack.image.id` will be used. | [None. Mandatory. (Well techinically, it's optional, but it's recommended to treat is as mandatory.)] |
+| openstack.image.id           | ID of the image for the node. Used when `openstack.image` is ambiguous or missing. | [None. Mandatory when `openstack.image` is missing or ambiguous.] |
+| openstack.bootScript         | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
+| openstack.bootScript.file    | As `openstack.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `openstack.bootScript` and `openstack.bootScript.file` can be specified at a time. | [None. Optional.] |
+| openstack.floatingIpPools    | Comma separated list of floating IP pool names. If the value is not provided, then all available pool names are used. | [None. Optional.] |
+| openstack.keyPair            | The key pair name (for public key) to be imported into this instance as an `authorized_key`. You can import a public key in the OpenStack dashboard. | [None. Optional.] |
+| openstack.inboundPorts       | Comma separated list of ports that can be used to access the instance. You will usually require at least port 22 for ssh access. | [None. Optional.] |
+| openstack.region             | OpenStack Location/Region name. If there is only one region, then the property config is optional. | [None. Mandatory when more regions.] |
+| openstack.securityGroups     | The comma separated security group names for the instance.        | [None. Optional.] |
+| openstack.networks           | The comma separated list of networks for the instance. Expects network UUIDs (not human-readable names).        | [None. Optional.] |
+| openstack.ssh.user           | The user name for accessing the instance via SSH. See [http://docs.openstack.org/image-guide/obtain-images.html](http://docs.openstack.org/image-guide/obtain-images.html) for typical user names for images of various operating systems. | [None. Optional.] |
+| openstack.ssh.password       | Overrides the user password for accessing the instance.           | [None. Optional. One of `openstack.ssh.password`, `openstack.ssh.privateKey` or `openstack.ssh.privateKeyFile` should be set.] |
+| openstack.ssh.privateKey     | PEM encoded PKCS#8 private key which should be used to connect to the instance. | [None. Optional. One of `openstack.ssh.password`, `openstack.ssh.privateKey` or `openstack.ssh.privateKeyFile` should be set.] |
 | openstack.ssh.privateKeyFile | The path to the private key file which should be used to connect to the instance. If special value `default` is used, then private key is loaded from `~/.ssh/id_rsa`. This property is only used when the `openstack.ssh.privateKey` property is empty.| [None. Optional. One of `openstack.ssh.password`, `openstack.ssh.privateKey` or `openstack.ssh.privateKeyFile` should be set.] |
-| openstack.userData          | User data in a string. Takes precedence over `openstack.userData.file`. | [None. Optional.] |
-| openstack.userData.file     | Path to file with user data.                                      | [None. Optional.] |
+| openstack.userData           | User data in a string. Takes precedence over `openstack.userData.file`. | [None. Optional.] |
+| openstack.userData.file      | Path to file with user data.                                      | [None. Optional.] |
