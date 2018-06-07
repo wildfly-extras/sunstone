@@ -246,6 +246,7 @@ public final class Config {
             public static final String IMAGE_ID = "openstack.image.id";
             public static final String KEY_PAIR = "openstack.keyPair";
             public static final String SECURITY_GROUPS = "openstack.securityGroups";
+            public static final String NETWORKS = "openstack.networks";
             public static final String INBOUND_PORTS = "openstack.inboundPorts";
             public static final String SSH_PRIVATE_KEY = "openstack.ssh.privateKey";
             public static final String SSH_PRIVATE_KEY_FILE = "openstack.ssh.privateKeyFile";
