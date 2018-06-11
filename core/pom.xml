@@ -61,7 +61,7 @@
             <artifactId>azurecompute</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.jclouds.labs</groupId>
+            <groupId>org.apache.jclouds.provider</groupId>
             <artifactId>azurecompute-arm</artifactId>
         </dependency>
         <dependency>
