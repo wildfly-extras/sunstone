@@ -44,10 +44,7 @@ public class AzureArmCloudProvider extends AbstractJCloudsCloudProvider {
         String publishers = objectProperties.getProperty(Config.CloudProvider.AzureArm.PUBLISHERS, "Canonical,RedHat");
 
         Properties defaultPropertyOverrides = new Properties();
-        // there's no constant for this :-(
-        defaultPropertyOverrides.setProperty("oauth.endpoint", "https://login.microsoftonline.com/" + tenantId + "/oauth2/token");
-        // 100 GB by default is way too much; maybe make this configurable?
-        defaultPropertyOverrides.setProperty(AzureComputeProperties.DEFAULT_DATADISKSIZE, "20");
+        defaultPropertyOverrides.setProperty(AzureArmPropertiesUnsupported.OAUTH_ENDPOINT, "https://login.microsoftonline.com/" + tenantId + "/oauth2/token");
         defaultPropertyOverrides.setProperty(AzureComputeProperties.IMAGE_PUBLISHERS, publishers);
         // listing all images is very expensive, so they should be cached for a long time
         // unfortunately, the default is 1 minute, which can never be sufficient; we use 5 hours here
