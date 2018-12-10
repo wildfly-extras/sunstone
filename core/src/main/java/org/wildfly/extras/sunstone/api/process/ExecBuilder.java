@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
@@ -130,6 +132,33 @@ public class ExecBuilder {
                 LOGGER.trace("Nohup execution result (will not be propagated): {}", execResult);
                 execResult = EXEC_RESULT_DAEMON;
             }
+            LOGGER.trace("ExecBuilder execution result: {}", execResult);
+            return execResult;
+        }
+    }
+
+    /**
+     * Executes the configured SSH command on given Node. SSH has to be available (and configured correctly) for the
+     * {@code node}.
+     *
+     * @param node
+     * @param timeout how long to wait
+     * @param timeoutUnit the {@link TimeUnit} of {@code timeout}
+     * @return the {@link ExecResult} if the command completes within the specified amount of time
+     * @throws OperationNotSupportedException SSH client could not be obtained or did not successfully connect
+     * @throws IOException when network error occurs
+     * @throws InterruptedException when interrupted while waiting for (non-daemon) command to finish
+     */
+    public ExecResult exec(Node node, long timeout, TimeUnit timeoutUnit) throws OperationNotSupportedException, IOException, InterruptedException, TimeoutException {
+        Objects.requireNonNull(node, "Can't execute command on null Node");
+        Objects.requireNonNull(timeout, "Can't execute command with null timeout");
+        Objects.requireNonNull(timeoutUnit, "Can't execute command with null timeoutUnit");
+
+        String renderedCommand = renderCommand(node);
+        LOGGER.debug("Executing command on node '{}': {}", node.getName(), renderedCommand);
+
+        try (SshClient ssh = node.ssh()) {
+            ExecResult execResult = ssh.execAndWait(renderedCommand, timeout, timeoutUnit);
             LOGGER.trace("ExecBuilder execution result: {}", execResult);
             return execResult;
         }

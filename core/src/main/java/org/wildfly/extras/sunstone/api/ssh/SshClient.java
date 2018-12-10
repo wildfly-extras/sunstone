@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import org.wildfly.extras.sunstone.api.ExecResult;
@@ -44,6 +46,18 @@ public interface SshClient extends AutoCloseable {
             }
         }
     }
+
+    /**
+     * Starts the {@code command} on the remote node and waits for its completion for the specified amount of time.
+     *
+     * @param command
+     * @param timeout how long to wait
+     * @param timeoutUnit the {@link TimeUnit} of {@code timeout}
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    ExecResult execAndWait(String command, long timeout, TimeUnit timeoutUnit) throws IOException, InterruptedException, TimeoutException;
 
     /**
      * Downloads the content of remote file at {@code path}. Caller is responsible
