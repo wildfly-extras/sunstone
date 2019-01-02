@@ -2,15 +2,20 @@ package org.wildfly.extras.sunstone.api.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
+import com.google.common.io.CharStreams;
 import org.jclouds.compute.domain.ExecChannel;
 import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.io.Payload;
 import org.jclouds.io.Payloads;
 import org.slf4j.Logger;
+import org.wildfly.extras.sunstone.api.ExecResult;
 import org.wildfly.extras.sunstone.api.OperationNotSupportedException;
 import org.wildfly.extras.sunstone.api.ssh.CommandExecution;
 import org.wildfly.extras.sunstone.api.ssh.SshClient;
@@ -82,6 +87,50 @@ public final class JCloudsSshClient implements SshClient {
     public CommandExecution exec(String command) {
         ExecChannel execChannel = jclouds.execChannel(command);
         return new JCloudsCommandExecution(execChannel);
+    }
+
+    @Override
+    public ExecResult execAndWait(String command, long timeout, TimeUnit timeoutUnit) throws IOException, InterruptedException, TimeoutException {
+        try (CommandExecution execution = exec(command)) {
+
+            try {
+                execution.await(timeout, timeoutUnit);
+            } catch (TimeoutException timeoutElapsed) {
+
+                LOGGER.warn("Command {} timed out after {} {}", command, timeout, timeoutUnit);
+
+                String stdoutStr = null;
+                try (InputStream stdout = execution.stdout()) {
+                    stdoutStr = CharStreams.toString(new InputStreamReader(stdout, StandardCharsets.UTF_8));
+                } catch (Exception err) {
+                    LOGGER.warn("Failed to retrieve stdout for command {} : {}", command, err);
+                }
+
+                String stderrStr = null;
+                try (InputStream stderr = execution.stderr()) {
+                    stderrStr = CharStreams.toString(new InputStreamReader(stderr, StandardCharsets.UTF_8));
+                } catch (Exception err) {
+                    LOGGER.warn("Failed to retrieve stderr for command {} : {}", command, err);
+                }
+
+                throw new TimeoutException(
+                        String.format("Command '%s' timed out %s stdout: %s %s stderr: %s",
+                                command,
+                                System.getProperty("line.separator"),
+                                stdoutStr,
+                                System.getProperty("line.separator"),
+                                stderrStr)
+                );
+            }
+
+            try (InputStream stdout = execution.stdout(); InputStream stderr = execution.stderr()) {
+                return new DefaultExecResult(
+                        CharStreams.toString(new InputStreamReader(stdout, StandardCharsets.UTF_8)),
+                        CharStreams.toString(new InputStreamReader(stderr, StandardCharsets.UTF_8)),
+                        execution.exitCode().orElse(-1)
+                );
+            }
+        }
     }
 
     @Override
