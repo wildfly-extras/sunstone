@@ -6,14 +6,15 @@ This text assumes that the version number for a release is X.Y.Z.
    if needed and update the `version.jclouds` property in `pom.xml`
 1. Make sure `CHANGELOG.md` is up to date. Cross-check with GitHub Issues
    for given milestone
-1. If needed: `git commit -m "add missing changelog entries"`
+1. If needed:
+   `git commit -m "add missing changelog entries"`
 1. Reorder the entries in `CHANGELOG.md` from most important to least
-   Up to this point, entries are typically added chronologically
+   Up to this point, entries are typically added chronologically.
    This is not the best order for release
 1. Update the heading of the latest changelog section.
    It should look like `X.Y.Z (YYYY-MM-DD)` instead of
    `X.Y.Z (not yet released)`.
-1. Update version in the `pom.xml`  
+1. Update version in the `pom.xml`:
    `mvn versions:set -DgenerateBackupPoms=false -DnewVersion=X.Y.Z`
 1. `git commit -a -m "version X.Y.Z"`
 1. Your workspace should now be pristine. Check with `git status`

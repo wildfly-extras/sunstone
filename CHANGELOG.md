@@ -1,11 +1,14 @@
 # Changelog
 
-## 1.1.0 (not yet released)
+## 1.2.0 (not yet released)
+
+## 1.1.0 (2019-01-09)
+- added `ExecBuilder#exec` method with configurable timeout
 - added `ExecBuilderFactory` that allows to create preconfigured `ExecBuilder`
 - added `templateTo` property on nodes to allow inverted creation of copies of nodes
-- fixed two property names starting with `clouds` and not `sunstone`
-- fixed issues with the testsuite on JDK 9+
 - added `openstack.networks` to the configurable options for OpenStack provider
+- fixed issues with the testsuite on JDK 9+
+- fixed two property names starting with `clouds` and not `sunstone`
 
 ## 1.0.0 (2017-01-06)
 
