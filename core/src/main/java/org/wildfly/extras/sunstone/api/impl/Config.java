@@ -110,6 +110,9 @@ public final class Config {
             public static final String ENDPOINT = "openstack.endpoint";
             public static final String USERNAME = "openstack.username";
             public static final String PASSWORD = "openstack.password";
+            public static final String PROJECT_NAME = "openstack.projectName";              // Keystone V3
+            public static final String PROJECT_DOMAIN_ID = "openstack.projectDomainId";     // Keystone V3
+            public static final String USER_DOMAIN_NAME = "openstack.userDomainName";       // Keystone V3
         }
 
         /**
@@ -253,6 +256,7 @@ public final class Config {
             public static final String USER_DATA = "openstack.userData";
             public static final String USER_DATA_FILE = "openstack.userData.file";
             public static final String FLOATING_IP_POOLS = "openstack.floatingIpPools";
+            public static final String AUTO_ASSIGN_FLOATING_IP = "openstack.autoAssignFloatingIp";
         }
 
         /**
