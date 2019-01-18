@@ -118,7 +118,13 @@ public class OpenstackNode extends AbstractJCloudsNode<OpenstackCloudProvider> {
     }
 
     private static NovaTemplateOptions buildTemplateOptions(ObjectProperties objectProperties) {
-        NovaTemplateOptions templateOptions = NovaTemplateOptions.Builder.autoAssignFloatingIp(true);
+        boolean autoAssignFloatingIp = true;
+        final String autoAssignFloatingIpStr = objectProperties.getProperty(Config.Node.Openstack.AUTO_ASSIGN_FLOATING_IP);
+        if (!Strings.isNullOrEmpty(autoAssignFloatingIpStr)) {
+            autoAssignFloatingIp = Boolean.parseBoolean(autoAssignFloatingIpStr);
+        }
+
+        NovaTemplateOptions templateOptions = NovaTemplateOptions.Builder.autoAssignFloatingIp(autoAssignFloatingIp);
 
         final String floatingIpPoolNames = objectProperties.getProperty(Config.Node.Openstack.FLOATING_IP_POOLS);
         if (!Strings.isNullOrEmpty(floatingIpPoolNames)) {
