@@ -59,6 +59,9 @@ List of OpenStack `CloudProvider` properties:
 | openstack.endpoint     | A specific endpoint for connecting within the given region.       | [None. Mandatory.]                 |
 | openstack.username     | The username in form `[tenant]:[user]` for your user.             | [None. Mandatory.]                 |
 | openstack.password     | The password for your user.                                       | [None. Mandatory.]                 |
+| openstack.projectName  | The project name (OS_PROJECT_NAME in OpenStack RC File)           | [None. Mandatory when using Keystone v3 (e.g. `cloud.provider.myprovider.openstack.endpoint=http://openstack.example.com:5000/v3`)] |
+| openstack.projectDomainId | The project domain ID (OS_PROJECT_DOMAIN_ID in OpenStack RC File) | [None. Mandatory when using Keystone v3 (e.g. `cloud.provider.myprovider.openstack.endpoint=http://openstack.example.com:5000/v3`)] |
+| openstack.userDomainName | The user domain name (OS_USER_DOMAIN_NAME in OpenStack RC File) | [None. Mandatory when using Keystone v3 (e.g. `cloud.provider.myprovider.openstack.endpoint=http://openstack.example.com:5000/v3`)] |
 
 ### Node
 
@@ -73,6 +76,7 @@ List of OpenStack `Node` properties:
 | openstack.bootScript         | Allows you to specify a script that is to be run on boot. The script is run with `sudo`. | [None. Optional.] |
 | openstack.bootScript.file    | As `openstack.bootScript`, but allows you to specify a path to a file that contains the script. Only one of `openstack.bootScript` and `openstack.bootScript.file` can be specified at a time. | [None. Optional.] |
 | openstack.floatingIpPools    | Comma separated list of floating IP pool names. If the value is not provided, then all available pool names are used. | [None. Optional.] |
+| openstack.autoAssignFloatingIp | Automatic Floating Ip assignation (if set to `false` disables Floating Ip assignation also when `openstack.floatingIpPools` is set) | `true` |
 | openstack.keyPair            | The key pair name (for public key) to be imported into this instance as an `authorized_key`. You can import a public key in the OpenStack dashboard. | [None. Optional.] |
 | openstack.inboundPorts       | Comma separated list of ports that can be used to access the instance. You will usually require at least port 22 for ssh access. | [None. Optional.] |
 | openstack.region             | OpenStack Location/Region name. If there is only one region, then the property config is optional. | [None. Mandatory when more regions.] |
