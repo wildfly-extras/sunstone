@@ -75,9 +75,26 @@ mvn clean install -fae \
 
 ## Deploying jars
 
-When deploying jars, you need to have an account with [Nexus](https://oss.sonatype.org).
+When deploying jars, you need to have an account with [Sonatype](https://issues.sonatype.org/secure/Dashboard.jspa).
+This will give you access to [Nexus](https://oss.sonatype.org/).
 The account needs to be granted access to upload the jars into the repository.
 If you don't have access, contact one of the active developers.
+
+After you create your account, add your credentials to your `~/.m2/settings.xml` file:
+
+```
+<settings>
+  <servers>
+    ...
+    <server>
+      <id>ossrh</id>
+      <username>your_username</username>
+      <password>your_password</password>
+    </server>
+  </servers>
+  ...
+</settings>
+```
 
 Additionally, the jars must be signed and the public key corresponding to
 the key you sign them with needs to be uploaded to a public keyserver. If
