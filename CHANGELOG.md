@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.2.1 (not yet released)
+
 ## 1.2.0 (2019-03-05)
 - added `openstack.projectName`, `openstack.projectDomainId` and `openstack.userDomainName` to the configurable options for OpenStack provider, in order to authenticate when using Keystone v3 API
 - added `openstack.autoAssignFloatingIp` to the configurable options for OpenStack provider
