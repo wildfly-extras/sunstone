@@ -13,6 +13,8 @@ import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsCloudProvider;
 import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.DynamicSshClientModule;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
+import org.wildfly.extras.sunstone.api.impl.SocketFinderAllInterfacesModule;
+import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPrivateInterfacesModule;
 import org.wildfly.extras.sunstone.api.impl.SocketFinderOnlyPublicInterfacesModule;
 import org.wildfly.extras.sunstone.api.impl.SunstoneCoreLogger;
 import org.wildfly.extras.sunstone.api.jclouds.JCloudsNode;
@@ -35,7 +37,17 @@ public final class OpenstackCloudProvider extends AbstractJCloudsCloudProvider {
     private static ContextBuilder createContextBuilder(ObjectProperties objectProperties) {
         Set<Module> modules = new HashSet<>();
         modules.add(new DynamicSshClientModule());
-        modules.add(new SocketFinderOnlyPublicInterfacesModule());
+        // OpenStack by default associates just a Private IP with every VM; optionally, also a Public IP can be associated: the so called 'Floating IP'
+        String socketFinderAllowedInterfaces = objectProperties.getProperty(Config.CloudProvider.Openstack.SOCKET_FINDER_ALLOWED_INTERFACES);
+        if (Strings.isNullOrEmpty(socketFinderAllowedInterfaces) || "PUBLIC".equalsIgnoreCase(socketFinderAllowedInterfaces)) {
+            // Public IP: the so called 'Floating IP'
+            modules.add(new SocketFinderOnlyPublicInterfacesModule());
+        } else if ("PRIVATE".equalsIgnoreCase(socketFinderAllowedInterfaces)) {
+            // Private IP: sometimes private address are routed externally and no floating IP (i.e. public address) is needed
+            modules.add(new SocketFinderOnlyPrivateInterfacesModule());
+        } else if ("ALL".equalsIgnoreCase(socketFinderAllowedInterfaces)) {
+            modules.add(new SocketFinderAllInterfacesModule());
+        }
         modules.add(new SLF4JLoggingModule());
 
         Properties overrides = new Properties();

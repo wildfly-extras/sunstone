@@ -113,6 +113,7 @@ public final class Config {
             public static final String PROJECT_NAME = "openstack.projectName";              // Keystone V3
             public static final String PROJECT_DOMAIN_ID = "openstack.projectDomainId";     // Keystone V3
             public static final String USER_DOMAIN_NAME = "openstack.userDomainName";       // Keystone V3
+            public static final String SOCKET_FINDER_ALLOWED_INTERFACES = "openstack.socketFinderAllowedInterfaces";
         }
 
         /**
