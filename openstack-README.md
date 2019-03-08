@@ -62,6 +62,7 @@ List of OpenStack `CloudProvider` properties:
 | openstack.projectName  | The project name (OS_PROJECT_NAME in OpenStack RC File)           | [None. Mandatory when using Keystone v3 (e.g. `cloud.provider.myprovider.openstack.endpoint=http://openstack.example.com:5000/v3`)] |
 | openstack.projectDomainId | The project domain ID (OS_PROJECT_DOMAIN_ID in OpenStack RC File) | [None. Mandatory when using Keystone v3 (e.g. `cloud.provider.myprovider.openstack.endpoint=http://openstack.example.com:5000/v3`)] |
 | openstack.userDomainName | The user domain name (OS_USER_DOMAIN_NAME in OpenStack RC File) | [None. Mandatory when using Keystone v3 (e.g. `cloud.provider.myprovider.openstack.endpoint=http://openstack.example.com:5000/v3`)] |
+| openstack.socketFinderAllowedInterfaces | What IPs are to be checked for ports listed in `waitForPorts`: PUBLIC,PRIVATE,ALL | `PUBLIC` (e.g. `cloud.provider.myprovider.openstack.socketFinderAllowedInterfaces=PRIVATE`)] |
 
 ### Node
 
