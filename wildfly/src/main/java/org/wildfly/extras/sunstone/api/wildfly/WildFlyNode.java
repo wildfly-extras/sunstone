@@ -1,7 +1,5 @@
 package org.wildfly.extras.sunstone.api.wildfly;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.wildfly.extras.creaper.core.ManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
@@ -9,6 +7,8 @@ import org.wildfly.extras.creaper.core.online.OnlineOptions;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 import org.wildfly.extras.sunstone.api.Node;
 import org.wildfly.extras.sunstone.api.NodeWrapper;
+
+import java.io.IOException;
 
 /**
  * Adds WildFly functionality to Node instances. The WildFly configuration is based on objectProperties of the node. Check
@@ -111,7 +111,10 @@ public class WildFlyNode extends NodeWrapper {
                 : OnlineOptions.standalone();
 
         OnlineOptions.OptionalOnlineOptions clientOptions = options
-                .hostAndPort(getPublicAddress(), getMgmtPort())
+                .hostAndPort(
+                        // sometimes private address is routable and public address (i.e. floating IP) simply is not assigned
+                        getPublicAddress() == null ? getPrivateAddress() : getPublicAddress(),
+                        getMgmtPort())
                 .auth(mgmtUser, mgmtPassword)
                 .connectionTimeout(timeoutInMillis)
                 .bootTimeout(1000 * (int) getBootTimeoutInSec());

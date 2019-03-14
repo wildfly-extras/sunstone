@@ -2,6 +2,7 @@
 
 ## 1.2.1 (not yet released)
 - added `openstack.socketFinderAllowedInterfaces` to the configurable options for OpenStack provider
+- fixed OpenStack support for installations with routable private addresses (i.e. where no floating IPs are assigned)
 
 ## 1.2.0 (2019-03-05)
 - added `openstack.projectName`, `openstack.projectDomainId` and `openstack.userDomainName` to the configurable options for OpenStack provider, in order to authenticate when using Keystone v3 API
