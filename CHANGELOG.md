@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.1 (not yet released)
+## 1.2.1 (2019-03-15)
 - added `openstack.socketFinderAllowedInterfaces` to the configurable options for OpenStack provider
 - fixed OpenStack support for installations with routable private addresses (i.e. where no floating IPs are assigned)
 
