@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.azurecompute.arm.config.AzureComputeProperties;
+import org.jclouds.location.reference.LocationConstants;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.wildfly.extras.sunstone.api.CloudProviderType;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsCloudProvider;
@@ -41,11 +42,15 @@ public class AzureArmCloudProvider extends AbstractJCloudsCloudProvider {
         String password = Objects.requireNonNull(
                 objectProperties.getProperty(Config.CloudProvider.AzureArm.PASSWORD),
                 "Azure password must be set");
+        String location = Objects.requireNonNull(
+                objectProperties.getProperty(Config.CloudProvider.AzureArm.LOCATION),
+                "Azure location must be set");
         String publishers = objectProperties.getProperty(Config.CloudProvider.AzureArm.PUBLISHERS, "Canonical,RedHat");
 
         Properties defaultPropertyOverrides = new Properties();
         defaultPropertyOverrides.setProperty(AzureArmPropertiesUnsupported.OAUTH_ENDPOINT, "https://login.microsoftonline.com/" + tenantId + "/oauth2/token");
         defaultPropertyOverrides.setProperty(AzureComputeProperties.IMAGE_PUBLISHERS, publishers);
+        defaultPropertyOverrides.put(LocationConstants.PROPERTY_REGIONS, location);
         // listing all images is very expensive, so they should be cached for a long time
         // unfortunately, the default is 1 minute, which can never be sufficient; we use 5 hours here
         defaultPropertyOverrides.setProperty(PROPERTY_SESSION_INTERVAL, "" + (5 * 60 * 60));
