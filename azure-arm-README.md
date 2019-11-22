@@ -45,6 +45,7 @@ List of Azure `CloudProvider` properties:
 | azure-arm.tenantId     | Azure tenant ID. Used for OAuth authentication.                   | [None. Mandatory.]                 |
 | azure-arm.applicationId | The application ID of the Azure service principal.               | [None. Mandatory.]                 |
 | azure-arm.password     | Password to the service principal. See `azure.applicationId`.     | [None. Mandatory.]                 |
+| azure-arm.location | Azure region to be used e.g. eastus |[None. Mandatory.] |
 | azure-arm.publishers   | Comma-delimited list of publishers whose marketplace images are recognized. If you want to use a marketplace image, you have to specify its publisher. Please note that listing all images takes a long time (it's only done once, though), so it's not the best idea to add publishers "just in case". | `Canonical,RedHat` |
 
 ### Node
