@@ -1,5 +1,5 @@
 sudo: required
-
+dist: xenial
 language: java
 
 jdk:
@@ -21,10 +21,10 @@ before_install:
     - docker version
 
     # enable docker remote API
-    - echo 'DOCKER_OPTS="-H tcp:// -H unix:///var/run/docker.sock"' | sudo tee -a /etc/default/docker 
-    - sudo cat /etc/default/docker
-    - sudo service docker restart
-    - docker version
+    - echo -e "[Service]\nExecStart=\nExecStart=/usr/bin/dockerd -H fd:// -H tcp://127.0.0.1:2375" | sudo SYSTEMD_EDITOR=tee systemctl edit docker
+    - sudo systemctl daemon-reload
+    - sudo systemctl restart docker
+    - docker info
 
 addons:
   coverity_scan:
