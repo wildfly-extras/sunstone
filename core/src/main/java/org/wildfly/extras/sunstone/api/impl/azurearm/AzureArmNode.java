@@ -5,13 +5,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.jclouds.azurecompute.arm.compute.options.AzureTemplateOptions;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.OsFamily;
 import org.jclouds.compute.domain.Template;
-import org.jclouds.compute.options.TemplateOptions;
 import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.impl.AbstractJCloudsNode;
 import org.wildfly.extras.sunstone.api.impl.Config;
@@ -52,7 +52,7 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
             LOGGER.debug("Found virtual machine size '{}' for node '{}'", size, name);
         }
 
-        TemplateOptions templateOptions = buildTemplateOptions(objectProperties);
+        AzureTemplateOptions templateOptions = buildTemplateOptions(objectProperties);
 
         LOGGER.debug("Creating JClouds Template with options: {}", templateOptions);
 
@@ -79,8 +79,8 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
         }
     }
 
-    private static TemplateOptions buildTemplateOptions(ObjectProperties objectProperties) {
-        TemplateOptions templateOptions = new TemplateOptions();
+    private static AzureTemplateOptions buildTemplateOptions(ObjectProperties objectProperties) {
+        AzureTemplateOptions templateOptions = new AzureTemplateOptions();
 
         String loginName = objectProperties.getProperty(Config.Node.AzureArm.SSH_USER);
         if (Strings.isNullOrEmpty(loginName)) {

@@ -101,6 +101,7 @@ public final class Config {
             public static final String APPLICATION_ID = "azure-arm.applicationId";
             public static final String PASSWORD = "azure-arm.password";
             public static final String PUBLISHERS = "azure-arm.publishers";
+            public static final String LOCATION = "azure-arm.location";
         }
 
         /**
