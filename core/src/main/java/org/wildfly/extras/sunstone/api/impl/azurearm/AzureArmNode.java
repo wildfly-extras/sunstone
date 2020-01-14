@@ -79,13 +79,12 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
         }
     }
 
-    private AzureTemplateOptions buildTemplateOptions(ObjectProperties objectProperties) {
+    private static AzureTemplateOptions buildTemplateOptions(ObjectProperties objectProperties) {
         AzureTemplateOptions templateOptions = new AzureTemplateOptions();
         String resourceGroup = objectProperties.getProperty(Config.Node.AzureArm.RESOURCE_GROUP, "");
         if (!resourceGroup.isEmpty()) {
             templateOptions.resourceGroup(resourceGroup);
         }
-        LOGGER.debug("Creating node in following resource group: {}", Config.Node.AzureArm.RESOURCE_GROUP);
         String loginName = objectProperties.getProperty(Config.Node.AzureArm.SSH_USER);
         if (Strings.isNullOrEmpty(loginName)) {
             throw new IllegalArgumentException("SSH user name for Azure virtual machine must be set");
