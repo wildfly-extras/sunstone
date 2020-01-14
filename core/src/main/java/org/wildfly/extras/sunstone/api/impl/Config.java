@@ -237,6 +237,7 @@ public final class Config {
             public static final String INBOUND_PORTS = "azure-arm.inboundPorts";
             public static final String SSH_USER = "azure-arm.ssh.user";
             public static final String SSH_PASSWORD = "azure-arm.ssh.password";
+            public static final String RESOURCE_GROUP = "azure-arm.resourceGroup";
         }
 
         /**
