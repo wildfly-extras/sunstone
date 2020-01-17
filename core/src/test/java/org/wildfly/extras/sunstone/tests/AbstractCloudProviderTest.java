@@ -293,12 +293,12 @@ public abstract class AbstractCloudProviderTest {
         assertEquals(0, result.getExitCode());
         assertThat(node.exec("cat", "/tmp/my-sudo-id.txt").getOutput(), containsString("root"));
 
-        long sleepInSecs = 60;
+        long sleepInSecs = 600;
         assertEquals("No running 'sleep' process should be found", 1, node.exec("pgrep","sleep").getExitCode());
         Instant start = Instant.now();
         result = ExecBuilder.fromCommand("sh", "-c", "sleep " + sleepInSecs).asDaemon().exec(node);
         Instant end = Instant.now();
-        assertThat("ExecBuilder.asDaemon().exec() should return immediatelly",
+        assertThat("ExecBuilder.asDaemon().exec() should return immediately",
                 Duration.between(start, end).getSeconds(), lessThan(sleepInSecs));
         assertSame("ExecBuilder.asDaemon().exec() should return the constant", ExecBuilder.EXEC_RESULT_DAEMON, result);
         assertEquals("Running 'sleep' process should be found", 0, node.exec("pgrep","sleep").getExitCode());
