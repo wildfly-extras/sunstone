@@ -1,8 +1,12 @@
 # Changelog
 
-## 1.2.1 (not yet released)
+## 1.2.2 (2020-01-23)
+- switched experimental Azure ARM provider to non-experimental
 - added `openstack.socketFinderAllowedInterfaces` to the configurable options for OpenStack provider
 - fixed OpenStack support for installations with routable private addresses (i.e. where no floating IPs are assigned)
+- added `azure-arm.location` which allows to specify Azure region
+- added `azure-arm.resourceGroup` which allows to specify the resource group where a node should be created
+- fixed recent issues with Travis CI builds
 
 ## 1.2.0 (2019-03-05)
 - added `openstack.projectName`, `openstack.projectDomainId` and `openstack.userDomainName` to the configurable options for OpenStack provider, in order to authenticate when using Keystone v3 API
