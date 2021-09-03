@@ -238,6 +238,9 @@ public final class Config {
             public static final String SSH_USER = "azure-arm.ssh.user";
             public static final String SSH_PASSWORD = "azure-arm.ssh.password";
             public static final String RESOURCE_GROUP = "azure-arm.resourceGroup";
+            public static final String PLAN_PUBLISHER = "azure-arm.planPublisher";
+            public static final String PLAN_NAME = "azure-arm.planName";
+            public static final String PLAN_PRODUCT = "azure-arm.planProduct";
         }
 
         /**

@@ -104,6 +104,11 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
                 .toArray();
         templateOptions.inboundPorts(inboundPorts);
 
+        // include plan information if present
+        templateOptions.planPublisher(objectProperties.getProperty(Config.Node.AzureArm.PLAN_PUBLISHER));
+        templateOptions.planName(objectProperties.getProperty(Config.Node.AzureArm.PLAN_NAME));
+        templateOptions.planProduct(objectProperties.getProperty(Config.Node.AzureArm.PLAN_PRODUCT));
+
         return templateOptions;
     }
 

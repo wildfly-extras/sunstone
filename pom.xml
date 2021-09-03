@@ -46,11 +46,12 @@
         <version.org.wildfly.core>2.2.0.Final</version.org.wildfly.core>
         <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
 
-        <version.jclouds>2.1.1</version.jclouds>
+        <version.jclouds>2.4.0</version.jclouds>
+        <version.jclouds.labs.azurecompute>2.1.1</version.jclouds.labs.azurecompute>
         <version.surefire>2.19.1</version.surefire>
         <version.commons.lang>3.4</version.commons.lang>
         <version.commons.io>2.4</version.commons.io>
-        <version.guava>19.0</version.guava>
+        <version.guava>27.1-jre</version.guava>
         <version.slf4j>1.7.21</version.slf4j>
         <version.logback>1.0.13</version.logback>
         <version.jaxb>2.3.0</version.jaxb>
@@ -263,7 +264,7 @@
             <dependency>
                 <groupId>org.apache.jclouds.labs</groupId>
                 <artifactId>azurecompute</artifactId>
-                <version>${version.jclouds}</version>
+                <version>${version.jclouds.labs.azurecompute}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.jclouds.provider</groupId>
