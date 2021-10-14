@@ -23,8 +23,8 @@ import org.wildfly.extras.sunstone.annotations.WithNode;
 import org.wildfly.extras.sunstone.annotations.WithWildFlyContainer;
 import org.wildfly.extras.sunstone.api.Node;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * This class tests if the starting nodes works on class-level using {@link WithNode} and {@link WithWildFlyContainer} annotaions works.

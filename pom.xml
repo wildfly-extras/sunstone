@@ -64,7 +64,7 @@
         <version.junit>4.12</version.junit>
         <version.mockito>1.10.19</version.mockito>
         <version.hamcrest>2.0.0.0</version.hamcrest>
-        
+
         <linkXRef>false</linkXRef>
     </properties>
 
