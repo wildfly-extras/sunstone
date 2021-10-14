@@ -48,7 +48,7 @@ cloud.provider.my-provider.type=docker
 cloud.provider.my-provider.docker.endpoint=http://dockerhost0.acme.com:2375/
 
 # Node - a single virtual machine in the cloud 
-node.wildfly-node.docker.image=jboss/wildfly:10.0.0.Final
+node.wildfly-node.docker.image=quay.io/jbossqe-eap/wildfly:25.0.0.Final
 node.wildfly-node.docker.waitForPorts=8080,9990
 node.wildfly-node.docker.waitForPorts.timeoutSec=30
 ```
@@ -161,7 +161,7 @@ The `Node` interface represents a single virtual machine in the cloud. Nodes are
 **`node.[name].`**. For instance
 
 ```properties
-node.node0.docker.image=jboss/wildfly:10.0.0.Final
+node.node0.docker.image=quay.io/jbossqe-eap/wildfly:25.0.0.Final
 node.node0.docker.waitForPorts=8080
 node.node0.docker.waitForPorts.timeoutSec=30
 ```
@@ -332,7 +332,7 @@ node.nodeA.docker.waitForPorts.timeoutSec=30
 then you can use system property to quickly override some value:
 
 ```bash
-mvn test "-Dnode.nodeA.docker.image=jboss/wildfly:10.0.0.Final"
+mvn test "-Dnode.nodeA.docker.image=quay.io/jbossqe-eap/wildfly:25.0.0.Final"
 ```
 
 ### Property replacement
