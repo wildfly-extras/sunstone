@@ -103,7 +103,7 @@ public class DockerNodeTest {
 
     @Test
     public void testGetImageName() {
-        assertEquals("kwart/alpine-ext:3.2-bash", alpineNode.getImageName());
+        assertEquals("quay.io/jbossqe-eap/alpine-ext:3.2-bash", alpineNode.getImageName());
     }
 
     @Test
@@ -566,7 +566,7 @@ public class DockerNodeTest {
 
     @Test
     public void testGetProperty() {
-        assertEquals("kwart/alpine-ext:3.2-bash", alpineNode.config().getProperty(Config.Node.Docker.IMAGE, "foobar"));
+        assertEquals("quay.io/jbossqe-eap/alpine-ext:3.2-bash", alpineNode.config().getProperty(Config.Node.Docker.IMAGE, "foobar"));
         assertEquals("foobar", alpineNode.config().getProperty("nonexisting.property", "foobar"));
     }
 }
