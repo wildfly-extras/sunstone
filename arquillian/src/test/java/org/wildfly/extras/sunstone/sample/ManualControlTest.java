@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -25,9 +27,6 @@ import org.wildfly.extras.sunstone.api.CloudProperties;
 import org.wildfly.extras.sunstone.api.CloudProvider;
 import org.wildfly.extras.sunstone.api.Node;
 import org.wildfly.extras.sunstone.api.wildfly.WildFlyNode;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 
 /**
  * Example which shows how to manually control cloud providers and nodes.

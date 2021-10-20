@@ -57,7 +57,7 @@ Create the file `/sunstone.properties` on the classpath:
 cloud.provider.provider0.type=docker
 cloud.provider.provider0.docker.endpoint=http://127.0.0.1:2375/
 
-node.jboss.docker.image=jboss/wildfly:10.0.0.Final
+node.jboss.docker.image=quay.io/jbossqe-eap/wildfly:25.0.0.Final
 node.jboss.docker.cmd=sh,-c,$JBOSS_HOME/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser && $JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
 node.jboss.wildfly.management.port=9990
 node.jboss.wildfly.management.user=admin
@@ -165,7 +165,7 @@ cloud.provider.dockerProvider.docker.endpoint=http://127.0.0.1:2375/
 node.postgres.docker.image=postgres:9.4.5
 node.postgres.arquillian.provider=dockerProvider
 
-node.jboss.docker.image=jboss/wildfly:10.0.0.Final
+node.jboss.docker.image=quay.io/jbossqe-eap/wildfly:25.0.0.Final
 node.jboss.arquillian.provider=dockerProvider
 ...
 ```

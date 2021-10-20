@@ -20,8 +20,8 @@ import org.junit.runner.RunWith;
 import org.wildfly.extras.sunstone.annotations.InjectNode;
 import org.wildfly.extras.sunstone.api.Node;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * This class tests if the suite level Nodes defined in the default cloud properties were correctly created.
