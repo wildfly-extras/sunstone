@@ -105,9 +105,18 @@ public class AzureArmNode extends AbstractJCloudsNode<AzureArmCloudProvider> {
         templateOptions.inboundPorts(inboundPorts);
 
         // include plan information if present
-        templateOptions.planPublisher(objectProperties.getProperty(Config.Node.AzureArm.PLAN_PUBLISHER));
-        templateOptions.planName(objectProperties.getProperty(Config.Node.AzureArm.PLAN_NAME));
-        templateOptions.planProduct(objectProperties.getProperty(Config.Node.AzureArm.PLAN_PRODUCT));
+        String planPublisher = objectProperties.getProperty(Config.Node.AzureArm.PLAN_PUBLISHER, "");
+        if (!planPublisher.isEmpty()) {
+            templateOptions.planPublisher(planPublisher);
+        }
+        String planName = objectProperties.getProperty(Config.Node.AzureArm.PLAN_NAME, "");
+        if (!planName.isEmpty()) {
+            templateOptions.planName(planName);
+        }
+        String planProduct = objectProperties.getProperty(Config.Node.AzureArm.PLAN_PRODUCT, "");
+        if (!planProduct.isEmpty()) {
+            templateOptions.planProduct(planProduct);
+        }
 
         return templateOptions;
     }
