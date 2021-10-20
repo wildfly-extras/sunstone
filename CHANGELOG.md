@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.2.3-SNAPSHOT (not yet released)
+## 1.2.4-SNAPSHOT (not yet released)
+
+## 1.2.3 (2021-10-20)
+- updated JClouds to 2.4.0
+- added `azure-arm.planPublisher`, `azure-arm.planName`, `azure-arm.planProduct` properties which allow you to create BYOS VM
+- fixed issues with image URLs
+- migrate to okhttp3
 
 ## 1.2.2 (2020-01-23)
 - switched experimental Azure ARM provider to non-experimental
