@@ -48,7 +48,7 @@ The following set of properties will get you started:
 cloud.provider.myprovider.type=docker
 cloud.provider.myprovider.docker.endpoint=http://docker.my-company.example:2375/
 
-node.mynode.docker.image=jboss/wildfly:10.0.0.Final
+node.mynode.docker.image=quay.io/jbossqe-eap/wildfly:25.0.0.Final
 node.mynode.docker.waitForPorts=8080
 node.mynode.docker.waitForPorts.timeoutSec=30
 ```
