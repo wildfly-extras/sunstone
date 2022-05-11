@@ -51,10 +51,10 @@
         <version.jclouds.labs.azurecompute>2.1.1</version.jclouds.labs.azurecompute>
         <version.surefire>2.19.1</version.surefire>
         <version.commons.lang>3.4</version.commons.lang>
-        <version.commons.io>2.4</version.commons.io>
-        <version.guava>27.1-jre</version.guava>
+        <version.commons.io>2.7</version.commons.io>
+        <version.guava>29.0-jre</version.guava>
         <version.slf4j>1.7.21</version.slf4j>
-        <version.logback>1.0.13</version.logback>
+        <version.logback>1.2.0</version.logback>
         <version.jaxb>2.3.0</version.jaxb>
 
         <!-- Checkstyle configuration -->
@@ -62,7 +62,7 @@
         <version.org.wildfly.checkstyle-config>1.0.4.Final</version.org.wildfly.checkstyle-config>
         
         <!-- Tests -->
-        <version.junit>4.12</version.junit>
+        <version.junit>4.13.1</version.junit>
         <version.mockito>1.10.19</version.mockito>
         <version.hamcrest>2.0.0.0</version.hamcrest>
 
