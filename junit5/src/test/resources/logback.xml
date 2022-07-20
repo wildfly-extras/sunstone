@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder
+            by default -->
+        <encoder>
+            <!-- default pattern
+             -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <!-- simple pattern
+            <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
+            -->
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>test.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="sunstone" level="DEBUG" />
+    <!--<logger name="sunstone.core.ssh" level="INFO" /> &lt;!&ndash; to prevent logging of sensitive information &ndash;&gt;-->
+    <logger name="org.jboss.eapqe.clouds" level="DEBUG" />
+
+    <logger name="org.jboss.eapqe.clouds.ec2" level="TRACE" />
+    <logger name="net.schmizz.sshj" level="ERROR" />
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>

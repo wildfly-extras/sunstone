@@ -1,0 +1,271 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    Generator: "former2"
+Description: ""
+Parameters:
+    defaultTag:
+        Type: "String"
+        Default: "cf-template-tag-changeme"
+    startupCommand:
+        Type: "String"
+        Default: |
+            #!/usr/bin/env bash
+            # platform dependent variables
+            if [[ "`cat /etc/redhat-release`" = *"release 7"* ]]; then
+                START_COMMAND="systemctl start eap7-standalone"
+                SERVICE_CONF_FILE=/etc/opt/rh/eap7/wildfly/eap7-standalone.conf
+            else
+                START_COMMAND="service eap7-standalone start"
+                SERVICE_CONF_FILE=/etc/sysconfig/eap7-standalone
+            fi
+            # set up addresses
+            INTERNAL_IP_ADDRESS=`ip addr show | grep eth0 -A 2 | head -n 3 | tail -n 1 | awk '{ print $2 }' | sed "s-/24--g" | cut -d'/' -f1`
+            echo $INTERNAL_IP_ADDRESS > /root/internal-ip-address.txt
+            JBOSS_HOME=/opt/rh/eap7/root/usr/share/wildfly
+            echo "JAVA_OPTS=\"\$JAVA_OPTS -Djboss.bind.address=$INTERNAL_IP_ADDRESS -Djboss.bind.address.private=$INTERNAL_IP_ADDRESS -Djboss.bind.address.management=$INTERNAL_IP_ADDRESS -Dpostgres.password='sOmE.DB.pASS'\"" >> ${JBOSS_HOME}/bin/standalone.conf
+            # set up standalone-full.xml
+            echo "WILDFLY_SERVER_CONFIG=standalone-full.xml" >> $SERVICE_CONF_FILE
+            # set up users (for remote management connections and application connections)
+            ${JBOSS_HOME}/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e
+            ${JBOSS_HOME}/bin/add-user.sh -u joe -p pass.1234 -a -r ApplicationRealm -g admin -e
+            # set up env vars
+            echo "export JAVA_HOME=/usr/lib/jvm/java" >> /root/.bashrc
+            echo "export JBOSS_HOME=${JBOSS_HOME}" >> /root/.bashrc
+            echo "export JAVA_HOME=/usr/lib/jvm/java" >> /home/ec2-user/.bashrc
+            echo "export JBOSS_HOME=${JBOSS_HOME}" >> /home/ec2-user/.bashrc
+            # start EAP
+            $START_COMMAND
+
+
+Resources:
+    EC2KeyPair:
+        Type: "AWS::EC2::KeyPair"
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+            PublicKeyMaterial: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCJXDQ9nvcaUQz8wAamVsQD509M3+b7kFPfYkMZj1bIiMRYvDYAV9bNhumzwO195eA8207IWmTQvh9kPAEsu3jxPaPlF2q6VnNngR2lIbNHGUfPo1OlwJhoXXHaFPciwn38lp+Br2vXSDJXf1zjjV+6eiDAENll/mcp1q83tq7qbqta57ZeT7j3N97kDREB2EGFzK3H13qoSWrWwhYCxDK2cOcpqDvarFJpxcBnPnc1Qyvi289PvGHYA+GpXcic5RW6u6vIOR25NOjX7rePBUZzRTftt4jWz8c2A7viBkIrCr6sjbnx0wKntY+QuCN+u7//dcgFkZxDzoUIY1D+RMrb
+            KeyName: !Join ["-", ["jclouds-jenkins", !Ref AWS::StackId]]
+            KeyType: "rsa"
+    EC2VPC:
+        Type: "AWS::EC2::VPC"
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+            CidrBlock: "172.31.0.0/16"
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            InstanceTenancy: "default"
+
+    EFSFileSystem:
+        Type: "AWS::EFS::FileSystem"
+        Properties:
+            FileSystemTags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+            PerformanceMode: "generalPurpose"
+            Encrypted: false
+            ThroughputMode: "bursting"
+
+    EFSMountTarget:
+        Type: "AWS::EFS::MountTarget"
+        Properties:
+            FileSystemId: !Ref EFSFileSystem
+            IpAddress: "172.31.15.87"
+            SecurityGroups:
+                - !Ref EC2SecurityGroup
+            SubnetId: !Ref EC2Subnet
+
+    EC2SecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+            GroupDescription: "Allows any connection"
+            GroupName: "allow-any"
+            VpcId: !Ref EC2VPC
+            SecurityGroupIngress:
+                -   CidrIp: "0.0.0.0/0"
+                    IpProtocol: "-1"
+                -   CidrIpv6: "::/0"
+                    IpProtocol: "-1"
+            SecurityGroupEgress:
+                -   CidrIp: "0.0.0.0/0"
+                    IpProtocol: "-1"
+
+    EC2Instance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: "ami-00753c9d2b9d4273c"
+            InstanceType: "t3.medium"
+            KeyName: !Ref EC2KeyPair
+            AvailabilityZone: !GetAtt EC2Subnet.AvailabilityZone
+            Tenancy: "default"
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+                - !Ref EC2SecurityGroup
+            SourceDestCheck: true
+            BlockDeviceMappings:
+                -   DeviceName: "/dev/sda1"
+                    Ebs:
+                        Encrypted: false
+                        VolumeSize: 10
+                        VolumeType: "gp2"
+                        DeleteOnTermination: true
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+                -   Key: "cf-template-resource"
+                    Value: !Join [ "-", [!Ref defaultTag, "ec2instance"]]
+                -   Key: "Name"
+                    Value: "eapqe-ha-live"
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+            UserData:
+                Fn::Base64:
+                    !Ref startupCommand
+
+    EC2Instance2:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: "ami-00753c9d2b9d4273c"
+            InstanceType: "t3.medium"
+            KeyName: !Ref EC2KeyPair
+            AvailabilityZone: !GetAtt EC2Subnet.AvailabilityZone
+            Tenancy: "default"
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+                - !Ref EC2SecurityGroup
+            SourceDestCheck: true
+            BlockDeviceMappings:
+                -   DeviceName: "/dev/sda1"
+                    Ebs:
+                        Encrypted: false
+                        VolumeSize: 10
+                        VolumeType: "gp2"
+                        DeleteOnTermination: true
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+                -   Key: "Name"
+                    Value: "eapqe-ha-client"
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+            UserData:
+                Fn::Base64:
+                  !Ref startupCommand
+
+    EC2Instance3:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: "ami-00753c9d2b9d4273c"
+            InstanceType: "t3.medium"
+            KeyName: !Ref EC2KeyPair
+            AvailabilityZone: !GetAtt EC2Subnet.AvailabilityZone
+            Tenancy: "default"
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+                - !Ref EC2SecurityGroup
+            SourceDestCheck: true
+            BlockDeviceMappings:
+                -   DeviceName: "/dev/sda1"
+                    Ebs:
+                        Encrypted: false
+                        VolumeSize: 10
+                        VolumeType: "gp2"
+                        DeleteOnTermination: true
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+                -   Key: "Name"
+                    Value: "eapqe-ha-backup"
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+            UserData:
+                Fn::Base64:
+                  !Ref startupCommand
+
+    EC2NetworkInterface2:
+        Type: "AWS::EC2::NetworkInterface"
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+            Description: !Sub "EFS mount target for ${EFSFileSystem} (${EFSMountTarget})"
+            SubnetId: !Ref EC2Subnet
+            SourceDestCheck: true
+            GroupSet:
+                - !Ref EC2SecurityGroup
+
+    EC2Subnet:
+        Type: "AWS::EC2::Subnet"
+        DependsOn:
+            - EC2VPC
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+            AvailabilityZone: !Sub "${AWS::Region}a"
+            CidrBlock: "172.31.0.0/20"
+            VpcId: !Ref EC2VPC
+            MapPublicIpOnLaunch: true
+
+    EC2InternetGateway:
+        Type: "AWS::EC2::InternetGateway"
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+
+    EC2Route:
+        Type: "AWS::EC2::Route"
+        DependsOn:
+            - EC2Subnet
+            - EC2InternetGateway
+            - EC2RouteTable
+        Properties:
+            DestinationCidrBlock: "0.0.0.0/0"
+            GatewayId: !Ref EC2InternetGateway
+            RouteTableId: !Ref EC2RouteTable
+
+    EC2VPCGatewayAttachment:
+        Type: "AWS::EC2::VPCGatewayAttachment"
+        Properties:
+            InternetGatewayId: !Ref EC2InternetGateway
+            VpcId: !Ref EC2VPC
+
+    EC2RouteTable:
+        Type: "AWS::EC2::RouteTable"
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: !Ref defaultTag
+            VpcId: !Ref EC2VPC
+
+    EC2SubnetRouteTableAssociation:
+        DependsOn:
+            - EC2Route
+        Type: "AWS::EC2::SubnetRouteTableAssociation"
+        Properties:
+            RouteTableId: !Ref EC2RouteTable
+            SubnetId: !Ref EC2Subnet

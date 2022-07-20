@@ -52,6 +52,24 @@ public final class Config {
     /**
      * Cloud provider related keys
      */
+    public static final class AzureSDK {
+        public static final String SUBSCRIPTION_ID = "subscriptionId";
+        public static final String TENANT_ID = "tenantId";
+        public static final String APPLICATION_ID = "applicationId";
+        public static final String PASSWORD = "password";
+    }
+    /**
+     * Cloud provider related keys
+     */
+    public static final class AwsSDK {
+        public static final String ACCESS_KEY_ID = "accessKeyID";
+        public static final String SECRET_ACCESS_KEY = "secretAccessKey";
+        public static final String REGION = "region";
+    }
+
+    /**
+     * Cloud provider related keys
+     */
     public static final class CloudProvider {
 
         public static final String TYPE = "type";

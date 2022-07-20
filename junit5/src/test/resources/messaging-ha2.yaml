@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    Generator: "former2"
+Description: ""
+
+Resources:
+    EC2KeyPair:
+        Type: "AWS::EC2::KeyPair"
+        Properties:
+            Tags:
+                -   Key: "cf-template"
+                    Value: "omg"
+            PublicKeyMaterial: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCJXDQ9nvcaUQz8wAamVsQD509M3+b7kFPfYkMZj1bIiMRYvDYAV9bNhumzwO195eA8207IWmTQvh9kPAEsu3jxPaPlF2q6VnNngR2lIbNHGUfPo1OlwJhoXXHaFPciwn38lp+Br2vXSDJXf1zjjV+6eiDAENll/mcp1q83tq7qbqta57ZeT7j3N97kDREB2EGFzK3H13qoSWrWwhYCxDK2cOcpqDvarFJpxcBnPnc1Qyvi289PvGHYA+GpXcic5RW6u6vIOR25NOjX7rePBUZzRTftt4jWz8c2A7viBkIrCr6sjbnx0wKntY+QuCN+u7//dcgFkZxDzoUIY1D+RMrb
+#            KeyName: !Join ["-", ["jclouds-jenkins", "3"]]
+            KeyName: !Join ["-", ["jclouds-jenkins", !Ref AWS::StackId]]
+            KeyType: "rsa"
