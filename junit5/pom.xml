@@ -25,7 +25,7 @@
         <version.msal4j>1.8.0</version.msal4j>
         <version.oauth2-oidc-sdk>7.4</version.oauth2-oidc-sdk>
         <version.jna>5.6.0</version.jna>
-        <version.netty>4.1.52.Final</version.netty>
+        <version.netty>4.1.77.Final</version.netty>
         <version.commons-net>3.6</version.commons-net>
 
     </properties>
