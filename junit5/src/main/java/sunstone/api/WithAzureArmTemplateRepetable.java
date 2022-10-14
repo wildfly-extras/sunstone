@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Inherited
-public @interface WithAzureArmTemplates {
+public @interface WithAzureArmTemplateRepetable {
     WithAzureArmTemplate[] value();
 }

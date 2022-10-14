@@ -1,7 +1,6 @@
 package sunstone.core;
 
 
-import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.ObjectType;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -24,13 +23,13 @@ class AwsUtils {
     private static ObjectProperties objectProperties = new ObjectProperties(ObjectType.JUNIT5, null);
 
     private static AwsCredentialsProvider getCredentialsProvider() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(objectProperties.getProperty(Config.JUnit5.Aws.ACCESS_KEY_ID), objectProperties.getProperty(Config.JUnit5.Aws.SECRET_ACCESS_KEY));
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(objectProperties.getProperty(JUnit5Config.JUnit5.Aws.ACCESS_KEY_ID), objectProperties.getProperty(JUnit5Config.JUnit5.Aws.SECRET_ACCESS_KEY));
         return StaticCredentialsProvider.create(credentials);
     }
 
     static CloudFormationClient getCloudFormationClient() {
         CloudFormationClient cfClient = CloudFormationClient.builder()
-                .region(Region.of(objectProperties.getProperty(Config.JUnit5.Aws.REGION)))
+                .region(Region.of(objectProperties.getProperty(JUnit5Config.JUnit5.Aws.REGION)))
                 .credentialsProvider(getCredentialsProvider())
                 .build();
         return cfClient;
@@ -38,7 +37,7 @@ class AwsUtils {
 
     static Ec2Client getEC2Client() {
         Ec2Client ec2Client = Ec2Client.builder()
-                .region(Region.of(objectProperties.getProperty(Config.JUnit5.Aws.REGION)))
+                .region(Region.of(objectProperties.getProperty(JUnit5Config.JUnit5.Aws.REGION)))
                 .credentialsProvider(getCredentialsProvider())
                 .build();
         return ec2Client;
@@ -46,7 +45,7 @@ class AwsUtils {
 
     static S3Client getS3Client() {
         S3Client s3Client = S3Client.builder()
-                .region(Region.of(objectProperties.getProperty(Config.JUnit5.Aws.REGION)))
+                .region(Region.of(objectProperties.getProperty(JUnit5Config.JUnit5.Aws.REGION)))
                 .credentialsProvider(getCredentialsProvider())
                 .build();
         return s3Client;

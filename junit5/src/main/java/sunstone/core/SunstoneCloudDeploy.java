@@ -2,7 +2,7 @@ package sunstone.core;
 
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import sunstone.api.TemplateType;
+import sunstone.api.ValueType;
 import sunstone.api.WithAwsCfTemplate;
 import sunstone.api.WithAzureArmTemplate;
 
@@ -70,7 +70,7 @@ class SunstoneCloudDeploy {
         return Collections.unmodifiableMap(parametersMap);
     }
 
-    private static String getTemplateContent(String value, TemplateType type) throws IOException {
+    private static String getTemplateContent(String value, ValueType type) throws IOException {
         switch (type) {
             case CONTENT:
                 return value;

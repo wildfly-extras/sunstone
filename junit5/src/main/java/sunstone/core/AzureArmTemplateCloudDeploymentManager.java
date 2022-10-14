@@ -8,7 +8,7 @@ import com.azure.resourcemanager.resources.models.ResourceGroups;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.wildfly.extras.sunstone.api.impl.Config;
+import org.slf4j.Logger;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.ObjectType;
 
@@ -30,17 +30,19 @@ import java.util.UUID;
  */
 
 class AzureArmTemplateCloudDeploymentManager implements TemplateCloudDeploymentManager {
+    static Logger LOGGER = SunstoneJUnit5Logger.DEFAULT;
 
     private final AzureResourceManager armManager;
     private final Set<String> usedRG;
 
+    // everything is deployed to one resource group
     private String groupName;
 
     AzureArmTemplateCloudDeploymentManager() {
         ObjectProperties objectProperties = new ObjectProperties(ObjectType.JUNIT5, null);
         armManager = AzureUtils.getResourceManager();
-        groupName = objectProperties.getProperty(Config.JUnit5.Azure.GROUP);
-        Region region = Region.fromName(new ObjectProperties(ObjectType.JUNIT5, null).getProperty(Config.JUnit5.Azure.REGION));
+        groupName = objectProperties.getProperty(JUnit5Config.JUnit5.Azure.GROUP);
+        Region region = Region.fromName(new ObjectProperties(ObjectType.JUNIT5, null).getProperty(JUnit5Config.JUnit5.Azure.REGION));
 
         // we will use one resource group and delete at in the end
         if (!armManager.resourceGroups().contain(groupName)){
@@ -48,7 +50,6 @@ class AzureArmTemplateCloudDeploymentManager implements TemplateCloudDeploymentM
                     .withRegion(region)
                     .create();
         }
-
         usedRG = new HashSet<>();
     }
 
@@ -68,6 +69,7 @@ class AzureArmTemplateCloudDeploymentManager implements TemplateCloudDeploymentM
                 .withParameters(parametersFromMap(template, parameters))
                 .withMode(DeploymentMode.INCREMENTAL)
                 .create();
+        LOGGER.debug("Azure deployment from template {} in \"{}\" group is ready", deploymentName, groupName);
         return groupName;
     }
 
@@ -101,7 +103,8 @@ class AzureArmTemplateCloudDeploymentManager implements TemplateCloudDeploymentM
                 result.put(k, valueElement);
             }
         });
-        return new Gson().toJson(result);
+        String r = new Gson().toJson(result);
+        return r;
     }
 
 

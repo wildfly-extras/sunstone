@@ -1,6 +1,7 @@
 package sunstone.core;
 
 
+import org.slf4j.Logger;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.cloudformation.model.CreateStackRequest;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Purpose: the class handles AWS CloudFormation template - deploy and undeploy the template to and from a stack.
@@ -26,6 +28,7 @@ import java.util.UUID;
  * CloudFormation client credentials are taken from Sunstone.properties. See {@link AwsUtils}.
  */
 class AwsCloudFormationCloudDeploymentManager implements TemplateCloudDeploymentManager {
+    static Logger LOGGER = SunstoneJUnit5Logger.DEFAULT;
 
     private final CloudFormationClient cfClient;
     private final Set<String> stacks;
@@ -55,8 +58,7 @@ class AwsCloudFormationCloudDeploymentManager implements TemplateCloudDeployment
                 .build();
 
         WaiterResponse<DescribeStacksResponse> waiterResponse = waiter.waitUntilStackCreateComplete(stacksRequest);
-        waiterResponse.matched().response().ifPresent(System.out::println);
-        System.out.println(stackName +" is ready");
+        LOGGER.debug("Stack {} is ready {}",stackName, waiterResponse.matched().response().orElse(null));
         return stackName;
     }
 
@@ -74,8 +76,7 @@ class AwsCloudFormationCloudDeploymentManager implements TemplateCloudDeployment
                 .build();
 
         WaiterResponse<DescribeStacksResponse> waiterResponse = waiter.waitUntilStackDeleteComplete(stacksRequest);
-        waiterResponse.matched().response().ifPresent(System.out::println);
-        System.out.println(id + " is deleted");
+        LOGGER.debug("Stack {} is deleted {}",id, waiterResponse.matched().response().orElse(null));
     }
 
     @Override

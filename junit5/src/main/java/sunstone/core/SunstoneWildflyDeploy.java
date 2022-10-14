@@ -8,6 +8,7 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
+import org.slf4j.Logger;
 import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.commands.deployments.Undeploy;
 import org.wildfly.extras.creaper.core.CommandFailedException;
@@ -40,12 +41,13 @@ import static sunstone.core.SunstoneStore.StoreWrapper;
  * Used by {@link SunstoneExtension}. The class is also responsible for registering undeploy operation if possible.
  */
 class SunstoneWildflyDeploy {
+    static Logger LOGGER = SunstoneJUnit5Logger.DEFAULT;
 
     /**
      * Find annotated method, get the deployment and deploy using ManagementClient to EC2 and Azure VMs or
      * Azure SDK to Azure Web APP (app service)
      */
-    static void performDeploymentOperation(ExtensionContext ctx) throws InvocationTargetException, IllegalAccessException, IOException, InterruptedException {
+    static void performDeploymentOperation(ExtensionContext ctx) throws Exception {
         SunstoneStore store = StoreWrapper(ctx);
         List<Method> annotatedMethods = AnnotationSupport.findAnnotatedMethods(ctx.getRequiredTestClass(), WildFlyDeployment.class, HierarchyTraversalMode.TOP_DOWN);
         for (Method method : annotatedMethods) {
@@ -53,7 +55,7 @@ class SunstoneWildflyDeploy {
                 throw new RuntimeException("Deployment method must be static");
             }
             if (method.getParameterCount() != 0) {
-                throw new RuntimeException("Demployment method must have 0 parameters");
+                throw new RuntimeException("Deployment method must have 0 parameters");
             }
             WildFlyDeployment annotation = method.getAnnotation(WildFlyDeployment.class);
             String deploymentName = annotation.name();
@@ -74,12 +76,13 @@ class SunstoneWildflyDeploy {
             } else if (invoke instanceof InputStream) {
                 is = (InputStream) invoke;
             } else {
-                throw new RuntimeException("Unknown type");
+                throw new RuntimeException("Unknown type for " + method.getName());
             }
 
             if (resourceType == AWS_EC2_INSTANCE || resourceType == AZ_VM_INSTANCE || resourceType == JCLOUDS_NODE) {
                 OnlineManagementClient client = CreaperUtils.getManagementClient(ctx, resourceName, resourceType);
                 try {
+                    LOGGER.debug("Deploying {} artifact to {} {}", deploymentName, resourceName, resourceType);
                     client.apply(new Deploy.Builder(is, deploymentName, true).build());
                 } catch (CommandFailedException e) {
                     throw new RuntimeException(e);
@@ -94,15 +97,23 @@ class SunstoneWildflyDeploy {
                 AzureResourceManager azureArmClient = store.getAzureArmClient();
                 Set<String> usedRG = store.getAzureArmTemplateDeploymentManager().getUsedRG();
                 WebApp azureWebApp = AzureUtils.findAzureWebApp(azureArmClient, resourceName, usedRG);
+                Exception ex = null;
                 for (int i = 0; i < 5; i++) {
                     try{
+                        LOGGER.debug("Deploying artifact to {} {}", resourceName, resourceType);
                         azureWebApp.warDeploy(tempFile.toFile());
+                        ex = null;
                         break;
                     } catch (Exception e) {
+                        LOGGER.debug("WebApp::warDeploy try no. {} failed", i);
                         e.printStackTrace();
+                        ex = e;
                         // try another time
                         Thread.sleep(10*1000);
                     }
+                }
+                if (ex != null) {
+                    throw ex;
                 }
                 azureWebApp.restart();
                 AzureUtils.waitForWebApp(azureWebApp);

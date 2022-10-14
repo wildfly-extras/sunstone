@@ -6,6 +6,7 @@ import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.slf4j.Logger;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
@@ -27,6 +28,7 @@ import static sunstone.core.SunstoneStore.StoreWrapper;
  * can be closed, whatever that means - usually just closing clients.
  */
 class SunstoneInject {
+    static Logger LOGGER = SunstoneJUnit5Logger.DEFAULT;
     static void injectInstanceResources(ExtensionContext ctx, Object instance) throws Exception {
         List<Field> annotatedFields = AnnotationSupport.findAnnotatedFields(instance.getClass(), SunstoneResource.class);
         for (Field field : annotatedFields) {
@@ -57,12 +59,14 @@ class SunstoneInject {
         if (Ec2Client.class.isAssignableFrom(field.getType())) {
             Ec2Client ec2Client = AwsUtils.getEC2Client();
             StoreWrapper(ctx).closables().push(ec2Client);
+            LOGGER.debug("Injecting {} into {}", ec2Client.getClass().getName(), field.getName());
             injected = ec2Client;
         }
         // inject S3Client
         else if (S3Client.class.isAssignableFrom(field.getType())) {
             S3Client s3Client = AwsUtils.getS3Client();
             StoreWrapper(ctx).closables().push(s3Client);
+            LOGGER.debug("Injecting {} into {}", s3Client.getClass().getName(), field.getName());
             injected = s3Client;
         }
         // inject PublicIPAddress
@@ -71,20 +75,30 @@ class SunstoneInject {
                 case AZ_VM_INSTANCE:
                     VirtualMachine vm = AzureUtils.findAzureVM(StoreWrapper(ctx).getAzureArmClient(), named, StoreWrapper(ctx).getAzureArmTemplateDeploymentManager().getUsedRG());
                     if (vm != null) {
+                        LOGGER.debug("Injecting {} ()->\"{}\" of Azure VM {} into {}", Hostname.class.getName(), vm.getPrimaryPublicIPAddress().ipAddress(), named, field.getName());
                         injected = (Hostname) vm.getPrimaryPublicIPAddress()::ipAddress;
+                    } else {
+                        LOGGER.error("Unable to find {} Azure VM", named);
                     }
                     break;
                 case AWS_EC2_INSTANCE:
                     Instance ec2Instance = AwsUtils.findEc2InstanceByNameTag(StoreWrapper(ctx).getAwsEC2Client(), named);
                     if (ec2Instance != null) {
+                        LOGGER.debug("Injecting {} ()->\"{}\" of EC2 {} into {}", Hostname.class.getName(), ec2Instance.publicIpAddress(), named, field.getName());
                         injected = (Hostname) ec2Instance::publicIpAddress;
+                    } else {
+                        LOGGER.error("Unable to find {} AWS EC2 instance", named);
                     }
                     break;
                 case AZ_WEB_APP:
                     WebApp app = AzureUtils.findAzureWebApp(StoreWrapper(ctx).getAzureArmClient(), named, StoreWrapper(ctx).getAzureArmTemplateDeploymentManager().getUsedRG());
                     if (app != null) {
+                        LOGGER.debug("Injecting {} ()->\"{}\" of Azure Web APP {} into {}", Hostname.class.getName(), app.defaultHostname(), named, field.getName());
                         injected = (Hostname) app::defaultHostname;
+                    } else {
+                        LOGGER.error("Unable to find {} Azure Web APP", named);
                     }
+                    break;
                 case JCLOUDS_NODE:
                     // todo
                     break;
@@ -92,11 +106,14 @@ class SunstoneInject {
         }
         // inject Azure Resource manager
         else if (AzureResourceManager.class.isAssignableFrom(field.getType())) {
-            injected = AzureUtils.getResourceManager();
+            AzureResourceManager arm = AzureUtils.getResourceManager();
+            LOGGER.debug("Injecting {} into {}", arm.getClass().getName(), field.getName());
+            injected = arm;
         }
         // inject OnlineManagementClient
         else if (OnlineManagementClient.class.isAssignableFrom(field.getType())) {
             OnlineManagementClient managementClient = CreaperUtils.getManagementClient(ctx, named, hint);
+            LOGGER.debug("Injecting {} into {}", managementClient.getClass().getName(), field.getName());
             StoreWrapper(ctx).closables().push(managementClient);
             injected = managementClient;
         } else {

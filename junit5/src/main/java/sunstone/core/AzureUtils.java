@@ -11,7 +11,6 @@ import com.azure.resourcemanager.compute.models.VirtualMachine;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.wildfly.extras.sunstone.api.impl.Config;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.ObjectType;
 
@@ -25,14 +24,14 @@ public class AzureUtils {
     public static AzureResourceManager getResourceManager() {
         return AzureResourceManager
                 .authenticate(getCredentials(), new AzureProfile(AzureEnvironment.AZURE))
-                .withSubscription(objectProperties.getProperty(Config.JUnit5.Azure.SUBSCRIPTION_ID));
+                .withSubscription(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.SUBSCRIPTION_ID));
     }
 
     private static TokenCredential getCredentials() {
         return new ClientSecretCredentialBuilder()
-                .tenantId(objectProperties.getProperty(Config.JUnit5.Azure.TENANT_ID))
-                .clientId(objectProperties.getProperty(Config.JUnit5.Azure.APPLICATION_ID))
-                .clientSecret(objectProperties.getProperty(Config.JUnit5.Azure.PASSWORD))
+                .tenantId(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.TENANT_ID))
+                .clientId(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.APPLICATION_ID))
+                .clientSecret(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.PASSWORD))
                 .build();
     }
 
@@ -69,6 +68,24 @@ public class AzureUtils {
                                 .build())
                         .execute();
                 int code = response.code();
+                /*
+                exclude
+                <body bgcolor="#00abec">
+    <div id="feature">
+        <div id="content">
+            <h1>404 Web Site not found.</h1>
+            <p>You may be seeing this error due to one of the reasons listed below :</p>
+            <ul>
+                <li>Custom domain has not been configured inside Azure. See <a href="https://go.microsoft.com/fwlink/?linkid=2194614">how to map an existing domain</a> to resolve this.</li>
+                <li>Client cache is still pointing the domain to old IP address. Clear the cache by running the command <i>ipconfig/flushdns.</i></li>
+            </ul>
+            <p>Checkout <a href="https://go.microsoft.com/fwlink/?linkid=2194451">App Service Domain FAQ</a> for more questions.</p>
+        </div>
+     </div>
+</body>
+</html>
+
+                 */
                 if (code < 500) {
                     return;
                 }

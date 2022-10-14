@@ -29,10 +29,10 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Repeatable(WithAzureArmTemplates.class)
+@Repeatable(WithAzureArmTemplateRepetable.class)
 @Inherited
 public @interface WithAzureArmTemplate {
-    String value() default "";
+    String value();
     String[] parameters() default {};
-    TemplateType type() default TemplateType.RESOURCE;
+    ValueType type() default ValueType.RESOURCE;
 }

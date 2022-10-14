@@ -17,12 +17,12 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Repeatable(WithAwsCfTemplates.class)
+@Repeatable(WithAwsCfTemplateRepetable.class)
 @Inherited
 public @interface WithAwsCfTemplate {
-    String value() default "";
+    String value();
 
     String[] parameters() default {};
 
-    TemplateType type() default TemplateType.RESOURCE;
+    ValueType type() default ValueType.RESOURCE;
 }

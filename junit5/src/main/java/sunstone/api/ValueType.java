@@ -1,6 +1,6 @@
 package sunstone.api;
 
-public enum TemplateType {
+public enum ValueType {
     /**
      * The test provides path to the template placed in resources
      */
