@@ -13,6 +13,7 @@ import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.commands.deployments.Undeploy;
 import org.wildfly.extras.creaper.core.CommandFailedException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import sunstone.api.SunstoneResourceHint;
 import sunstone.api.WildFlyDeployment;
 
@@ -58,8 +59,8 @@ class SunstoneWildflyDeploy {
                 throw new RuntimeException("Deployment method must have 0 parameters");
             }
             WildFlyDeployment annotation = method.getAnnotation(WildFlyDeployment.class);
-            String deploymentName = annotation.name();
-            String resourceName = annotation.to();
+            String deploymentName = ObjectProperties.replaceSystemProperties(annotation.name());
+            String resourceName = ObjectProperties.replaceSystemProperties(annotation.to());
             SunstoneResourceHint resourceType = annotation.hint();
 
             Object invoke = method.invoke(null);

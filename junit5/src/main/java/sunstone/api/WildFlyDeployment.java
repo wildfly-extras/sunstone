@@ -34,9 +34,9 @@ import java.nio.file.Path;
  *    <li>
  *        {@link SunstoneResourceHint#AZ_WEB_APP}: {@link #to()} name of the instance.
  *        <br>
- *        <b>only WAR archive is supported</b>
+ *        <b>Azure App services can deploy only WAR archive</b>
  *        <br>
- *        Be aware {@link #to()} doesn't matter - AzureSDK always deploys the archive as ROOT.war. Deployment isn't
+ *        Be aware {@link #name()} doesn't matter - AzureSDK always deploys the archive as ROOT.war. Deployment isn't
  *        un-deployed after the test. If different archive is deployed, the old one is simply overridden and container is
  *        restarted.
  *    </li>

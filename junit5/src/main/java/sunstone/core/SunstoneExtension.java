@@ -61,6 +61,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         Setup setup = ctx.getRequiredTestClass().getAnnotationsByType(Setup.class)[0];
         for (Class<? extends AbstractSetupTask> setupTask : setup.value()) {
             SunstoneInject.injectStaticResources(ctx, setupTask);
+            // todo check number of parameters
             AbstractSetupTask abstractSetupTask = setupTask.getDeclaredConstructor().newInstance();
             SunstoneInject.injectInstanceResources(ctx, abstractSetupTask);
             store.closables().push(abstractSetupTask::cleanup);

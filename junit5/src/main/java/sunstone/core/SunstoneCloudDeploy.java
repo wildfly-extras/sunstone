@@ -1,7 +1,12 @@
 package sunstone.core;
 
 
+import com.google.common.io.BaseEncoding;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
+import org.wildfly.extras.sunstone.api.impl.ObjectPropertiesType;
+import org.wildfly.extras.sunstone.api.impl.ObjectType;
+import sunstone.api.AbstractParameterProvider;
 import sunstone.api.ValueType;
 import sunstone.api.WithAwsCfTemplate;
 import sunstone.api.WithAzureArmTemplate;
@@ -9,9 +14,11 @@ import sunstone.api.WithAzureArmTemplate;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static sunstone.core.SunstoneStore.StoreWrapper;
@@ -39,34 +46,57 @@ class SunstoneCloudDeploy {
         WithAwsCfTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class);
         for (int i = 0; i < annotations.length; i++) {
             String content = getTemplateContent(annotations[i].value(), annotations[i].type());
-            Map<String, String> parameters = getParameters(annotations[i].parameters());
-            deploymentManager.deployAndRegister(content, parameters);
+            String md5sum = md5sum(content);
+            if (!annotations[i].testSuiteLevel() || !store.suiteLevelDeploymentExists(md5sum)) {
+                // todo check and handle exception
+                Class<? extends AbstractParameterProvider> ppClass = annotations[i].parametersProvider();
+                AbstractParameterProvider parameterProvider = ppClass.getDeclaredConstructor().newInstance();
+                Map<String, String> parameters = getParameters(parameterProvider, annotations[i].parameters());
+                deploymentManager.deployAndRegister(content, parameters);
+                store.addSuiteLevelDeployment(md5sum);
+            }
         }
+    }
+
+    private static String md5sum(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        sha256.update(str.getBytes("UTF-8"));
+        byte[] digest = sha256.digest();
+        return BaseEncoding.base16().encode(digest);
     }
 
     static void handleAzureArmTemplateAnnotations(ExtensionContext ctx) throws Exception {
         AzureArmTemplateCloudDeploymentManager deploymentManager = new AzureArmTemplateCloudDeploymentManager();
-        StoreWrapper(ctx).setAzureArmTemplateDeploymentManager(deploymentManager);
-        StoreWrapper(ctx).closables().push(() -> {
+        SunstoneStore store = StoreWrapper(ctx);
+        store.setAzureArmTemplateDeploymentManager(deploymentManager);
+        store.closables().push(() -> {
             deploymentManager.undeployAll();
             deploymentManager.close();
         });
         WithAzureArmTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class);
         for (int i = 0; i < annotations.length; i++) {
             String content = getTemplateContent(annotations[i].value(), annotations[i].type());
-            Map<String, String> parameters = getParameters(annotations[i].parameters());
-            deploymentManager.deployAndRegister(content, parameters);
+            String md5sum = md5sum(content);
+            if (!annotations[i].testSuiteLevel() || !store.suiteLevelDeploymentExists(md5sum)) {
+                Class<? extends AbstractParameterProvider> ppClass = annotations[i].parametersProvider();
+                // todo check and handle exception
+                AbstractParameterProvider parameterProvider = ppClass.getDeclaredConstructor().newInstance();
+                Map<String, String> parameters = getParameters(parameterProvider, annotations[i].parameters());
+                deploymentManager.deployAndRegister(content, parameters);
+                store.addSuiteLevelDeployment(md5sum);
+            }
         }
     }
 
-    private static Map<String, String> getParameters(String[] parameters) {
+    private static Map<String, String> getParameters(AbstractParameterProvider parameterProvider, String[] parameters) {
         if (parameters.length % 2 != 0) {
             throw new RuntimeException("Even number of parameters are expected! First value is the key and the second one is the value.");
         }
-        Map<String, String> parametersMap = new HashMap<>(parameters.length / 2);
+        Map<String, String> parametersMap = parameterProvider.getParameters();
         for (int i = 0; i < parameters.length; i += 2) {
             parametersMap.put(parameters[i], parameters[i + 1]);
         }
+        parametersMap.forEach((key, value) -> parametersMap.put(key, ObjectProperties.replaceSystemProperties(value)));
         return Collections.unmodifiableMap(parametersMap);
     }
 

@@ -84,8 +84,14 @@ public class AzureUtils {
      </div>
 </body>
 </html>
-
                  */
+                if (code == 404 && response.body() != null
+                        && response.body().string().contains("404 Web Site not found.")
+                        && response.body().string().contains("Custom domain has not been configured inside Azure. See <a href=\"https://go.microsoft.com/fwlink/?linkid=2194614\">how to map an existing domain</a> to resolve this.")
+                        && response.body().string().contains("Client cache is still pointing the domain to old IP address. Clear the cache by running the command <i>ipconfig/flushdns.</i>")
+                ) {
+                    continue;
+                }
                 if (code < 500) {
                     return;
                 }

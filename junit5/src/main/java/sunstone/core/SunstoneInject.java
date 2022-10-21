@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.slf4j.Logger;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -34,7 +35,7 @@ class SunstoneInject {
         for (Field field : annotatedFields) {
             if (!Modifier.isStatic(field.getModifiers())) {
                 SunstoneResource annotation = field.getAnnotation(SunstoneResource.class);
-                String name = annotation.of();
+                String name = annotation.resource();
                 SunstoneResourceHint hint = annotation.hint();
                 injectAndRegisterResource(field, instance, name, hint, ctx);
             }
@@ -46,7 +47,7 @@ class SunstoneInject {
         for (Field field : annotatedFields) {
             if (Modifier.isStatic(field.getModifiers())) {
                 SunstoneResource annotation = field.getAnnotation(SunstoneResource.class);
-                String name = annotation.of();
+                String name = ObjectProperties.replaceSystemProperties(annotation.resource());
                 SunstoneResourceHint hint = annotation.hint();
                 injectAndRegisterResource(field, null, name, hint, ctx);
             }

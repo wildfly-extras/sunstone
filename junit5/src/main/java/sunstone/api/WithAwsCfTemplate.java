@@ -23,6 +23,8 @@ public @interface WithAwsCfTemplate {
     String value();
 
     String[] parameters() default {};
+    Class<?  extends AbstractParameterProvider> parametersProvider() default AbstractParameterProvider.DEFAULT.class;
 
     ValueType type() default ValueType.RESOURCE;
+    boolean testSuiteLevel() default false;
 }

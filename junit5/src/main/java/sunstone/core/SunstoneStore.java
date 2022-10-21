@@ -8,6 +8,8 @@ import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 
 import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An abstraction over JUnit5 Extension store providing methods to set commonly used resources.
@@ -16,6 +18,7 @@ class SunstoneStore {
     private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create("sunstone", "core", "SunstoneStore");
     private static final String CLOSABLES = "closables";
 
+    private static final String SUITE_LEVEL_DEPLOYMENTS = "sunstoneSuiteLevelDeployments";
     private static final String AZURE_ARM_TEMPLATE_DEPLOYMENT_MANAGER = "azureArmTemplateManager";
     private static final String AWS_CF_DEMPLOYMENT_MANAGER = "awsCfManager";
 
@@ -36,6 +39,16 @@ class SunstoneStore {
         return context.getStore(NAMESPACE);
     }
 
+    void addSuiteLevelDeployment(String checkSum) {
+        Store store = context.getRoot().getStore(ExtensionContext.Namespace.GLOBAL);
+        Set<String> checkSums = (Set<String>) store.getOrComputeIfAbsent(SUITE_LEVEL_DEPLOYMENTS, s -> new HashSet<String>());
+        checkSums.add(checkSum);
+    }
+    boolean suiteLevelDeploymentExists(String checkSum) {
+        Store store = context.getRoot().getStore(ExtensionContext.Namespace.GLOBAL);
+        Set<String> checkSums = (Set<String>) store.getOrComputeIfAbsent(SUITE_LEVEL_DEPLOYMENTS, s -> new HashSet<String>());
+        return checkSums.contains(checkSum);
+    }
     AzureResourceManager getAzureArmClient() {
         return getStore().get(AZURE_ARM_CLIENT, AzureResourceManager.class);
     }
