@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 @ExtendWith({SunstoneExtension.class})
 @Inherited
 public @interface WithAzureArmTemplate {
-    String value();
+    String template();
 
     /**
      * Array of parameters: [key1, value1, key2, value2, ... ]
@@ -43,5 +43,5 @@ public @interface WithAzureArmTemplate {
      *     <li>bool</li>
      * </ul>
      */
-    String[] parameters() default {};
+    Parameter[] parameters() default {};
 }

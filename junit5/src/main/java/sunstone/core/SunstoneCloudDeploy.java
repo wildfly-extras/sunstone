@@ -4,6 +4,7 @@ package sunstone.core;
 import com.google.common.io.BaseEncoding;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
+import sunstone.api.Parameter;
 import sunstone.api.WithAzureArmTemplate;
 
 import java.io.ByteArrayOutputStream;
@@ -48,20 +49,17 @@ class SunstoneCloudDeploy {
         };
         WithAzureArmTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class);
         for (int i = 0; i < annotations.length; i++) {
-            String content = getResourceContent(annotations[i].value());
+            String content = getResourceContent(annotations[i].template());
             Map<String, String> parameters = getParameters(annotations[i].parameters());
             deploymentManager.deployAndRegister(content, parameters);
             store.addClosable(closeable);
         }
     }
 
-    private static Map<String, String> getParameters(String[] parameters) {
-        if (parameters.length % 2 != 0) {
-            throw new RuntimeException("Even number of parameters are expected! First value is the key and the second one is the value.");
-        }
+    private static Map<String, String> getParameters(Parameter[] parameters) {
         Map<String, String> parametersMap = new HashMap<>();
-        for (int i = 0; i < parameters.length; i += 2) {
-            parametersMap.put(parameters[i], parameters[i + 1]);
+        for (int i = 0; i < parameters.length; i++) {
+            parametersMap.put(parameters[i].k(), parameters[i].v());
         }
         parametersMap.forEach((key, value) -> parametersMap.put(key, ObjectProperties.replaceSystemProperties(value)));
         return Collections.unmodifiableMap(parametersMap);
