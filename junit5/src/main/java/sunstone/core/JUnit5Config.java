@@ -2,6 +2,9 @@ package sunstone.core;
 
 
 public class JUnit5Config {
+
+    public static final String TIMEOUT_FACTOR = "timeout.factor";
+
     /**
      * Azure SDK related keys used in JUnit5 module
      */

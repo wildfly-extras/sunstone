@@ -64,8 +64,8 @@ public class AzureUtils {
 
     static void waitForWebApp(WebApp app) throws InterruptedException, IOException {
         OkHttpClient client = new OkHttpClient();
-        // todo factor
-        long timeout = 20 * 60 * 1000;
+        // 20 minutes in millis
+        long timeout = TimeoutUtil.adjust(1200000);
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < timeout) {
             try {
@@ -87,7 +87,7 @@ public class AzureUtils {
                 }
             } catch (SocketTimeoutException e) {
                 // skipping timeout
-                Thread.sleep(500);
+                Thread.sleep(TimeoutUtil.adjust(500));
             }
         }
         throw new RuntimeException("Timeout!");
