@@ -21,7 +21,7 @@ import java.util.Set;
 public class AzureUtils {
     private static ObjectProperties objectProperties = new ObjectProperties(ObjectType.JUNIT5, null);
 
-    public static AzureResourceManager getResourceManager() {
+    static AzureResourceManager getResourceManager() {
         return AzureResourceManager
                 .authenticate(getCredentials(), new AzureProfile(AzureEnvironment.AZURE))
                 .withSubscription(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.SUBSCRIPTION_ID));
@@ -33,6 +33,13 @@ public class AzureUtils {
                 .clientId(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.APPLICATION_ID))
                 .clientSecret(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.PASSWORD))
                 .build();
+    }
+
+    static boolean propertiesForArmClientArePresent() {
+        return objectProperties.getProperty(JUnit5Config.JUnit5.Azure.SUBSCRIPTION_ID) != null
+                && objectProperties.getProperty(JUnit5Config.JUnit5.Azure.TENANT_ID) != null
+                && objectProperties.getProperty(JUnit5Config.JUnit5.Azure.APPLICATION_ID) != null
+                && objectProperties.getProperty(JUnit5Config.JUnit5.Azure.PASSWORD) != null;
     }
 
     static VirtualMachine findAzureVM(AzureResourceManager arm, String name, Set<String> resourceGroups) {
@@ -55,7 +62,7 @@ public class AzureUtils {
         return null;
     }
 
-    public static void waitForWebApp(WebApp app) throws InterruptedException, IOException {
+    static void waitForWebApp(WebApp app) throws InterruptedException, IOException {
         OkHttpClient client = new OkHttpClient();
         // todo factor
         long timeout = 20 * 60 * 1000;

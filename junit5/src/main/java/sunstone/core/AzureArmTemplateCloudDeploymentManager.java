@@ -38,9 +38,9 @@ class AzureArmTemplateCloudDeploymentManager implements TemplateCloudDeploymentM
     // everything is deployed to one resource group
     private String groupName;
 
-    AzureArmTemplateCloudDeploymentManager() {
+    AzureArmTemplateCloudDeploymentManager(AzureResourceManager arm) {
         ObjectProperties objectProperties = new ObjectProperties(ObjectType.JUNIT5, null);
-        armManager = AzureUtils.getResourceManager();
+        armManager = arm;
         groupName = objectProperties.getProperty(JUnit5Config.JUnit5.Azure.GROUP);
         Region region = Region.fromName(new ObjectProperties(ObjectType.JUNIT5, null).getProperty(JUnit5Config.JUnit5.Azure.REGION));
 

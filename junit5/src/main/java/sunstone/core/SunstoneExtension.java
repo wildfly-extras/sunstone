@@ -20,9 +20,15 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback {
 
     @Override
     public void beforeAll(ExtensionContext ctx) throws Exception {
-        StoreWrapper(ctx).initClosables();
+        SunstoneStore store = StoreWrapper(ctx);
+        store.initClosables();
+
+        // cache Azure ARM
+        if (AzureUtils.propertiesForArmClientArePresent()) {
+            store.setAzureArmClient(AzureUtils.getResourceManager());
+        }
+
         if (ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class).length > 0) {
-            StoreWrapper(ctx).setAzureArmClient(AzureUtils.getResourceManager());
             SunstoneCloudDeploy.handleAzureArmTemplateAnnotations(ctx);
         }
     }

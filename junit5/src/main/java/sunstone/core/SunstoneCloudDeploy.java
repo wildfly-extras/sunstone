@@ -40,8 +40,8 @@ class SunstoneCloudDeploy {
     }
 
     static void handleAzureArmTemplateAnnotations(ExtensionContext ctx) throws Exception {
-        AzureArmTemplateCloudDeploymentManager deploymentManager = new AzureArmTemplateCloudDeploymentManager();
         SunstoneStore store = StoreWrapper(ctx);
+        AzureArmTemplateCloudDeploymentManager deploymentManager = new AzureArmTemplateCloudDeploymentManager(store.getAzureArmClient());
         store.setAzureArmTemplateDeploymentManager(deploymentManager);
         AutoCloseable closeable = () -> {
             deploymentManager.undeployAll();
