@@ -4,6 +4,7 @@ package sunstone.core;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -15,8 +16,11 @@ class SunstoneStore {
     private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create("sunstone", "core", "SunstoneStore");
     private static final String CLOSABLES = "closables";
     private static final String AZURE_ARM_TEMPLATE_DEPLOYMENT_MANAGER = "azureArmTemplateManager";
-
     private static final String AZURE_ARM_CLIENT = "azureArmClient";
+
+
+    private static final String AWS_CF_DEMPLOYMENT_MANAGER = "awsCfTemplateManager";
+    private static final String AWS_CF_CLIENT = "awsCfClient";
     private final ExtensionContext context;
 
     private SunstoneStore(ExtensionContext ctx) {
@@ -47,6 +51,17 @@ class SunstoneStore {
         getStore().put(AZURE_ARM_TEMPLATE_DEPLOYMENT_MANAGER, o);
     }
 
+    void setAwsCfDemploymentManager(AwsCloudFormationCloudDeploymentManager o) {
+        getStore().put(AWS_CF_DEMPLOYMENT_MANAGER, o);
+    }
+
+    CloudFormationClient getAwsCfClient() {
+        return getStore().get(AWS_CF_CLIENT, CloudFormationClient.class);
+    }
+
+    void setAwsCfClient(CloudFormationClient client) {
+        getStore().put(AWS_CF_CLIENT, client);
+    }
 
     void initClosables() {
         getStore().put(CLOSABLES, new ArrayDeque<>());

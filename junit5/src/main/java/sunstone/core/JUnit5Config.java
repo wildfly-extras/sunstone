@@ -16,4 +16,13 @@ public class JUnit5Config {
         public static final String REGION = "az.region";
         public static final String GROUP = "az.group";
     }
+
+    /**
+     * AWS SDK related keys used in JUnit5 module
+     */
+    public static final class Aws {
+        public static final String ACCESS_KEY_ID = "aws.accessKeyID";
+        public static final String SECRET_ACCESS_KEY = "aws.secretAccessKey";
+        public static final String REGION = "aws.region";
+    }
 }
