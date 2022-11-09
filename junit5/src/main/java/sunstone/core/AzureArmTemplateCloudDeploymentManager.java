@@ -41,8 +41,8 @@ class AzureArmTemplateCloudDeploymentManager implements TemplateCloudDeploymentM
     AzureArmTemplateCloudDeploymentManager(AzureResourceManager arm) {
         ObjectProperties objectProperties = new ObjectProperties(ObjectType.JUNIT5, null);
         armManager = arm;
-        groupName = objectProperties.getProperty(JUnit5Config.JUnit5.Azure.GROUP);
-        Region region = Region.fromName(new ObjectProperties(ObjectType.JUNIT5, null).getProperty(JUnit5Config.JUnit5.Azure.REGION));
+        groupName = objectProperties.getProperty(JUnit5Config.Azure.GROUP);
+        Region region = Region.fromName(new ObjectProperties(ObjectType.JUNIT5, null).getProperty(JUnit5Config.Azure.REGION));
 
         // we will use one resource group and delete at in the end
         if (!armManager.resourceGroups().contain(groupName)){

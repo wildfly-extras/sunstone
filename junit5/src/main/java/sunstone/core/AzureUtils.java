@@ -24,22 +24,22 @@ public class AzureUtils {
     static AzureResourceManager getResourceManager() {
         return AzureResourceManager
                 .authenticate(getCredentials(), new AzureProfile(AzureEnvironment.AZURE))
-                .withSubscription(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.SUBSCRIPTION_ID));
+                .withSubscription(objectProperties.getProperty(JUnit5Config.Azure.SUBSCRIPTION_ID));
     }
 
     private static TokenCredential getCredentials() {
         return new ClientSecretCredentialBuilder()
-                .tenantId(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.TENANT_ID))
-                .clientId(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.APPLICATION_ID))
-                .clientSecret(objectProperties.getProperty(JUnit5Config.JUnit5.Azure.PASSWORD))
+                .tenantId(objectProperties.getProperty(JUnit5Config.Azure.TENANT_ID))
+                .clientId(objectProperties.getProperty(JUnit5Config.Azure.APPLICATION_ID))
+                .clientSecret(objectProperties.getProperty(JUnit5Config.Azure.PASSWORD))
                 .build();
     }
 
     static boolean propertiesForArmClientArePresent() {
-        return objectProperties.getProperty(JUnit5Config.JUnit5.Azure.SUBSCRIPTION_ID) != null
-                && objectProperties.getProperty(JUnit5Config.JUnit5.Azure.TENANT_ID) != null
-                && objectProperties.getProperty(JUnit5Config.JUnit5.Azure.APPLICATION_ID) != null
-                && objectProperties.getProperty(JUnit5Config.JUnit5.Azure.PASSWORD) != null;
+        return objectProperties.getProperty(JUnit5Config.Azure.SUBSCRIPTION_ID) != null
+                && objectProperties.getProperty(JUnit5Config.Azure.TENANT_ID) != null
+                && objectProperties.getProperty(JUnit5Config.Azure.APPLICATION_ID) != null
+                && objectProperties.getProperty(JUnit5Config.Azure.PASSWORD) != null;
     }
 
     static VirtualMachine findAzureVM(AzureResourceManager arm, String name, Set<String> resourceGroups) {
