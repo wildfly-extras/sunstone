@@ -75,6 +75,11 @@ public class AzureUtils {
                                 .build())
                         .execute();
                 int code = response.code();
+                /*
+                Skip 404 with very specific error.
+                The error comes from Azure portal when web app is already deployed but DNS has some troubles with redirecting
+                the connection
+                 */
                 if (code == 404 && response.body() != null
                         && response.body().string().contains("404 Web Site not found.")
                         && response.body().string().contains("Custom domain has not been configured inside Azure. See <a href=\"https://go.microsoft.com/fwlink/?linkid=2194614\">how to map an existing domain</a> to resolve this.")
