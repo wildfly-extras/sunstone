@@ -52,8 +52,8 @@ class SunstoneCloudDeploy {
             String content = getResourceContent(annotations[i].template());
             Map<String, String> parameters = getParameters(annotations[i].parameters());
             deploymentManager.deployAndRegister(content, parameters);
-            store.addClosable(closeable);
         }
+        store.addClosable(closeable);
     }
 
     private static Map<String, String> getParameters(Parameter[] parameters) {
