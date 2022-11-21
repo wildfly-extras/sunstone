@@ -13,34 +13,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Deploy Azure template
- * Deployed as into resource group defined in sunstone.properties.
- * Deployed in {@link BeforeAllCallback} and resource group is deleted and recreated in {@link  AfterAllCallback}
+ * Deploy CloudFormation template
+ * <p>
+ * Deployed as a stack in {@link BeforeAllCallback} and stack is deleted in {@link  AfterAllCallback}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Repeatable(WithAzureArmTemplateRepetable.class)
+@Repeatable(WithAwsCfTemplateRepetable.class)
 @ExtendWith({SunstoneExtension.class})
 @Inherited
-public @interface WithAzureArmTemplate {
+public @interface WithAwsCfTemplate {
+    /**
+     * Template file located in resources.
+     */
     String template();
 
     /**
      * Array of parameters
-     *
      * Values may can be an expression - 'value-${variable:default}' - var is resolved from system properties.
-     * <p>
-     * Not all types are supported https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/data-types
-     * Since all parameters are string, the Sunstone looks into the template to determine the type and parse the value
-     * accordingly.
-     * <p>
-     * Supported types:
-     * <ul>
-     *     <li>string</li>
-     *     <li>securestring</li>
-     *     <li>int</li>
-     *     <li>bool</li>
-     * </ul>
-     */
+    */
     Parameter[] parameters() default {};
 }

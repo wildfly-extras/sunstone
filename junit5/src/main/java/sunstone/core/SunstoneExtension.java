@@ -4,6 +4,8 @@ package sunstone.core;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
+import sunstone.api.WithAwsCfTemplate;
 import sunstone.api.WithAzureArmTemplate;
 
 import static sunstone.core.SunstoneStore.StoreWrapper;
@@ -29,7 +31,23 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback {
         }
 
         if (ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class).length > 0) {
+            if (!AzureUtils.propertiesForArmClientArePresent()) {
+                throw new RuntimeException("Missing credentials / rg / region for Azure.");
+            }
             SunstoneCloudDeploy.handleAzureArmTemplateAnnotations(ctx);
+        }
+
+        if (AwsUtils.propertiesForAwsClientArePresent()) {
+            CloudFormationClient cloudFormationClient = AwsUtils.getCloudFormationClient();
+            store.setAwsCfClient(cloudFormationClient);
+            store.addClosable(cloudFormationClient);
+        }
+
+        if (ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class).length > 0) {
+            if (!AwsUtils.propertiesForAwsClientArePresent()) {
+                throw new RuntimeException("Missing credentials / region for AWS.");
+            }
+            SunstoneCloudDeploy.handleAwsCloudFormationAnnotations(ctx);
         }
     }
 

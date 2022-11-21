@@ -5,6 +5,7 @@ import com.google.common.io.BaseEncoding;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import sunstone.api.Parameter;
+import sunstone.api.WithAwsCfTemplate;
 import sunstone.api.WithAzureArmTemplate;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +38,23 @@ class SunstoneCloudDeploy {
         sha256.update(str.getBytes("UTF-8"));
         byte[] digest = sha256.digest();
         return BaseEncoding.base16().encode(digest);
+    }
+
+    static void handleAwsCloudFormationAnnotations(ExtensionContext ctx) throws Exception {
+        SunstoneStore store = StoreWrapper(ctx);
+        AwsCloudFormationCloudDeploymentManager deploymentManager = new AwsCloudFormationCloudDeploymentManager(store.getAwsCfClient());
+        store.setAwsCfDemploymentManager(deploymentManager);
+        AutoCloseable closeable = () -> {
+            deploymentManager.undeployAll();
+            deploymentManager.close();
+        };
+        WithAwsCfTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class);
+        for (int i = 0; i < annotations.length; i++) {
+            String content = getResourceContent(annotations[i].template());
+            Map<String, String> parameters = getParameters(annotations[i].parameters());
+            deploymentManager.deployAndRegister(content, parameters);
+        }
+        store.addClosable(closeable);
     }
 
     static void handleAzureArmTemplateAnnotations(ExtensionContext ctx) throws Exception {
