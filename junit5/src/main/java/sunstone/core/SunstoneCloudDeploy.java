@@ -4,6 +4,8 @@ package sunstone.core;
 import com.google.common.io.BaseEncoding;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
+import org.wildfly.extras.sunstone.api.impl.ObjectType;
+import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import sunstone.api.Parameter;
 import sunstone.api.WithAwsCfTemplate;
 import sunstone.api.WithAzureArmTemplate;
@@ -28,7 +30,7 @@ import static sunstone.core.SunstoneStore.StoreWrapper;
  * Used by {@link SunstoneExtension} which delegate handling TestClass annotations such as {@link WithAzureArmTemplate}.
  * Lambda function to undeploy resources is also registered for the AfterAllCallback phase.
  * <p>
- * The class works with {@link CloudDeploymentRegistry} classes such as {@link AzureArmTemplateCloudDeploymentManager}
+ * The class works classes {@link AzureArmTemplateCloudDeploymentManager} and {@link AwsCloudFormationCloudDeploymentManager}
  * that handle specific deploy method to the 3rd part cloud.
  */
 class SunstoneCloudDeploy {
@@ -42,36 +44,78 @@ class SunstoneCloudDeploy {
 
     static void handleAwsCloudFormationAnnotations(ExtensionContext ctx) throws Exception {
         SunstoneStore store = StoreWrapper(ctx);
-        AwsCloudFormationCloudDeploymentManager deploymentManager = new AwsCloudFormationCloudDeploymentManager(store.getAwsCfClient());
+        AwsCloudFormationCloudDeploymentManager deploymentManager = new AwsCloudFormationCloudDeploymentManager();
         store.setAwsCfDemploymentManager(deploymentManager);
-        AutoCloseable closeable = () -> {
-            deploymentManager.undeployAll();
-            deploymentManager.close();
-        };
+        // lets close clients at the very end
+        store.addSuiteLevelClosable(deploymentManager);
         WithAwsCfTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class);
         for (int i = 0; i < annotations.length; i++) {
-            String content = getResourceContent(annotations[i].template());
-            Map<String, String> parameters = getParameters(annotations[i].parameters());
-            deploymentManager.deployAndRegister(content, parameters);
+            WithAwsCfTemplate annotation = annotations[i];
+            String content = getResourceContent(annotation.template());
+            Map<String, String> parameters = getParameters(annotation.parameters());
+            String region = resolveOrGetFromSunstoneProperties(annotation.region(), JUnit5Config.Aws.REGION);
+            if (region == null) {
+                throw new IllegalArgumentException("Region for AWS template is not defined. It must be specified either"
+                        + "in the annotation or in sunstone.properties file");
+            }
+            String md5sum = md5sum(content);
+
+            if (!annotation.perSuite() || !store.suiteLevelDeploymentExists(md5sum)) {
+                CloudFormationClient cfClient = store.getAwsCfClientOrCreate(region);
+                String stack = deploymentManager.deployAndRegister(cfClient, content, parameters);
+                if (annotation.perSuite()) {
+                    store.addSuiteLevelClosable(() -> deploymentManager.undeploy(stack));
+                    store.addSuiteLevelDeployment(md5sum);
+                } else {
+                    store.addClosable(() -> deploymentManager.undeploy(stack));
+                }
+            }
         }
-        store.addClosable(closeable);
     }
 
     static void handleAzureArmTemplateAnnotations(ExtensionContext ctx) throws Exception {
         SunstoneStore store = StoreWrapper(ctx);
-        AzureArmTemplateCloudDeploymentManager deploymentManager = new AzureArmTemplateCloudDeploymentManager(store.getAzureArmClient());
+        AzureArmTemplateCloudDeploymentManager deploymentManager = new AzureArmTemplateCloudDeploymentManager(store.getAzureArmClientOrCreate());
         store.setAzureArmTemplateDeploymentManager(deploymentManager);
-        AutoCloseable closeable = () -> {
-            deploymentManager.undeployAll();
-            deploymentManager.close();
-        };
         WithAzureArmTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class);
         for (int i = 0; i < annotations.length; i++) {
-            String content = getResourceContent(annotations[i].template());
-            Map<String, String> parameters = getParameters(annotations[i].parameters());
-            deploymentManager.deployAndRegister(content, parameters);
+            WithAzureArmTemplate annotation = annotations[i];
+            String content = getResourceContent(annotation.template());
+            String group = resolveOrGetFromSunstoneProperties(annotation.group(), JUnit5Config.Azure.GROUP);
+            if (group == null) {
+                throw new IllegalArgumentException("Resource group for Azure ARM template is not defined. "
+                        + "It must be specified either in the annotation or in sunstone.properties file");
+            }
+            String region = resolveOrGetFromSunstoneProperties(annotation.region(), JUnit5Config.Azure.REGION);
+            if (region == null) {
+                throw new IllegalArgumentException("Region for AWS template is not defined. It must be specified either"
+                        + "in the annotation or in sunstone.properties file");
+            }
+
+            Map<String, String> parameters = getParameters(annotation.parameters());
+            String md5sum = md5sum(content);
+
+            if (!annotation.perSuite() || !store.suiteLevelDeploymentExists(md5sum)) {
+                deploymentManager.deployAndRegister(group, region, content, parameters);
+                if (annotation.perSuite()) {
+                    store.addSuiteLevelClosable(() -> deploymentManager.undeploy(group));
+                    store.addSuiteLevelDeployment(md5sum);
+                } else {
+                    store.addClosable(() -> deploymentManager.undeploy(group));
+                }
+            }
         }
-        store.addClosable(closeable);
+    }
+
+    static String resolveOrGetFromSunstoneProperties(String toResolve, String sunstoneProperty) {
+        String resolved = null;
+        if (!toResolve.isEmpty()) {
+            resolved = ObjectProperties.replaceSystemProperties(toResolve);
+        } else if (sunstoneProperty != null) {
+            ObjectProperties objectProperties = new ObjectProperties(ObjectType.JUNIT5, null);
+            resolved = objectProperties.getProperty(sunstoneProperty);
+        }
+        return resolved;
     }
 
     private static Map<String, String> getParameters(Parameter[] parameters) {
@@ -84,11 +128,16 @@ class SunstoneCloudDeploy {
     }
 
     private static String getResourceContent(String resource) throws IOException {
-        InputStream is = SunstoneCloudDeploy.class.getClassLoader().getResourceAsStream(resource);
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        for (int length; (length = is.read(buffer)) != -1; ) {
-            result.write(buffer, 0, length);
+        ByteArrayOutputStream result;
+        try (InputStream is = SunstoneCloudDeploy.class.getClassLoader().getResourceAsStream(resource)) {
+            if (is == null) {
+                throw new IllegalArgumentException("Can not find resource " + resource);
+            }
+            result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            for (int length; (length = is.read(buffer)) != -1; ) {
+                result.write(buffer, 0, length);
+            }
         }
         return result.toString(StandardCharsets.UTF_8.name());
     }

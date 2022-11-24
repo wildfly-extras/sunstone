@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.cloudformation.model.Parameter;
 import software.amazon.awssdk.services.cloudformation.waiters.CloudFormationWaiter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,19 +27,20 @@ import java.util.UUID;
  * <p>
  * CloudFormation client credentials are taken from Sunstone.properties. See {@link AwsUtils}.
  */
-class AwsCloudFormationCloudDeploymentManager implements TemplateCloudDeploymentManager {
+class AwsCloudFormationCloudDeploymentManager implements AutoCloseable {
     static Logger LOGGER = SunstoneJUnit5Logger.DEFAULT;
 
-    private final CloudFormationClient cfClient;
-    private final Set<String> stacks;
+    private final Map<CloudFormationClient, Set<String>> client2stacks;
+    private final Map<String, CloudFormationClient> stack2Client;
 
-    AwsCloudFormationCloudDeploymentManager(CloudFormationClient client) {
-        cfClient = client;
-        stacks = new HashSet<>();
+    AwsCloudFormationCloudDeploymentManager() {
+        client2stacks = new HashMap<>();
+        stack2Client = new HashMap<>();
     }
 
-    String deploy(String template, Map<String, String> parameters) {
+    String deploy(CloudFormationClient cfClient, String template, Map<String, String> parameters) {
         String stackName = "SunstoneStack-" + UUID.randomUUID().toString().substring(0, 5);
+
         CloudFormationWaiter waiter = cfClient.waiter();
 
         List<Parameter> cfParameters = new ArrayList<>();
@@ -61,40 +63,38 @@ class AwsCloudFormationCloudDeploymentManager implements TemplateCloudDeployment
         return stackName;
     }
 
-    @Override
-    public void undeploy(String id) {
+    public void undeploy(String stack) {
+        CloudFormationClient cfClient = stack2Client.get(stack);
         CloudFormationWaiter waiter = cfClient.waiter();
 
         DeleteStackRequest stackRequest = DeleteStackRequest.builder()
-                .stackName(id)
+                .stackName(stack)
                 .build();
 
         cfClient.deleteStack(stackRequest);
         DescribeStacksRequest stacksRequest = DescribeStacksRequest.builder()
-                .stackName(id)
+                .stackName(stack)
                 .build();
 
         WaiterResponse<DescribeStacksResponse> waiterResponse = waiter.waitUntilStackDeleteComplete(stacksRequest);
-        LOGGER.debug("Stack {} is deleted {}", id, waiterResponse.matched().response().orElse(null));
-    }
-
-    @Override
-    public void register(String id) {
-        stacks.add(id);
+        LOGGER.debug("Stack {} is deleted {}", stack, waiterResponse.matched().response().orElse(null));
+        stack2Client.remove(stack);
+        client2stacks.get(cfClient).remove(stack);
     }
 
     public void close() {
-        cfClient.close();
+        client2stacks.forEach((client, strings) -> client.close());
     }
 
-    @Override
-    public void deployAndRegister(String templateContent, Map<String, String> parameters) {
-        register(deploy(templateContent, parameters));
+    public String deployAndRegister(CloudFormationClient cfClient, String templateContent, Map<String, String> parameters) {
+        String stack = deploy(cfClient, templateContent, parameters);
+        client2stacks.putIfAbsent(cfClient, new HashSet<>());
+        client2stacks.get(cfClient).add(stack);
+        stack2Client.put(stack, cfClient);
+        return stack;
     }
 
-    @Override
     public void undeployAll() {
-        stacks.forEach(this::undeploy);
-        stacks.clear();
+        stack2Client.forEach((stack, client) -> undeploy(stack));
     }
 }
