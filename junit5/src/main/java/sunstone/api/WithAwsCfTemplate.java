@@ -33,7 +33,9 @@ public @interface WithAwsCfTemplate {
      * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz} -
      * var is resolved from system properties.
      *
-     * If empty, {@code junit5.az.region} from {@code sunstone.properties} is used.
+     * If empty, {@code junit5.aws.region} from {@code sunstone.properties} is used.
+     *
+     * For the list of available regions see {@link software.amazon.awssdk.regions.Region}
      */
     String region() default "";
 

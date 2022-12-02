@@ -56,6 +56,8 @@ class AzureArmTemplateCloudDeploymentManager {
             armManager.resourceGroups().define(group)
                     .withRegion(region)
                     .create();
+        } else {
+            LOGGER.warn("Azure resource group '{}' already exists! It will be reused and deleted when tests arre finished.", group);
         }
 
         armManager.deployments().define(deploymentName)
@@ -109,13 +111,9 @@ class AzureArmTemplateCloudDeploymentManager {
         usedRG.remove(rgName);
     }
 
-    public void register(String group) {
-        usedRG.add(group);
-    }
-
     public void deployAndRegister(String group, String region, String templateContent, Map<String, String> parameters) throws IOException {
         deploy(templateContent, parameters, group, region);
-        register(group);
+        usedRG.add(group);
     }
 
     public void undeployAll() {

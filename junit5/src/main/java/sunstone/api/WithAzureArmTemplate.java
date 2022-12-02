@@ -59,6 +59,8 @@ public @interface WithAzureArmTemplate {
      * var is resolved from system properties.
      *
      * If empty, {@code junit5.az.region} from {@code sunstone.properties} is used.
+     *
+     * For the list of available regions see {@link com.azure.core.management.Region}
      */
     String region() default "";
 

@@ -30,8 +30,8 @@ import static sunstone.core.SunstoneStore.StoreWrapper;
  * Used by {@link SunstoneExtension} which delegate handling TestClass annotations such as {@link WithAzureArmTemplate}.
  * Lambda function to undeploy resources is also registered for the AfterAllCallback phase.
  * <p>
- * The class works classes {@link AzureArmTemplateCloudDeploymentManager} and {@link AwsCloudFormationCloudDeploymentManager}
- * that handle specific deploy method to the 3rd part cloud.
+ * The class works with classes {@link AzureArmTemplateCloudDeploymentManager} and {@link AwsCloudFormationCloudDeploymentManager}
+ * which handle deploy operation to particular cloud vendor.
  */
 class SunstoneCloudDeploy {
 
