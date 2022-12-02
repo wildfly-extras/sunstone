@@ -44,8 +44,7 @@ class SunstoneCloudDeploy {
 
     static void handleAwsCloudFormationAnnotations(ExtensionContext ctx) throws Exception {
         SunstoneStore store = StoreWrapper(ctx);
-        AwsCloudFormationCloudDeploymentManager deploymentManager = new AwsCloudFormationCloudDeploymentManager();
-        store.setAwsCfDemploymentManager(deploymentManager);
+        AwsCloudFormationCloudDeploymentManager deploymentManager = store.getAwsCfDemploymentManagerOrCreate();
         // lets close clients at the very end
         store.addSuiteLevelClosable(deploymentManager);
         WithAwsCfTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class);
@@ -75,8 +74,7 @@ class SunstoneCloudDeploy {
 
     static void handleAzureArmTemplateAnnotations(ExtensionContext ctx) throws Exception {
         SunstoneStore store = StoreWrapper(ctx);
-        AzureArmTemplateCloudDeploymentManager deploymentManager = new AzureArmTemplateCloudDeploymentManager(store.getAzureArmClientOrCreate());
-        store.setAzureArmTemplateDeploymentManager(deploymentManager);
+        AzureArmTemplateCloudDeploymentManager deploymentManager = store.getAzureArmTemplateDeploymentManagerOrCreate();
         WithAzureArmTemplate[] annotations = ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class);
         for (int i = 0; i < annotations.length; i++) {
             WithAzureArmTemplate annotation = annotations[i];

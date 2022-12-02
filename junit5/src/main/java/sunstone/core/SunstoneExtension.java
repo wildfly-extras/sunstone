@@ -22,7 +22,6 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback {
     @Override
     public void beforeAll(ExtensionContext ctx) throws Exception {
         SunstoneStore store = StoreWrapper(ctx);
-        store.initClosables();
 
         // cache Azure ARM
         if (AzureUtils.propertiesForArmClientArePresent()) {
@@ -48,9 +47,9 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback {
         var ref = new Object() {
             Exception e = null;
         };
-        StoreWrapper(ctx).closables().forEach(autoCloseable -> {
+        StoreWrapper(ctx).getClosablesOrCreate().forEach(closeable -> {
             try {
-                autoCloseable.close();
+                closeable.close();
             } catch (Exception e) {
                 if (ref.e == null) {
                     ref.e = e;

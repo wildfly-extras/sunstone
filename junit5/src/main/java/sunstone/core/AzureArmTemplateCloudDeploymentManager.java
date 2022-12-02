@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 
 /**
@@ -35,7 +35,7 @@ class AzureArmTemplateCloudDeploymentManager {
 
     AzureArmTemplateCloudDeploymentManager(AzureResourceManager arm) {
         armManager = arm;
-        usedRG = new HashSet<>();
+        usedRG = new ConcurrentSkipListSet<>();
     }
 
     Set<String> getUsedRG() {

@@ -12,13 +12,14 @@ import software.amazon.awssdk.services.cloudformation.model.OnFailure;
 import software.amazon.awssdk.services.cloudformation.model.Parameter;
 import software.amazon.awssdk.services.cloudformation.waiters.CloudFormationWaiter;
 
+import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Purpose: the class handles AWS CloudFormation template - deploy and undeploy the template to and from a stack.
@@ -27,15 +28,15 @@ import java.util.UUID;
  * <p>
  * CloudFormation client credentials are taken from Sunstone.properties. See {@link AwsUtils}.
  */
-class AwsCloudFormationCloudDeploymentManager implements AutoCloseable {
+class AwsCloudFormationCloudDeploymentManager implements Closeable {
     static Logger LOGGER = SunstoneJUnit5Logger.DEFAULT;
 
     private final Map<CloudFormationClient, Set<String>> client2stacks;
     private final Map<String, CloudFormationClient> stack2Client;
 
     AwsCloudFormationCloudDeploymentManager() {
-        client2stacks = new HashMap<>();
-        stack2Client = new HashMap<>();
+        client2stacks = new ConcurrentHashMap<>();
+        stack2Client = new ConcurrentHashMap<>();
     }
 
     String deploy(CloudFormationClient cfClient, String template, Map<String, String> parameters) {
@@ -88,7 +89,7 @@ class AwsCloudFormationCloudDeploymentManager implements AutoCloseable {
 
     public String deployAndRegister(CloudFormationClient cfClient, String templateContent, Map<String, String> parameters) {
         String stack = deploy(cfClient, templateContent, parameters);
-        client2stacks.putIfAbsent(cfClient, new HashSet<>());
+        client2stacks.putIfAbsent(cfClient, new ConcurrentSkipListSet<>());
         client2stacks.get(cfClient).add(stack);
         stack2Client.put(stack, cfClient);
         return stack;
