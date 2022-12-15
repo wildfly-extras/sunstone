@@ -15,20 +15,21 @@ import java.lang.annotation.Target;
 /**
  * Deploy Azure template
  * Deployed as into resource group defined in sunstone.properties.
- * Deployed in {@link BeforeAllCallback} and resource group is deleted and recreated in {@link  AfterAllCallback}
+ * Deployed in {@link BeforeAllCallback} and whole resource group is deleted and recreated in {@link  AfterAllCallback}
+ * or once the suite is finished (see {@link WithAzureArmTemplate#perSuite()})
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Repeatable(WithAzureArmTemplateRepetable.class)
+@Repeatable(WithAzureArmTemplateRepeatable.class)
 @ExtendWith({SunstoneExtension.class})
 @Inherited
 public @interface WithAzureArmTemplate {
     String template();
 
     /**
-     * Array of parameters
+     * Array of parameters.
      *
-     * Values may can be an expression - 'value-${variable:default}' - var is resolved from system properties.
+     * Values may can be an expression - {@code abc-${variable:default}-xyz} - var is resolved from system properties.
      * <p>
      * Not all types are supported https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/data-types
      * Since all parameters are string, the Sunstone looks into the template to determine the type and parse the value
@@ -43,4 +44,34 @@ public @interface WithAzureArmTemplate {
      * </ul>
      */
     Parameter[] parameters() default {};
+
+    /**
+     * Resource group that should be used for deployment. Expression is allowed, e.g. {@code abc-${var:default}-xyz} -
+     * var is resolved from system properties. Resources in a group share lifecycle and the group is deleted as it is for
+     * undeploy operation.
+     *
+     * If empty, {@code junit5.az.group} from {@code sunstone.properties} is used.
+     */
+    String group() default "";
+
+    /**
+     * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz} -
+     * var is resolved from system properties.
+     *
+     * If empty, {@code junit5.az.region} from {@code sunstone.properties} is used.
+     *
+     * For the list of available regions see {@link com.azure.core.management.Region}
+     */
+    String region() default "";
+
+    /**
+     * <p>
+     * True if resources supposed to be managed at suite level.
+     * <p>
+     * The template is deployed only once and undeployed once the suite is done.
+     * <p>
+     * Suite is a set of test classes that runs in a bulk not interfering with other suites (sets of test classes).
+     * Suite may be defined as a surefire run or as {@link org.junit.platform.suite.api.Suite}
+     */
+    boolean perSuite() default false;
 }

@@ -11,7 +11,6 @@ import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
-import software.amazon.awssdk.services.ec2.model.Ec2Exception;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.Reservation;
@@ -29,29 +28,36 @@ class AwsUtils {
 
     static boolean propertiesForAwsClientArePresent() {
         return objectProperties.getProperty(JUnit5Config.Aws.ACCESS_KEY_ID) != null
-                && objectProperties.getProperty(JUnit5Config.Aws.SECRET_ACCESS_KEY) != null
-                && objectProperties.getProperty(JUnit5Config.Aws.REGION) != null;
+                && objectProperties.getProperty(JUnit5Config.Aws.SECRET_ACCESS_KEY) != null;
     }
 
-    static CloudFormationClient getCloudFormationClient() {
+    static Region getAndCheckRegion(String regionStr) {
+        Region region = Region.of(regionStr);
+        if (region == null) {
+            throw new IllegalArgumentException("Unkown region " + regionStr);
+        }
+        return region;
+    }
+
+    static CloudFormationClient getCloudFormationClient(String region) {
         CloudFormationClient cfClient = CloudFormationClient.builder()
-                .region(Region.of(objectProperties.getProperty(JUnit5Config.Aws.REGION)))
+                .region(getAndCheckRegion(region))
                 .credentialsProvider(getCredentialsProvider())
                 .build();
         return cfClient;
     }
 
-    static Ec2Client getEC2Client() {
+    static Ec2Client getEC2Client(String region) {
         Ec2Client ec2Client = Ec2Client.builder()
-                .region(Region.of(objectProperties.getProperty(JUnit5Config.Aws.REGION)))
+                .region(getAndCheckRegion(region))
                 .credentialsProvider(getCredentialsProvider())
                 .build();
         return ec2Client;
     }
 
-    static S3Client getS3Client() {
+    static S3Client getS3Client(String region) {
         S3Client s3Client = S3Client.builder()
-                .region(Region.of(objectProperties.getProperty(JUnit5Config.Aws.REGION)))
+                .region(getAndCheckRegion(region))
                 .credentialsProvider(getCredentialsProvider())
                 .build();
         return s3Client;

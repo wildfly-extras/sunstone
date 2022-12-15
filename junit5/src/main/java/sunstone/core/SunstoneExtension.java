@@ -4,7 +4,6 @@ package sunstone.core;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import sunstone.api.WithAwsCfTemplate;
 import sunstone.api.WithAzureArmTemplate;
 
@@ -23,29 +22,21 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback {
     @Override
     public void beforeAll(ExtensionContext ctx) throws Exception {
         SunstoneStore store = StoreWrapper(ctx);
-        store.initClosables();
 
         // cache Azure ARM
         if (AzureUtils.propertiesForArmClientArePresent()) {
-            store.setAzureArmClient(AzureUtils.getResourceManager());
         }
 
         if (ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class).length > 0) {
             if (!AzureUtils.propertiesForArmClientArePresent()) {
-                throw new RuntimeException("Missing credentials / rg / region for Azure.");
+                throw new RuntimeException("Missing credentials for Azure.");
             }
             SunstoneCloudDeploy.handleAzureArmTemplateAnnotations(ctx);
         }
 
-        if (AwsUtils.propertiesForAwsClientArePresent()) {
-            CloudFormationClient cloudFormationClient = AwsUtils.getCloudFormationClient();
-            store.setAwsCfClient(cloudFormationClient);
-            store.addClosable(cloudFormationClient);
-        }
-
         if (ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class).length > 0) {
             if (!AwsUtils.propertiesForAwsClientArePresent()) {
-                throw new RuntimeException("Missing credentials / region for AWS.");
+                throw new RuntimeException("Missing credentials for AWS.");
             }
             SunstoneCloudDeploy.handleAwsCloudFormationAnnotations(ctx);
         }
@@ -56,9 +47,9 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback {
         var ref = new Object() {
             Exception e = null;
         };
-        StoreWrapper(ctx).closables().forEach(autoCloseable -> {
+        StoreWrapper(ctx).getClosablesOrCreate().forEach(closeable -> {
             try {
-                autoCloseable.close();
+                closeable.close();
             } catch (Exception e) {
                 if (ref.e == null) {
                     ref.e = e;

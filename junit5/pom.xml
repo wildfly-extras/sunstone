@@ -16,13 +16,24 @@
     <properties>
 
         <version.junit.jupiter>5.8.2</version.junit.jupiter>
+        <version.junit.platform>1.8.1</version.junit.platform>
         <version.maven-compiler-plugin>3.3</version.maven-compiler-plugin>
 
         <!-- Azure SDK dependencies & other due to dependencyManagement issues with Azure SDK-->
-        <version.azure-resourcemanager>2.18.0</version.azure-resourcemanager>
-        <version.com.azure.bom>1.2.5</version.com.azure.bom>
+        <!-- Based on https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/resourcemanager#include-the-package-->
+        <version.azure-resourcemanager>2.20.0</version.azure-resourcemanager>
+        <version.com.azure.azure-identity>1.6.1</version.com.azure.azure-identity>
+        <version.com.azure.azure-core-http-netty>1.12.6</version.com.azure.azure-core-http-netty>
+
+        <!-- Azure SDK uses okhttp3 which is also brought by Sunstone core...we need to find suitable version... -->
+        <version.com.squareup.okhttp3>4.10.0</version.com.squareup.okhttp3>
+
+        <!-- AWS SDK dependencies        -->
+        <version.software.amazon.awssdk.bom>2.17.174</version.software.amazon.awssdk.bom>
 
         <version.com.google.code.gson>2.9.0</version.com.google.code.gson>
+
+        <version.org.assertj>3.23.1</version.org.assertj>
 
     </properties>
     <build>
@@ -35,6 +46,23 @@
                     <trimStackTrace>false</trimStackTrace>
                     <testFailureIgnore>true</testFailureIgnore>
                     <failIfNoTests>false</failIfNoTests>
+                    <includes>
+                        <!--
+                        These are surefire default values explicitly stated
+                        Why? There are suite tests (@Suite) that select several test classes not following any of following pattern.
+                        Those selected classes can not be run outside of @Suite
+
+                        So if you need to change includes mind those cases!
+                        -->
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                        <include>**/*TestCase.java</include>
+                    </includes>
+                    <excludes>
+                        <!-- These should not be run alone since they are supposed to be run in a suite -->
+                        <exclude>**/suite/tests/*.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
@@ -44,19 +72,10 @@
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>2.17.174</version>
+                <version>${version.software.amazon.awssdk.bom}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/com.azure/azure-sdk-bom -->
-            <dependency>
-                <groupId>com.azure</groupId>
-                <artifactId>azure-sdk-bom</artifactId>
-                <version>${version.com.azure.bom}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -68,15 +87,26 @@
 
         <!--        Azure-->
         <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-identity</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.azure.resourcemanager</groupId>
             <artifactId>azure-resourcemanager</artifactId>
             <version>${version.azure-resourcemanager}</version>
         </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>${version.com.azure.azure-identity}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-core-http-netty</artifactId>
+            <version>${version.com.azure.azure-core-http-netty}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${version.com.squareup.okhttp3}</version>
+        </dependency>
 
         <!--        AWS-->
         <dependency>
@@ -106,12 +136,21 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${version.junit.jupiter}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>${version.junit.jupiter}</version>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>${version.junit.platform}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${version.org.assertj}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

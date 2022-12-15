@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    Generator: "former2"
+Description: ""
+Parameters:
+    keyTag:
+        Type: "String"
+        Default: sunstoneKeyPair"
+    keyName:
+        Type: "String"
+        Default: sunstoneKeyPair"
+
+Resources:
+    EC2KeyPair:
+        Type: "AWS::EC2::KeyPair"
+        Properties:
+            Tags:
+                -   Key: "tag"
+                    Value: !Ref keyTag
+            KeyName: !Ref keyName
+            KeyType: "rsa"
