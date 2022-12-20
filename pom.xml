@@ -51,7 +51,7 @@
         <version.jclouds.labs.azurecompute>2.1.1</version.jclouds.labs.azurecompute>
         <version.surefire>2.19.1</version.surefire>
         <version.commons.lang>3.4</version.commons.lang>
-        <version.commons.io>2.4</version.commons.io>
+        <version.commons.io>2.7</version.commons.io>
         <version.guava>27.1-jre</version.guava>
         <version.slf4j>1.7.21</version.slf4j>
         <version.logback>1.0.13</version.logback>
