@@ -24,7 +24,7 @@ import java.util.Map;
 public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
     @Override
     public void deploy(Annotation annotation, ExtensionContext ctx) {
-        verifyClass(annotation);
+        verify(annotation);
         WithAzureArmTemplate armTemplateDefinition = (WithAzureArmTemplate) annotation;
 
         AzureSunstoneStore store = AzureSunstoneStore.get(ctx);
@@ -63,9 +63,10 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
         }
     }
 
-    private void verifyClass(Annotation clazz) {
+    private void verify(Annotation clazz) {
         if (!AzureUtils.propertiesForArmClientArePresent()) {
             throw new RuntimeException("Missing credentials for Azure.");
         }
+        WithAzureArmTemplate.class.isAssignableFrom(clazz.getClass());
     }
 }

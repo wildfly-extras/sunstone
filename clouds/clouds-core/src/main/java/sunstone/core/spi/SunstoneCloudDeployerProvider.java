@@ -2,6 +2,8 @@ package sunstone.core.spi;
 
 import sunstone.core.api.SunstoneCloudDeployer;
 
+import java.util.Optional;
+
 public interface SunstoneCloudDeployerProvider {
-    SunstoneCloudDeployer create(Class annotation);
+    Optional<SunstoneCloudDeployer> create(Class annotation);
 }

@@ -5,12 +5,14 @@ import sunstone.api.WithAwsCfTemplate;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 
+import java.util.Optional;
+
 public class AwsSunstoneDeployerProvider implements SunstoneCloudDeployerProvider {
     @Override
-    public SunstoneCloudDeployer create(Class annotation) {
+    public Optional<SunstoneCloudDeployer> create(Class annotation) {
         if (WithAwsCfTemplate.class.isAssignableFrom(annotation)) {
-            return new AwsSunstoneDeployer();
+            return Optional.of(new AwsSunstoneDeployer());
         }
-        return null;
+        return Optional.empty();
     }
 }

@@ -4,9 +4,11 @@ package sunstone.core;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 
+import java.util.Optional;
+
 public class TestSunstoneDeployerProvider implements SunstoneCloudDeployerProvider {
     @Override
-    public SunstoneCloudDeployer create(Class annotation) {
-        return new TestSunstoneDeployer();
+    public Optional<SunstoneCloudDeployer> create(Class annotation) {
+        return Optional.of(new TestSunstoneDeployer());
     }
 }

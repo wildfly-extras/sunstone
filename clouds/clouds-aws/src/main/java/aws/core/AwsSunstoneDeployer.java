@@ -24,7 +24,7 @@ import java.util.Map;
 public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
     @Override
     public void deploy(Annotation annotation, ExtensionContext ctx) {
-        verifyClass(annotation);
+        verify(annotation);
         WithAwsCfTemplate awsTemplateDefinition = (WithAwsCfTemplate) annotation;
 
         AwsSunstoneStore store = AwsSunstoneStore.get(ctx);
@@ -57,10 +57,10 @@ public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
         }
     }
 
-    private void verifyClass(Annotation clazz) {
+    private void verify(Annotation clazz) {
         if (!AwsUtils.propertiesForAwsClientArePresent()) {
             throw new RuntimeException("Missing credentials for AWS.");
         }
-
+        WithAwsCfTemplate.class.isAssignableFrom(clazz.getClass());
     }
 }

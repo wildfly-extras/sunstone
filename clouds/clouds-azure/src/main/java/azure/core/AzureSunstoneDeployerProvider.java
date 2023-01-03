@@ -5,12 +5,14 @@ import sunstone.api.WithAzureArmTemplate;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 
+import java.util.Optional;
+
 public class AzureSunstoneDeployerProvider implements SunstoneCloudDeployerProvider {
     @Override
-    public SunstoneCloudDeployer create(Class annotation) {
+    public Optional<SunstoneCloudDeployer> create(Class annotation) {
         if (WithAzureArmTemplate.class.isAssignableFrom(annotation)) {
-            return new AzureSunstoneDeployer();
+            return Optional.of(new AzureSunstoneDeployer());
         }
-        return null;
+        return Optional.empty();
     }
 }
