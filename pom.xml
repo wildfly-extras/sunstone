@@ -73,7 +73,7 @@
         <module>core</module>
         <module>wildfly</module>
         <module>arquillian</module>
-        <module>junit5</module>
+        <module>clouds</module>
     </modules>
 
     <scm>
