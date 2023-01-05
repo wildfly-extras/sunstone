@@ -1,0 +1,176 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.wildfly.extras.sunstone</groupId>
+        <artifactId>sunstone-parent</artifactId>
+        <version>1.2.4-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>sunstone-clouds-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+
+    <modules>
+        <module>clouds-core</module>
+        <module>clouds-azure</module>
+        <module>clouds-aws</module>
+    </modules>
+
+
+
+    <properties>
+
+
+        <version.slf4j>1.7.21</version.slf4j>
+        <version.logback>1.0.13</version.logback>
+
+        <version.junit.jupiter>5.8.2</version.junit.jupiter>
+        <version.junit.platform>1.8.1</version.junit.platform>
+        <version.maven-compiler-plugin>3.3</version.maven-compiler-plugin>
+
+        <!-- Azure SDK dependencies & other due to dependencyManagement issues with Azure SDK-->
+        <!-- Based on https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/resourcemanager#include-the-package-->
+        <version.azure-resourcemanager>2.20.0</version.azure-resourcemanager>
+        <version.com.azure.azure-identity>1.6.1</version.com.azure.azure-identity>
+        <version.com.azure.azure-core-http-netty>1.12.6</version.com.azure.azure-core-http-netty>
+
+        <!-- Azure SDK uses okhttp3 which is also brought by Sunstone core...we need to find suitable version... -->
+        <version.com.squareup.okhttp3>4.10.0</version.com.squareup.okhttp3>
+
+        <!-- AWS SDK dependencies        -->
+        <version.software.amazon.awssdk.bom>2.17.174</version.software.amazon.awssdk.bom>
+
+        <version.com.google.code.gson>2.9.0</version.com.google.code.gson>
+
+        <version.org.assertj>3.23.1</version.org.assertj>
+        <version.maven-surefire-plugin>3.0.0-M7</version.maven-surefire-plugin>
+
+    </properties>
+
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.maven-surefire-plugin}</version>
+                    <configuration>
+                        <trimStackTrace>false</trimStackTrace>
+                        <testFailureIgnore>true</testFailureIgnore>
+                        <failIfNoTests>false</failIfNoTests>
+                        <includes>
+                            <!--
+                            These are surefire default values explicitly stated
+                            Why? There are suite tests (@Suite) that select several test classes not following any of following pattern.
+                            Those selected classes can not be run outside of @Suite
+
+                            So if you need to change includes mind those cases!
+                            -->
+                            <include>**/Test*.java</include>
+                            <include>**/*Test.java</include>
+                            <include>**/*Tests.java</include>
+                            <include>**/*TestCase.java</include>
+                        </includes>
+                        <excludes>
+                            <!-- These should not be run alone since they are supposed to be run in a suite -->
+                            <exclude>**/suite/tests/*.java</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+           <!-- AWS-->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${version.software.amazon.awssdk.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--            GSON -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${version.com.google.code.gson}</version>
+            </dependency>
+
+            <!--        Azure-->
+            <dependency>
+                <groupId>com.azure.resourcemanager</groupId>
+                <artifactId>azure-resourcemanager</artifactId>
+                <version>${version.azure-resourcemanager}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${version.com.azure.azure-identity}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-core-http-netty</artifactId>
+                <version>${version.com.azure.azure-core-http-netty}</version>
+            </dependency>
+
+<!--            logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${version.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${version.logback}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.extras.sunstone</groupId>
+                <artifactId>sunstone-core</artifactId>
+            </dependency>
+
+            <!--        JUnit5-->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${version.junit.jupiter}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite-api</artifactId>
+                <version>${version.junit.platform}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${version.junit.jupiter}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite-engine</artifactId>
+                <version>${version.junit.platform}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.org.assertj}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
+</project>

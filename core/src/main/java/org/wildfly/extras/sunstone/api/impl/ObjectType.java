@@ -7,7 +7,7 @@ package org.wildfly.extras.sunstone.api.impl;
 public enum ObjectType implements ObjectPropertiesType {
     CLOUD_PROVIDER("cloud.provider", "cloud provider"),
     NODE("node", "node"),
-    JUNIT5("junit5", "JUnit5");
+    CLOUDS("clouds", "Clouds");
 
     private final String propertyPrefix;
     private final String humanReadableName;
