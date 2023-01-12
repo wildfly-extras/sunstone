@@ -28,14 +28,6 @@
             <artifactId>sunstone-clouds-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!-- AWS-->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>bom</artifactId>
-            <version>${version.software.amazon.awssdk.bom}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
 
         <!--        Azure-->
         <dependency>
@@ -89,6 +81,27 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+        </dependency>
+
+        <!-- Creaper -->
+        <dependency>
+            <groupId>org.wildfly.extras.creaper</groupId>
+            <artifactId>creaper-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.extras.creaper</groupId>
+            <artifactId>creaper-commands</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.core</groupId>
+            <artifactId>wildfly-controller-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.core</groupId>
+            <artifactId>wildfly-cli</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

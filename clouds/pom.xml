@@ -78,6 +78,7 @@
                         <excludes>
                             <!-- These should not be run alone since they are supposed to be run in a suite -->
                             <exclude>**/suite/tests/*.java</exclude>
+                            <exclude>**/suitetests/*.java</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
