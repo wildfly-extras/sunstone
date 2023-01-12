@@ -7,6 +7,7 @@ import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
+import com.azure.resourcemanager.appservice.models.WebAppBasic;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,7 +18,7 @@ import sunstone.core.TimeoutUtils;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.Set;
+import java.util.Optional;
 
 public class AzureUtils {
     private static ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
@@ -43,24 +44,16 @@ public class AzureUtils {
                 && objectProperties.getProperty(AzureConfig.PASSWORD) != null;
     }
 
-    static VirtualMachine findAzureVM(AzureResourceManager arm, String name, Set<String> resourceGroups) {
-        for (String rg : resourceGroups) {
-            VirtualMachine vm = arm.virtualMachines().getByResourceGroup(rg, name);
-            if (vm != null) {
-                return vm;
-            }
-        }
-        return null;
+    static Optional<VirtualMachine> findAzureVM(AzureResourceManager arm, String name, String resourceGroup) {
+        return arm.virtualMachines().listByResourceGroup(resourceGroup).stream()
+                .filter(vm -> vm.name().equals(name))
+                .findAny();
     }
 
-    static WebApp findAzureWebApp(AzureResourceManager arm, String name, Set<String> resourceGroups) {
-        for (String rg : resourceGroups) {
-            WebApp app = arm.webApps().getByResourceGroup(rg, name);
-            if (app != null) {
-                return app;
-            }
-        }
-        return null;
+    static Optional<WebAppBasic> findAzureWebApp(AzureResourceManager arm, String name, String resourceGroup) {
+        return arm.webApps().listByResourceGroup(resourceGroup) .stream()
+                .filter(webApp -> webApp.name().equals(name))
+                .findAny();
     }
 
     static void waitForWebApp(WebApp app) throws InterruptedException, IOException {
