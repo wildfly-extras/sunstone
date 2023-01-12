@@ -17,6 +17,8 @@ import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.Tag;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import java.util.Optional;
+
 class AwsUtils {
 
     private static ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
@@ -63,7 +65,7 @@ class AwsUtils {
         return s3Client;
     }
 
-    static Instance findEc2InstanceByNameTag(Ec2Client client, String name) {
+    static Optional<Instance> findEc2InstanceByNameTag(Ec2Client client, String name) {
         Filter runningInstancesFilter = Filter.builder()
                 .name("instance-state-name")
                 .values("running")
@@ -83,11 +85,11 @@ class AwsUtils {
             for (Instance instance : reservation.instances()) {
                 for (Tag tag : instance.tags()) {
                     if (tag.key().equals("Name") && tag.value().equals(name)) {
-                        return instance;
+                        return Optional.of(instance);
                     }
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 }
