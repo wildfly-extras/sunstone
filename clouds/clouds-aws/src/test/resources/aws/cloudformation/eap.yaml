@@ -101,10 +101,6 @@ Resources:
 
                         yum install -y unzip python3-pip
                         pip3 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
-                        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                        unzip -q awscliv2.zip
-                        chmod +x ./aws/dist/aws
-                        export PATH=$PATH:`pwd`/aws/dist
 
                         INTERNAL_IP_ADDRESS=`ip addr show | grep eth0 -A 2 | head -n 3 | tail -n 1 | awk '{ print $2 }' | sed "s-/24--g" | cut -d'/' -f1`
                         echo $INTERNAL_IP_ADDRESS > /root/internal-ip-address.txt

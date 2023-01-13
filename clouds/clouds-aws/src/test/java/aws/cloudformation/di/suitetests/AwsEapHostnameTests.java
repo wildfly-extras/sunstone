@@ -14,8 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Shared resources among other DI tests.
+ * Shared resources (EAP on AWS) among other DI tests - perSuite is true
  * Only one test case, since we don't want Sunstone to create lots of clients.
+ * If you inject non-static field, they are injected per test case due to isolation and how JUnit5 framework works.
+ * So the idea is to have only one testcase due to performance.
  */
 @WithAwsCfTemplate(parameters = {
         @Parameter(k = "instanceName", v = instanceName)
