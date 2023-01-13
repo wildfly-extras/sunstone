@@ -17,9 +17,10 @@ import java.lang.annotation.Target;
  * <br>
  * For more information about possible injection, see {@link AwsInjectionAnnotation}
  */
-// represented by AzureIdentifiableSunstoneResource#AUTO
+// represented by AwsIdentifiableSunstoneResource#AUTO
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @AwsInjectionAnnotation
 public @interface AwsAutoResolve {
+    String region() default "";
 }

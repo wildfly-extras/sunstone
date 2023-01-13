@@ -3,7 +3,6 @@ package aws.core;
 
 import aws.core.identification.AwsAutoResolve;
 import aws.core.identification.AwsEc2Instance;
-import aws.core.identification.AwsRegion;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import org.wildfly.extras.sunstone.api.impl.ObjectType;
@@ -26,7 +25,7 @@ import static org.wildfly.extras.sunstone.api.impl.ObjectProperties.replaceSyste
 /**
  * Used by {@link AwsSunstoneResourceInjector}
  *
- * Enum of Azure resources that can be identified by {@link AwsEc2Instance} and so on and what field types are supported
+ * Enum of Aws resources that can be identified by {@link AwsEc2Instance} and so on and what field types are supported
  * for such identification by this module. Basically represent injection annotations and serves as a factory to get resources.
  *
  * I.e. for {@link #AUTO}, which effectively mean {@link AwsAutoResolve} is used, {@link Ec2Client} and {@link S3Client}
@@ -38,24 +37,6 @@ import static org.wildfly.extras.sunstone.api.impl.ObjectProperties.replaceSyste
  */
 enum AwsIdentifiableSunstoneResource {
     UNSUPPORTED(null),
-
-    REGION(AwsRegion.class) {
-        final Class[] injectionSupport = new Class[] {S3Client.class, Ec2Client.class};
-
-        @Override
-        boolean isTypeSupportedForInject(Class<?> type) {
-            return Arrays.stream(injectionSupport).anyMatch(clazz -> clazz.isAssignableFrom(type));
-        }
-
-        @Override
-        <T> T get(Annotation injectionAnnotation, AwsSunstoneStore store, Class<T> clazz) throws SunstoneException {
-            if(!getRepresentedInjectionAnnotation().isAssignableFrom(injectionAnnotation.annotationType())) {
-                throw new IllegalArgumentSunstoneException(format("Expected %s annotation type but got %s",
-                        getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
-            }
-            return clazz.cast(replaceSystemProperties(((AwsRegion) injectionAnnotation).value()));
-        }
-    },
 
     /**
      * Empty identification - e.g. {@link AwsAutoResolve}
@@ -74,7 +55,7 @@ enum AwsIdentifiableSunstoneResource {
     },
 
     /**
-     * Azure Virtual machine instance identification, representation for {@link Instance}
+     * Aws EC2 instance identification, representation for {@link Instance}
      *
      * Injectable: {@link Hostname} and {@link OnlineManagementClient}
      *
@@ -114,7 +95,7 @@ enum AwsIdentifiableSunstoneResource {
 
     public String toString() {
         if (representedInjectionAnnotation == null) {
-            return "unsupported AzureIdentifiableSunstoneResource type";
+            return "unsupported AwsIdentifiableSunstoneResource type";
         } else {
             return format("%s representing %s injection annotation", this.name(), representedInjectionAnnotation.getName());
         }
@@ -136,8 +117,6 @@ enum AwsIdentifiableSunstoneResource {
     public static AwsIdentifiableSunstoneResource getType(Annotation annotation) {
         if(AwsEc2Instance.class.isAssignableFrom(annotation.annotationType())) {
             return EC2_INSTANCE;
-        } else if(AwsRegion.class.isAssignableFrom(annotation.annotationType())) {
-            return REGION;
         } else if(AwsAutoResolve.class.isAssignableFrom(annotation.annotationType())) {
             return AUTO;
         } else {

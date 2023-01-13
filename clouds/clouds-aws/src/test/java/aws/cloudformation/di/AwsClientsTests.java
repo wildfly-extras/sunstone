@@ -2,7 +2,6 @@ package aws.cloudformation.di;
 
 
 import aws.core.identification.AwsAutoResolve;
-import aws.core.identification.AwsRegion;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,25 +15,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SunstoneExtension.class)
 public class AwsClientsTests {
 
-    @AwsRegion(region)
+    @AwsAutoResolve(region = region)
     static Ec2Client staticEC2ClientWithRegion;
 
     @AwsAutoResolve
     static Ec2Client staticEC2Client;
 
-    @AwsRegion(region)
+    @AwsAutoResolve(region = region)
     static S3Client staticS3ClientWithRegion;
 
     @AwsAutoResolve
     static S3Client staticS3Client;
 
-    @AwsRegion(region)
+    @AwsAutoResolve(region = region)
     Ec2Client ec2ClientWithRegion;
 
     @AwsAutoResolve
     Ec2Client ec2Client;
 
-    @AwsRegion(region)
+    @AwsAutoResolve(region = region)
     S3Client s3ClientWithRegion;
 
     @AwsAutoResolve

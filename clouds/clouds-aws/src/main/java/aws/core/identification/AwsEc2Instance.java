@@ -13,13 +13,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to identify Azure virtual machine for injection purposes.
+ * Annotation used to identify AWS EC2 instance (VM) for injection purposes.
  * <br>
  * Injectable: {@link Hostname} and {@link OnlineManagementClient}
  * <br>
  * For more information about possible injection, see {@link AwsInjectionAnnotation}
  */
-// represented by AzureIdentifiableSunstoneResource#VM_INSTANCE
+// represented by AwsIdentifiableSunstoneResource#EC2_INSTANCE
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @AwsInjectionAnnotation

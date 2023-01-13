@@ -12,11 +12,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Aggregates {@link SunstoneInjectionAnnotation} annotation for Azure module purposes.
+ * Aggregates {@link SunstoneInjectionAnnotation} annotation for AWS module purposes.
  * <br>
- * Used to determine that the field has annotation marking Azure module ability to inject to the field.
+ * Used to determine that the field has annotation marking AWS module ability to inject to the field.
  * <br>
- * This is for JavaDoc only. Aggregates information about what types can be injected by this Azure module and for what
+ * This JavaDoc also aggregates information about what types can be injected by this AWS module and for what
  * cloud resources (identifiable by special annotation)
  * <br>
  * <br>
@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * <table>
  *     <tr>
  *         <th>Type</th>
- *         <th>Supported Azure identification annotations</th>
+ *         <th>Supported Aws identification annotations</th>
  *     </tr>
  *     <tr>
  *         <td>

@@ -2,6 +2,7 @@ package aws.core;
 
 
 import aws.core.AwsIdentifiableSunstoneResource.Identification;
+import aws.core.identification.AwsAutoResolve;
 import aws.core.identification.AwsEc2Instance;
 import aws.core.identification.AwsInjectionAnnotation;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -27,14 +28,15 @@ import java.util.Objects;
 
 import static aws.core.AwsIdentifiableSunstoneResource.EC2_INSTANCE;
 import static java.lang.String.format;
+import static org.wildfly.extras.sunstone.api.impl.ObjectProperties.*;
 
 
 /**
- * Handles injecting object related to Azure cloud.
+ * Handles injecting object related to Aws cloud.
  *
  * Heavily uses {@link AwsIdentifiableSunstoneResource} to determine what should be injected into i.e. {@link Hostname}
  *
- * To retrieve Azure cloud resources, the class relies on {@link AwsIdentifiableSunstoneResource#get(Annotation, AwsSunstoneStore, Class)}.
+ * To retrieve Aws cloud resources, the class relies on {@link AwsIdentifiableSunstoneResource#get(Annotation, AwsSunstoneStore, Class)}.
  * If needed, it can inject resources directly or form the resources (get a hostname of AZ VM and create a {@link Hostname}) lambda
  *
  * Closable resources are registered in root extension store so that they are closed once the root store is closed (end of suite)
@@ -70,23 +72,23 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
 
     static Ec2Client resolveEc2ClientDI(AwsIdentifiableSunstoneResource.Identification identification, AwsSunstoneStore store) throws SunstoneException {
         Ec2Client client;
-        if (identification.type == AwsIdentifiableSunstoneResource.REGION) {
-            client = AwsUtils.getEC2Client(identification.get(store, String.class));
+        if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
+            AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
+            client = AwsUtils.getEC2Client(annotation.region().isEmpty() ? objectProperties.getProperty(AwsConfig.REGION) : replaceSystemProperties(annotation.region()));
         } else {
-            client = AwsUtils.getEC2Client(objectProperties.getProperty(AwsConfig.REGION));
+            throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }
-        store.addClosable(client);
         return client;
     }
 
     static S3Client resolveS3ClientDI(Identification identification, AwsSunstoneStore store) throws SunstoneException {
         S3Client client;
-        if (identification.type == AwsIdentifiableSunstoneResource.REGION) {
-            client = AwsUtils.getS3Client(identification.get(store, String.class));
+        if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
+            AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
+            client = AwsUtils.getS3Client(annotation.region().isEmpty() ? objectProperties.getProperty(AwsConfig.REGION) : replaceSystemProperties(annotation.region()));
         } else {
-            client = AwsUtils.getS3Client(objectProperties.getProperty(AwsConfig.REGION));
+            throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }
-        store.addClosable(client);
         return client;
     }
 
@@ -113,11 +115,15 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
             Objects.requireNonNull(injected, "Unable to determine hostname.");
         } else if (Ec2Client.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
-            injected = resolveEc2ClientDI(identification, store);
+            Ec2Client client = resolveEc2ClientDI(identification, store);
+            store.addClosable(client);
+            injected = client;
             Objects.requireNonNull(injected, "Unable to determine AWS EC2 client.");
         } else if (S3Client.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
-            injected = resolveS3ClientDI(identification, store);
+            S3Client client = resolveS3ClientDI(identification, store);
+            store.addClosable(client);
+            injected = client;
             Objects.requireNonNull(injected, "Unable to determine AWS S3 client.");
         } else if (OnlineManagementClient.class.isAssignableFrom(fieldType)) {
             OnlineManagementClient client = resolveOnlineManagementClientDI(identification, store);

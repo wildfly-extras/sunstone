@@ -14,8 +14,8 @@ import java.util.Optional;
 public class AwsSunstoneResourceInjectorProvider implements SunstoneResourceInjectorProvider {
     @Override
     public Optional<SunstoneResourceInjector> create(Field field) {
-        // if field is annotated by @SunstoneResource or annotation annotated by @AzureInjectionAnnotation and field
-        // type is supported for that kind of injection, then AzureSunstoneResourceInjector should be able to inject
+        // if field is annotated by @SunstoneResource or annotation annotated by @AwsInjectionAnnotation and field
+        // type is supported for that kind of injection, then AwsSunstoneResourceInjector should be able to inject
         if (AwsSunstoneResourceInjector.canInject(field)) {
             return Optional.of(new AwsSunstoneResourceInjector());
         } else {
