@@ -68,6 +68,10 @@ enum AwsIdentifiableSunstoneResource {
         boolean isTypeSupportedForInject(Class<?> type) {
             return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
         }
+        @Override
+        boolean deployToWildFlySupported() {
+            return true;
+        }
 
         @Override
         <T> T get(Annotation injectionAnnotation, AwsSunstoneStore store, Class<T> clazz) throws SunstoneException {
@@ -104,6 +108,10 @@ enum AwsIdentifiableSunstoneResource {
     private static final ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
 
     boolean isTypeSupportedForInject(Class<?> type) {
+        return false;
+    }
+
+    boolean deployToWildFlySupported() {
         return false;
     }
     <T> T get(Annotation injectionAnnotation, AwsSunstoneStore store, Class<T> clazz) throws SunstoneException {
