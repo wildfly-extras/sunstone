@@ -75,6 +75,15 @@ public class SunstoneStore {
     public void addClosable(Closeable closable) {
         getClosablesOrCreate().push(closable);
     }
+    public void addClosable(AutoCloseable closable) {
+        getClosablesOrCreate().push(() -> {
+            try {
+                closable.close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
     protected ExtensionContext getContext() {
         return context;
