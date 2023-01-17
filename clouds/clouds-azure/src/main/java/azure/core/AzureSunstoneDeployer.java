@@ -12,8 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 /**
- * Purpose: handles creating resources on clouds. Resources may be defined by AWS CloudFormation template,
- * Azure template, JCloud Sunstone properties, ...
+ * Purpose: handles creating resources on clouds. Resources may be defined by Azure ARM template
  * <p>
  * Used by {@link SunstoneExtension} which delegate handling TestClass annotations such as {@link WithAzureArmTemplate}.
  * Lambda function to undeploy resources is also registered for the AfterAllCallback phase.
@@ -40,7 +39,7 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
             }
             String region = resolveOrGetFromSunstoneProperties(armTemplateDefinition.region(), AzureConfig.REGION);
             if (region == null) {
-                throw new IllegalArgumentException("Region for AWS template is not defined. It must be specified either"
+                throw new IllegalArgumentException("Region for Azure ARM template is not defined. It must be specified either"
                         + "in the annotation or in sunstone.properties file");
             }
 
