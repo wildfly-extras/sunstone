@@ -20,6 +20,8 @@ import java.lang.annotation.Target;
 public @interface Deployment {
     /**
      * Name of the deployment. Some resources may not support the name and will ignore it.
+     * <br>
+     * For example Azure App services - the way Azure platform works, it is always deployed as ROOT.war
      */
     String name() default "";
 }

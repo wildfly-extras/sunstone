@@ -2,7 +2,6 @@ package azure.core.identification;
 
 
 import sunstone.api.Deployment;
-import sunstone.api.SunstoneArchiveDeployTargetAnotation;
 import sunstone.api.inject.Hostname;
 
 import java.lang.annotation.ElementType;
@@ -17,14 +16,14 @@ import java.lang.annotation.Target;
  * <br>
  * For more information about possible injection, see {@link AzureInjectionAnnotation}
  * <br>
- * Archive deploy operation (using {@link sunstone.api.Deployment}) is supported always as a <b>ROOT.war</b> ignoring {@link Deployment#name()}.
+ * Archive deploy operation (using {@link sunstone.api.Deployment}) is supported. Always deployed as a <b>ROOT.war</b> ignoring {@link Deployment#name()}.
  * <br>
  * For more information about possible archive deploy operation, see {@link AzureArchiveDeploymentAnnotation}
  */
 // represented by AzureIdentifiableSunstoneResource#WEB_APP
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
-@SunstoneArchiveDeployTargetAnotation
+@AzureInjectionAnnotation
 @AzureArchiveDeploymentAnnotation
 public @interface AzureWebApplication {
     String name();

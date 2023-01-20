@@ -179,7 +179,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                 method.setAccessible(true);
                 Object invoke = method.invoke(null);
                 if (invoke == null) {
-                    throw new RuntimeException("return object is null");
+                    throw new RuntimeException(format("%s in %s returned null", method.getName(), method.getDeclaringClass().getName()));
                 }
                 InputStream is;
                 if (invoke instanceof Archive) {

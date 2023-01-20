@@ -17,6 +17,9 @@ import static azure.armTemplates.AzureTestConstants.IMAGE_REF;
 import static azure.armTemplates.AzureTestConstants.instanceName;
 import static azure.armTemplates.archiveDeploy.vm.VmDeploySuiteTests.vmDeployGroup;
 
+/**
+ * The test is supposed to run after AzureWebAppDeployFirstTest and verifies undeploy operation
+ */
 @WithAzureArmTemplate(parameters = {
         @Parameter(k = "virtualMachineName", v = instanceName),
         @Parameter(k = "imageRefId", v = IMAGE_REF)

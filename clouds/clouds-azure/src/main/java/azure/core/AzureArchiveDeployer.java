@@ -13,6 +13,7 @@ import org.wildfly.extras.creaper.core.CommandFailedException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.core.TimeoutUtils;
 import sunstone.core.api.SunstoneArchiveDeployer;
+import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 
@@ -115,10 +116,16 @@ public class AzureArchiveDeployer implements SunstoneArchiveDeployer {
 
         switch (identification.type) {
             case VM_INSTANCE:
+                if (deploymentName.isEmpty()) {
+                    throw new IllegalArgumentSunstoneException("Deployment name can not be empty for Azure virtual machine.");
+                }
                 deployToVmInstance(deploymentName, identification, deployment, store);
                 break;
             case WEB_APP:
                 try {
+                    if (!deploymentName.isEmpty()) {
+                        AzureLogger.DEFAULT.warn("Deployment name for Azure Web app is not empty. The name will be ignored and the archive will be deployed as ROOT.war");
+                    }
                     deployToWebApp(identification, deployment, store);
                 } catch (Exception e) {
                     throw new RuntimeException(e);

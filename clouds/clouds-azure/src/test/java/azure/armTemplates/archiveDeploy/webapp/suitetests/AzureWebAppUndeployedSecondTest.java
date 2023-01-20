@@ -16,6 +16,9 @@ import java.io.IOException;
 import static azure.armTemplates.AzureTestConstants.instanceName;
 import static azure.armTemplates.archiveDeploy.webapp.WebAppDeploySuiteTests.webAppDeployGroup;
 
+/**
+ * The test is supposed to run after AzureWebAppDeployFirstTest and verifies undeploy operation
+ */
 @WithAzureArmTemplate(template = "azure/armTemplates/eapWebApp.json",
         parameters = {@Parameter(k = "appName", v = instanceName)}, group = webAppDeployGroup, perSuite = true)
 public class AzureWebAppUndeployedSecondTest {
