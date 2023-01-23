@@ -2,6 +2,7 @@ package azure.core;
 
 
 import azure.core.AzureIdentifiableSunstoneResource.Identification;
+import com.azure.resourcemanager.appservice.models.DeployType;
 import com.azure.resourcemanager.appservice.models.PublishingProfile;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import org.apache.commons.net.ftp.FTP;
@@ -11,7 +12,6 @@ import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.commands.deployments.Undeploy;
 import org.wildfly.extras.creaper.core.CommandFailedException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.core.TimeoutUtils;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -40,29 +40,11 @@ public class AzureArchiveDeployer implements SunstoneArchiveDeployer {
         Path tempFile = Files.createTempFile("sunstone-war-deployment-", ".war");
         Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
         WebApp azureWebApp = resourceIdentification.get(store, WebApp.class);
+        azureWebApp.deployAsync(DeployType.WAR, tempFile.toFile()).block();
 
-        Exception ex = null;
-        for (int i = 0; i < 5; i++) {
-            try {
-                azureWebApp.warDeploy(tempFile.toFile());
-                ex = null;
-                break;
-            } catch (Exception e) {
-                AzureLogger.DEFAULT.debug("WebApp::warDeploy try no. {} failed", i);
-                e.printStackTrace();
-                ex = e;
-                // try another time
-                Thread.sleep(10 * 1000);
-            }
-        }
-        if (ex != null) {
-            throw ex;
-        }
         store.addClosable(() -> undeployFromWebApp(azureWebApp));
 
-        azureWebApp.restart();
-        // restart is started after some unknown time (async) :/
-        Thread.sleep(TimeoutUtils.adjust(30000));
+        azureWebApp.restartAsync().block();
         AzureUtils.waitForWebAppDeployment(azureWebApp);
     }
 
@@ -81,9 +63,7 @@ public class AzureArchiveDeployer implements SunstoneArchiveDeployer {
 
             ftpClient.disconnect();
 
-            webApp.restart();
-            // restart is started after some unknown time (async) :/
-            Thread.sleep(TimeoutUtils.adjust(30000));
+            webApp.restartAsync().block();
             AzureUtils.waitForWebAppCleanState(webApp);
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,7 +104,7 @@ public class AzureArchiveDeployer implements SunstoneArchiveDeployer {
             case WEB_APP:
                 try {
                     if (!deploymentName.isEmpty()) {
-                        AzureLogger.DEFAULT.warn("Deployment name for Azure Web app is not empty. The name will be ignored and the archive will be deployed as ROOT.war");
+                        throw new IllegalArgumentSunstoneException("Deployment name must be empty for Azure Web App. It is always ROOT.war and only WAR is supported.");
                     }
                     deployToWebApp(identification, deployment, store);
                 } catch (Exception e) {
