@@ -2,6 +2,7 @@ package azure.core.identification;
 
 
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import sunstone.api.Deployment;
 import sunstone.api.DomainMode;
 import sunstone.api.EapMode;
 import sunstone.api.StandaloneMode;
@@ -18,11 +19,16 @@ import java.lang.annotation.Target;
  * Injectable: {@link Hostname} and {@link OnlineManagementClient}
  * <br>
  * For more information about possible injection, see {@link AzureInjectionAnnotation}
+ * <br>
+ * Archive deploy operation (using {@link Deployment}) is supported under the name defined by {@link Deployment#name()}.
+ * <br>
+ * For more information about possible archive deploy operation, see {@link AzureArchiveDeploymentAnnotation}
  */
 // represented by AzureIdentifiableSunstoneResource#VM_INSTANCE
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @AzureInjectionAnnotation
+@AzureArchiveDeploymentAnnotation
 public @interface AzureVirtualMachine {
     String name();
     String group() default "";

@@ -5,7 +5,7 @@ import azure.core.identification.AzureAutoResolve;
 import azure.core.identification.AzureVirtualMachine;
 import azure.core.identification.AzureWebApplication;
 import com.azure.resourcemanager.AzureResourceManager;
-import com.azure.resourcemanager.appservice.models.WebAppBasic;
+import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
@@ -69,6 +69,10 @@ enum AzureIdentifiableSunstoneResource {
         boolean isTypeSupportedForInject(Class<?> type) {
             return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
         }
+        @Override
+        boolean deployToWildFlySupported() {
+            return true;
+        }
 
         @Override
         <T> T get(Annotation injectionAnnotation, AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {
@@ -99,6 +103,10 @@ enum AzureIdentifiableSunstoneResource {
             return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
         }
         @Override
+        boolean deployToWildFlySupported() {
+            return true;
+        }
+        @Override
         <T> T get(Annotation injectionAnnotation, AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {
             if(!getRepresentedInjectionAnnotation().isAssignableFrom(injectionAnnotation.annotationType())) {
                 throw new IllegalArgumentSunstoneException(format("Expected %s annotation type but got %s",
@@ -107,7 +115,7 @@ enum AzureIdentifiableSunstoneResource {
             AzureWebApplication webApp = (AzureWebApplication) injectionAnnotation;
             String appName = replaceSystemProperties(webApp.name());
             String appGroup = webApp.group().isEmpty() ? objectProperties.getProperty(AzureConfig.GROUP) : replaceSystemProperties(webApp.group());
-            Optional<WebAppBasic> azureWebApp = AzureUtils.findAzureWebApp(store.getAzureArmClientOrCreate(), appName, appGroup);
+            Optional<WebApp> azureWebApp = AzureUtils.findAzureWebApp(store.getAzureArmClientOrCreate(), appName, appGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure Web App in '%s' resource group.", appName, appGroup))));
         }
     };
@@ -133,6 +141,9 @@ enum AzureIdentifiableSunstoneResource {
     private static final ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
 
     boolean isTypeSupportedForInject(Class<?> type) {
+        return false;
+    }
+    boolean deployToWildFlySupported() {
         return false;
     }
     <T> T get(Annotation injectionAnnotation, AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {

@@ -29,6 +29,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+
+
         <!--        Azure-->
         <dependency>
             <groupId>com.azure.resourcemanager</groupId>

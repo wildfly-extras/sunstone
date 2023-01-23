@@ -1,23 +1,41 @@
 package sunstone.core;
 
 
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
+import org.junit.platform.commons.support.AnnotationSupport;
+import org.junit.platform.commons.support.HierarchyTraversalMode;
+import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
 import sunstone.api.SunstoneInjectionAnnotation;
+import sunstone.api.SunstoneArchiveDeployTargetAnotation;
+import sunstone.api.Deployment;
 import sunstone.api.WithAwsCfTemplate;
 import sunstone.api.WithAzureArmTemplate;
+import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
+import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
+import sunstone.core.spi.SunstoneArchiveDeployerProvider;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 import sunstone.core.spi.SunstoneResourceInjectorProvider;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +56,9 @@ import static sunstone.core.SunstoneStore.get;
  * a resource that needs to be cleaned/closed is also responsible for registering it.
  */
 public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, TestInstancePostProcessor {
+    static ServiceLoader<SunstoneArchiveDeployerProvider> sunstoneArchiveDeployerProviderLoader = ServiceLoader.load(SunstoneArchiveDeployerProvider.class);
+    static ServiceLoader<SunstoneCloudDeployerProvider> sunstoneCloudDeployerProviderLoader = ServiceLoader.load(SunstoneCloudDeployerProvider.class);
+    static ServiceLoader<SunstoneResourceInjectorProvider> sunstoneResourceInjectorProviderLoader = ServiceLoader.load(SunstoneResourceInjectorProvider.class);
 
     @Override
     public void beforeAll(ExtensionContext ctx) throws Exception {
@@ -48,6 +69,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         if (ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class).length > 0) {
             handleAwsCloudFormationAnnotations(ctx);
         }
+        performDeploymentOperation(ctx);
         injectStaticResources(ctx, ctx.getRequiredTestClass());
     }
 
@@ -68,8 +90,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
     }
 
     static <A extends Annotation> Optional<SunstoneCloudDeployer> getDeployer(Class<A> annotation) {
-        ServiceLoader<SunstoneCloudDeployerProvider> loader = ServiceLoader.load(SunstoneCloudDeployerProvider.class);
-        for (SunstoneCloudDeployerProvider sunstoneCloudDeployerProvider : loader) {
+        for (SunstoneCloudDeployerProvider sunstoneCloudDeployerProvider : sunstoneCloudDeployerProviderLoader) {
             Optional<SunstoneCloudDeployer> deployer = sunstoneCloudDeployerProvider.create(annotation);
             if (deployer.isPresent()) {
                 return deployer;
@@ -79,8 +100,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
     }
 
     static Optional<SunstoneResourceInjector> getSunstoneResourceInjector(Field field) {
-        ServiceLoader<SunstoneResourceInjectorProvider> loader = ServiceLoader.load(SunstoneResourceInjectorProvider.class);
-        for (SunstoneResourceInjectorProvider provider : loader) {
+        for (SunstoneResourceInjectorProvider provider : sunstoneResourceInjectorProviderLoader) {
             Optional<SunstoneResourceInjector> injector = provider.create(field);
             if (injector.isPresent()) {
                 return injector;
@@ -96,6 +116,9 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         if (injectionAnnotations.size() > 1) {
             throw new IllegalArgumentSunstoneException(format("More than one annotation (in)direrectly annotated by %s found on %s %s in %s class",
                     SunstoneInjectionAnnotation.class, field.getType().getName(), field.getName(), field.getDeclaringClass()));
+        }
+        if (injectionAnnotations.isEmpty()) {
+            return Optional.empty();
         }
         return Optional.ofNullable(injectionAnnotations.get(0));
     }
@@ -126,6 +149,67 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         } catch (SunstoneException e) {
             throw new RuntimeException(format("Unable to injec %s %s in %s", field.getType().getName(), field.getName(), field.getDeclaringClass()), e);
         } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static Optional<SunstoneArchiveDeployer> getArchiveDeployer(Annotation annotation) {
+        for (SunstoneArchiveDeployerProvider sunstoneCloudDeployerProvider : sunstoneArchiveDeployerProviderLoader) {
+            Optional<SunstoneArchiveDeployer> deployer = sunstoneCloudDeployerProvider.create(annotation);
+            if (deployer.isPresent()) {
+                return deployer;
+            }
+        }
+        return Optional.empty();
+    }
+    static void performDeploymentOperation(ExtensionContext ctx) throws SunstoneException {
+        List<Method> annotatedMethods = AnnotationSupport.findAnnotatedMethods(ctx.getRequiredTestClass(), Deployment.class, HierarchyTraversalMode.TOP_DOWN);
+
+        try {
+            for (Method method : annotatedMethods) {
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    throw new IllegalArgumentSunstoneException("Deployment method must be static");
+                }
+                if (method.getParameterCount() != 0) {
+                    throw new IllegalArgumentSunstoneException("Deployment method must have 0 parameters");
+                }
+                Deployment annotation = method.getAnnotation(Deployment.class);
+                String deploymentName = ObjectProperties.replaceSystemProperties(annotation.name());
+
+                method.setAccessible(true);
+                Object invoke = method.invoke(null);
+                if (invoke == null) {
+                    throw new RuntimeException(format("%s in %s returned null", method.getName(), method.getDeclaringClass().getName()));
+                }
+                InputStream is;
+                if (invoke instanceof Archive) {
+                    is = ((Archive) invoke).as(ZipExporter.class).exportAsInputStream();
+                } else if (invoke instanceof File) {
+                    is = new FileInputStream((File) invoke);
+                } else if (invoke instanceof Path) {
+                    is = new FileInputStream(((Path) invoke).toFile());
+                } else if (invoke instanceof InputStream) {
+                    is = (InputStream) invoke;
+                } else {
+                    throw new UnsupportedSunstoneOperationException("Unsupported type " + method.getName());
+                }
+                for (Annotation ann : AnnotationUtils.findAnnotationsAnnotatedBy(method.getAnnotations(), SunstoneArchiveDeployTargetAnotation.class)) {
+                    Optional<SunstoneArchiveDeployer> archiveDeployer = getArchiveDeployer(ann);
+                    archiveDeployer.orElseThrow(() -> new SunstoneException("todo"));
+                    archiveDeployer.get().deployAndRegisterUndeploy(deploymentName, ann, is, ctx);
+                }
+
+
+                is.close();
+
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
