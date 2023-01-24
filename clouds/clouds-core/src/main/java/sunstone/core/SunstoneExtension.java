@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
+import sunstone.api.AbstractSetupTask;
+import sunstone.api.Setup;
 import sunstone.api.SunstoneInjectionAnnotation;
 import sunstone.api.SunstoneArchiveDeployTargetAnotation;
 import sunstone.api.Deployment;
@@ -31,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -69,8 +72,36 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         if (ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class).length > 0) {
             handleAwsCloudFormationAnnotations(ctx);
         }
+        if (ctx.getRequiredTestClass().getAnnotationsByType(Setup.class).length > 0) {
+            handleSetup(ctx);
+        }
         performDeploymentOperation(ctx);
         injectStaticResources(ctx, ctx.getRequiredTestClass());
+    }
+
+    static void handleSetup(ExtensionContext ctx) throws IllegalArgumentSunstoneException {
+        SunstoneStore store = new SunstoneStore(ctx);
+        if (ctx.getRequiredTestClass().getAnnotationsByType(Setup.class).length != 1) {
+            throw new IllegalArgumentSunstoneException("Only one setup task may be defined.");
+        }
+        Setup setup = ctx.getRequiredTestClass().getAnnotationsByType(Setup.class)[0];
+        for (Class<? extends AbstractSetupTask> setupTask : setup.value()) {
+            injectStaticResources(ctx, setupTask);
+            Optional<Constructor<?>> constructor = Arrays.stream(setupTask.getDeclaredConstructors())
+                    .filter(c -> c.getParameterCount() == 0)
+                    .findAny();
+            constructor.orElseThrow(() -> new IllegalArgumentSunstoneException("Setup task must have a constructor with 0 parameters"));
+            constructor.get().setAccessible(true);
+            AbstractSetupTask abstractSetupTask = null;
+            try {
+                abstractSetupTask = (AbstractSetupTask) constructor.get().newInstance();
+                injectInstanceResources(ctx, abstractSetupTask);
+                store.addClosable((AutoCloseable) abstractSetupTask::cleanup);
+                abstractSetupTask.setup();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     static void handleAwsCloudFormationAnnotations(ExtensionContext ctx) {
