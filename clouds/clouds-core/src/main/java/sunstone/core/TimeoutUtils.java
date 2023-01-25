@@ -1,8 +1,8 @@
 package sunstone.core;
 
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
 
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 
 public class TimeoutUtils {
     private static double factor = Double.parseDouble(new ObjectProperties(ObjectType.CLOUDS, null).getProperty(CloudsConfig.TIMEOUT_FACTOR, "1.0"));

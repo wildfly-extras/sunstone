@@ -8,20 +8,20 @@ import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
 import sunstone.api.inject.Hostname;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.wildfly.extras.sunstone.api.impl.ObjectProperties.replaceSystemProperties;
+import static sunstone.core.properties.ObjectProperties.replaceSystemProperties;
 
 /**
  * Used by {@link AzureSunstoneResourceInjector}

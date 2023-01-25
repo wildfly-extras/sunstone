@@ -6,8 +6,8 @@ import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 import azure.core.AzureConfig;
 
 public class AzureTestUtils {

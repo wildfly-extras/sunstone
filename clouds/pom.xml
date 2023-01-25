@@ -2,16 +2,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.wildfly.extras.sunstone</groupId>
-        <artifactId>sunstone-parent</artifactId>
-        <version>1.2.4-SNAPSHOT</version>
-    </parent>
+    <groupId>org.wildfly.extras.sunstone</groupId>
+    <version>1.2.4-SNAPSHOT</version>
 
     <artifactId>sunstone-clouds-parent</artifactId>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
+    <description>Simple Java library which helps to control resources in cloud environments.</description>
+    <url>https://github.com/wildfly-extras/sunstone</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <modules>
         <module>clouds-core</module>
@@ -19,13 +26,33 @@
         <module>clouds-aws</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:git@github.com:wildfly-extras/sunstone.git</connection>
+        <developerConnection>scm:git:git@github.com:wildfly-extras/sunstone.git</developerConnection>
+        <url>https://github.com/wildfly-extras/sunstone/tree/master</url>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
 
     <properties>
-
+        <testLogToFile>true</testLogToFile>
 
         <version.slf4j>1.7.21</version.slf4j>
         <version.logback>1.0.13</version.logback>
+
+
+        <version.org.wildfly.core>17.0.1.Final</version.org.wildfly.core>
+        <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
 
         <version.junit.jupiter>5.8.2</version.junit.jupiter>
         <version.junit.platform>1.8.1</version.junit.platform>
@@ -49,20 +76,34 @@
         <version.org.assertj>3.23.1</version.org.assertj>
         <version.maven-surefire-plugin>3.0.0-M7</version.maven-surefire-plugin>
 
-    </properties>
+        <!-- Checkstyle configuration -->
+        <version.checkstyle.plugin>2.17</version.checkstyle.plugin>
+        <version.org.wildfly.checkstyle-config>1.0.4.Final</version.org.wildfly.checkstyle-config>
 
+        <version.commons-lang3>3.12.0</version.commons-lang3>
+        <version.shrinkwrap>1.2.6</version.shrinkwrap>
+    </properties>
 
     <build>
         <pluginManagement>
             <plugins>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${version.maven-surefire-plugin}</version>
                     <configuration>
+                        <redirectTestOutputToFile>${testLogToFile}</redirectTestOutputToFile>
                         <trimStackTrace>false</trimStackTrace>
-                        <testFailureIgnore>true</testFailureIgnore>
+                        <threadCount>1</threadCount>
+                        <workingDirectory>${project.build.directory}</workingDirectory>
+                        <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                         <failIfNoTests>false</failIfNoTests>
+                        <systemPropertyVariables>
+                            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+                        </systemPropertyVariables>
+
+                        <testFailureIgnore>true</testFailureIgnore>
                         <includes>
                             <!--
                             These are surefire default values explicitly stated
@@ -83,18 +124,137 @@
                         </excludes>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.3</version>
+                    <configuration>
+                        <source>11</source>
+                        <target>11</target>
+                    </configuration>
+                </plugin>
+
+                <!-- Checkstyle -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${version.checkstyle.plugin}</version>
+                    <configuration>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <useFile />
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.wildfly.checkstyle</groupId>
+                            <artifactId>wildfly-checkstyle-config</artifactId>
+                            <version>${version.org.wildfly.checkstyle-config}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>check-style-wildfly</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <configLocation>wildfly-checkstyle/checkstyle.xml</configLocation>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>check-style-sunstone</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <checkstyleRules>
+                                    <module name="Checker">
+                                        <module name="RegexpMultiline">
+                                            <property name="format" value="@author" />
+                                            <property name="message" value="Do not use Javadoc @author annotation" />
+                                            <property name="fileExtensions" value="java" />
+                                        </module>
+                                    </module>
+                                </checkstyleRules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- removing license headers from source files -->
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>2.11</version>
+                    <configuration>
+                        <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>remove-license-headers</id>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>remove</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${version.commons-lang3}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${version.com.squareup.okhttp3}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.extras.sunstone</groupId>
+                <artifactId>sunstone-clouds-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.shrinkwrap</groupId>
+                <artifactId>shrinkwrap-bom</artifactId>
+                <version>${version.shrinkwrap}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
                 <version>${version.commons-net}</version>
             </dependency>
-           <!-- AWS-->
+            <!-- AWS-->
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
@@ -126,7 +286,7 @@
                 <version>${version.com.azure.azure-core-http-netty}</version>
             </dependency>
 
-<!--            logging -->
+            <!--            logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -137,11 +297,6 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback}</version>
                 <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.wildfly.extras.sunstone</groupId>
-                <artifactId>sunstone-core</artifactId>
             </dependency>
 
             <!--        JUnit5-->
@@ -177,7 +332,126 @@
                 <version>${version.org.assertj}</version>
                 <scope>test</scope>
             </dependency>
-        </dependencies>
 
+
+            <dependency>
+                <groupId>org.wildfly.extras.creaper</groupId>
+                <artifactId>creaper-core</artifactId>
+                <version>${version.org.wildfly.extras.creaper}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.extras.creaper</groupId>
+                <artifactId>creaper-commands</artifactId>
+                <version>${version.org.wildfly.extras.creaper}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-controller-client</artifactId>
+                <version>${version.org.wildfly.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-cli</artifactId>
+                <version>${version.org.wildfly.core}</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>apache-snapshots</id>
+            <url>https://repository.apache.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-public</id>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -2,10 +2,10 @@ package sunstone.core;
 
 
 import com.google.common.io.BaseEncoding;
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
 import sunstone.api.Parameter;
 import sunstone.core.api.SunstoneCloudDeployer;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

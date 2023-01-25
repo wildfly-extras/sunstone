@@ -1,8 +1,8 @@
 package aws.core;
 
 
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;

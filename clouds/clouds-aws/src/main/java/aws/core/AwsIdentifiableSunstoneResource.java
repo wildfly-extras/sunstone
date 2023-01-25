@@ -4,8 +4,8 @@ package aws.core;
 import aws.core.identification.AwsAutoResolve;
 import aws.core.identification.AwsEc2Instance;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.wildfly.extras.sunstone.api.impl.ObjectProperties.replaceSystemProperties;
+import static sunstone.core.properties.ObjectProperties.replaceSystemProperties;
 
 /**
  * Used by {@link AwsSunstoneResourceInjector}

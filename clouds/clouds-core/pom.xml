@@ -22,15 +22,15 @@
         </plugins>
     </build>
 
-    <dependencies>
-<!--        Modules-->
+    <dependencies><!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
-            <groupId>org.wildfly.extras.sunstone</groupId>
-            <artifactId>sunstone-core</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-impl-base</artifactId>
+        </dependency>
         <!--        JUnit5-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
