@@ -11,8 +11,8 @@ import com.azure.resourcemanager.compute.models.VirtualMachine;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 import sunstone.core.TimeoutUtils;
 
 import java.io.IOException;

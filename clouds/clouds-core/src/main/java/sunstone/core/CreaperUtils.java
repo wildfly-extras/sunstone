@@ -6,9 +6,9 @@ import org.wildfly.extras.creaper.core.ManagementClient;
 import org.wildfly.extras.creaper.core.online.ManagementProtocol;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineOptions;
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
 import sunstone.api.StandaloneMode;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 
 import java.io.IOException;
 

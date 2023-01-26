@@ -26,14 +26,17 @@
         <dependency>
             <groupId>org.wildfly.extras.sunstone</groupId>
             <artifactId>sunstone-clouds-core</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
         </dependency>
 
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
         </dependency>
-
 
         <!--        Azure-->
         <dependency>

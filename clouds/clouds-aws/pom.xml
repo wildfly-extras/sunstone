@@ -26,14 +26,18 @@
         <dependency>
             <groupId>org.wildfly.extras.sunstone</groupId>
             <artifactId>sunstone-clouds-core</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
         </dependency>
 
         <!--        AWS-->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>cloudformation</artifactId>
-        </dependency><!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-ec2 -->
+        </dependency>
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>

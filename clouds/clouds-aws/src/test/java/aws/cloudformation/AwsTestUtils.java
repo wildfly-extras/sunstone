@@ -1,8 +1,6 @@
 package aws.cloudformation;
 
 
-import org.wildfly.extras.sunstone.api.impl.ObjectProperties;
-import org.wildfly.extras.sunstone.api.impl.ObjectType;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -13,6 +11,8 @@ import software.amazon.awssdk.services.ec2.model.DescribeKeyPairsResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.KeyPairInfo;
 import aws.core.AwsConfig;
+import sunstone.core.properties.ObjectProperties;
+import sunstone.core.properties.ObjectType;
 
 import java.util.List;
 

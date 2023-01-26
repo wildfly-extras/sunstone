@@ -50,7 +50,7 @@ public @interface WithAzureArmTemplate {
      * var is resolved from system properties. Resources in a group share lifecycle and the group is deleted as it is for
      * undeploy operation.
      *
-     * If empty, {@code clouds.az.group} from {@code sunstone.properties} is used.
+     * If empty, {@code sunstone.azure.group} from {@code sunstone.properties} is used.
      */
     String group() default "";
 
@@ -58,7 +58,7 @@ public @interface WithAzureArmTemplate {
      * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz} -
      * var is resolved from system properties.
      *
-     * If empty, {@code clouds.az.region} from {@code sunstone.properties} is used.
+     * If empty, {@code sunstone.azure.region} from {@code sunstone.properties} is used.
      *
      * For the list of available regions see {@link com.azure.core.management.Region}
      */
