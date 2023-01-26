@@ -1,14 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.wildfly.extras.sunstone</groupId>
-    <artifactId>sunstone-parent</artifactId>
     <version>1.2.4-SNAPSHOT</version>
+
+    <artifactId>sunstone-parent</artifactId>
     <packaging>pom</packaging>
 
-    <name>${project.groupId}:${project.artifactId}</name>
-    <description>Simple Java library which helps to control virtual machines in cloud environments.</description>
+    <name>${project.artifactId}</name>
+    <description>Simple Java library which helps to control resources in cloud environments.</description>
     <url>https://github.com/wildfly-extras/sunstone</url>
 
     <licenses>
@@ -19,60 +20,10 @@
         </license>
     </licenses>
 
-    <developers>
-        <developer>
-            <id>kwart</id>
-            <name>Josef Cacek</name>
-            <url>https://github.com/kwart/</url>
-        </developer>
-        <developer>
-            <id>LittleJohnII</id>
-            <name>Richard Janík</name>
-            <url>https://github.com/LittleJohnII/</url>
-        </developer>
-        <developer>
-            <id>Ladicek</id>
-            <name>Ladislav Thon</name>
-            <url>https://github.com/Ladicek/</url>
-        </developer>
-    </developers>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <testLogToFile>true</testLogToFile>
-
-        <version.org.wildfly.bom>10.1.0.Final</version.org.wildfly.bom>
-        <version.org.wildfly.core>17.0.1.Final</version.org.wildfly.core>
-        <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
-        <version.org.wildfly.arquillian>2.2.0.Final</version.org.wildfly.arquillian>
-
-        <version.jclouds>2.4.0</version.jclouds>
-        <version.jclouds.labs.azurecompute>2.1.1</version.jclouds.labs.azurecompute>
-        <version.surefire>2.19.1</version.surefire>
-        <version.commons.lang>3.4</version.commons.lang>
-        <version.commons.io>2.4</version.commons.io>
-        <version.guava>27.1-jre</version.guava>
-        <version.slf4j>1.7.21</version.slf4j>
-        <version.logback>1.0.13</version.logback>
-        <version.jaxb>2.3.0</version.jaxb>
-
-        <!-- Checkstyle configuration -->
-        <version.checkstyle.plugin>2.17</version.checkstyle.plugin>
-        <version.org.wildfly.checkstyle-config>1.0.4.Final</version.org.wildfly.checkstyle-config>
-        
-        <!-- Tests -->
-        <version.junit>4.12</version.junit>
-        <version.mockito>1.10.19</version.mockito>
-        <version.hamcrest>2.0.0.0</version.hamcrest>
-
-        <linkXRef>false</linkXRef>
-    </properties>
-
     <modules>
         <module>core</module>
-        <module>wildfly</module>
-        <module>arquillian</module>
+        <module>azure</module>
+        <module>aws</module>
     </modules>
 
     <scm>
@@ -92,22 +43,55 @@
         </repository>
     </distributionManagement>
 
+
+    <properties>
+        <testLogToFile>true</testLogToFile>
+
+        <version.slf4j>1.7.21</version.slf4j>
+        <version.logback>1.0.13</version.logback>
+
+
+        <version.org.wildfly.core>17.0.1.Final</version.org.wildfly.core>
+        <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
+
+        <version.junit.jupiter>5.8.2</version.junit.jupiter>
+        <version.junit.platform>1.8.1</version.junit.platform>
+        <version.maven-compiler-plugin>3.3</version.maven-compiler-plugin>
+
+        <!-- Azure SDK dependencies & other due to dependencyManagement issues with Azure SDK-->
+        <!-- Based on https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/resourcemanager#include-the-package-->
+        <version.azure-resourcemanager>2.20.0</version.azure-resourcemanager>
+        <version.com.azure.azure-identity>1.6.1</version.com.azure.azure-identity>
+        <version.com.azure.azure-core-http-netty>1.12.6</version.com.azure.azure-core-http-netty>
+
+        <!-- Azure SDK uses okhttp3 which is also brought by Sunstone core...we need to find suitable version... -->
+        <version.com.squareup.okhttp3>4.10.0</version.com.squareup.okhttp3>
+
+        <!-- AWS SDK dependencies        -->
+        <version.software.amazon.awssdk.bom>2.17.174</version.software.amazon.awssdk.bom>
+
+        <version.com.google.code.gson>2.9.0</version.com.google.code.gson>
+        <version.commons-net>3.9.0</version.commons-net>
+
+        <version.org.assertj>3.23.1</version.org.assertj>
+        <version.maven-surefire-plugin>3.0.0-M7</version.maven-surefire-plugin>
+
+        <!-- Checkstyle configuration -->
+        <version.checkstyle.plugin>2.17</version.checkstyle.plugin>
+        <version.org.wildfly.checkstyle-config>1.0.4.Final</version.org.wildfly.checkstyle-config>
+
+        <version.commons-lang3>3.12.0</version.commons-lang3>
+        <version.shrinkwrap>1.2.6</version.shrinkwrap>
+    </properties>
+
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
-                    <configuration>
-                        <source>8</source>
-                        <target>8</target>
-                    </configuration>
-                </plugin>
 
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.surefire}</version>
+                    <version>${version.maven-surefire-plugin}</version>
                     <configuration>
                         <redirectTestOutputToFile>${testLogToFile}</redirectTestOutputToFile>
                         <trimStackTrace>false</trimStackTrace>
@@ -118,6 +102,36 @@
                         <systemPropertyVariables>
                             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                         </systemPropertyVariables>
+
+                        <testFailureIgnore>true</testFailureIgnore>
+                        <includes>
+                            <!--
+                            These are surefire default values explicitly stated
+                            Why? There are suite tests (@Suite) that select several test classes not following any of following pattern.
+                            Those selected classes can not be run outside of @Suite
+
+                            So if you need to change includes mind those cases!
+                            -->
+                            <include>**/Test*.java</include>
+                            <include>**/*Test.java</include>
+                            <include>**/*Tests.java</include>
+                            <include>**/*TestCase.java</include>
+                        </includes>
+                        <excludes>
+                            <!-- These should not be run alone since they are supposed to be run in a suite -->
+                            <exclude>**/suite/tests/*.java</exclude>
+                            <exclude>**/suitetests/*.java</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.3</version>
+                    <configuration>
+                        <source>11</source>
+                        <target>11</target>
                     </configuration>
                 </plugin>
 
@@ -209,135 +223,70 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- modules -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${version.commons-lang3}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${version.com.squareup.okhttp3}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.wildfly.extras.sunstone</groupId>
                 <artifactId>sunstone-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.wildfly.extras.sunstone</groupId>
-                <artifactId>sunstone-wildfly</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.extras.sunstone</groupId>
-                <artifactId>sunstone-arquillian</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
-            <!-- WildFly and WildFly Core -->
             <dependency>
-                <groupId>org.wildfly.bom</groupId>
-                <artifactId>wildfly-javaee7-with-tools</artifactId>
-                <version>${version.org.wildfly.bom}</version>
+                <groupId>org.jboss.shrinkwrap</groupId>
+                <artifactId>shrinkwrap-bom</artifactId>
+                <version>${version.shrinkwrap}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
 
             <dependency>
-                <groupId>org.wildfly.core</groupId>
-                <artifactId>wildfly-controller-client</artifactId>
-                <version>${version.org.wildfly.core}</version>
+                <groupId>commons-net</groupId>
+                <artifactId>commons-net</artifactId>
+                <version>${version.commons-net}</version>
             </dependency>
+            <!-- AWS-->
             <dependency>
-                <groupId>org.wildfly.core</groupId>
-                <artifactId>wildfly-cli</artifactId>
-                <version>${version.org.wildfly.core}</version>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${version.software.amazon.awssdk.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
+            <!--            GSON -->
             <dependency>
-                <groupId>org.wildfly.core</groupId>
-                <artifactId>wildfly-patching</artifactId>
-                <version>${version.org.wildfly.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.arquillian</groupId>
-                <artifactId>wildfly-arquillian-container-remote</artifactId>
-                <version>${version.org.wildfly.arquillian}</version>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${version.com.google.code.gson}</version>
             </dependency>
 
-            <!-- JClouds -->
+            <!--        Azure-->
             <dependency>
-                <groupId>org.apache.jclouds.provider</groupId>
-                <artifactId>aws-ec2</artifactId>
-                <version>${version.jclouds}</version>
+                <groupId>com.azure.resourcemanager</groupId>
+                <artifactId>azure-resourcemanager</artifactId>
+                <version>${version.azure-resourcemanager}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.jclouds.api</groupId>
-                <artifactId>docker</artifactId>
-                <version>${version.jclouds}</version>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-identity</artifactId>
+                <version>${version.com.azure.azure-identity}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.jclouds.labs</groupId>
-                <artifactId>azurecompute</artifactId>
-                <version>${version.jclouds.labs.azurecompute}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jclouds.provider</groupId>
-                <artifactId>azurecompute-arm</artifactId>
-                <version>${version.jclouds}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jclouds.driver</groupId>
-                <artifactId>jclouds-sshj</artifactId>
-                <version>${version.jclouds}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jclouds.driver</groupId>
-                <artifactId>jclouds-jsch</artifactId>
-                <version>${version.jclouds}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jclouds.driver</groupId>
-                <artifactId>jclouds-slf4j</artifactId>
-                <version>${version.jclouds}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jclouds.api</groupId>
-                <artifactId>openstack-nova</artifactId>
-                <version>${version.jclouds}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jclouds.api</groupId>
-                <artifactId>byon</artifactId>
-                <version>${version.jclouds}</version>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-core-http-netty</artifactId>
+                <version>${version.com.azure.azure-core-http-netty}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${version.commons.lang}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${version.commons.io}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${version.guava}</version>
-            </dependency>
-
-            <!-- Creaper -->
-            <dependency>
-                <groupId>org.wildfly.extras.creaper</groupId>
-                <artifactId>creaper-core</artifactId>
-                <version>${version.org.wildfly.extras.creaper}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wildfly.extras.creaper</groupId>
-                <artifactId>creaper-commands</artifactId>
-                <version>${version.org.wildfly.extras.creaper}</version>
-            </dependency>
-
-            <!-- logging -->
+            <!--            logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -349,54 +298,62 @@
                 <version>${version.logback}</version>
                 <scope>test</scope>
             </dependency>
-            
-            <!-- testing -->
+
+            <!--        JUnit5-->
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${version.junit}</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${version.junit.jupiter}</version>
             </dependency>
+
             <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${version.mockito}</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite-api</artifactId>
+                <version>${version.junit.platform}</version>
             </dependency>
+
             <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>java-hamcrest</artifactId>
-                <version>${version.hamcrest}</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${version.junit.jupiter}</version>
                 <scope>test</scope>
             </dependency>
 
-            <!-- JAXB dependencies, need to be explicitly specified since Java 9 -->
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${version.jaxb}</version>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite-engine</artifactId>
+                <version>${version.junit.platform}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.org.assertj}</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.wildfly.extras.creaper</groupId>
+                <artifactId>creaper-core</artifactId>
+                <version>${version.org.wildfly.extras.creaper}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${version.jaxb}</version>
+                <groupId>org.wildfly.extras.creaper</groupId>
+                <artifactId>creaper-commands</artifactId>
+                <version>${version.org.wildfly.extras.creaper}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-controller-client</artifactId>
+                <version>${version.org.wildfly.core}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${version.jaxb}</version>
+                <groupId>org.wildfly.core</groupId>
+                <artifactId>wildfly-cli</artifactId>
+                <version>${version.org.wildfly.core}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

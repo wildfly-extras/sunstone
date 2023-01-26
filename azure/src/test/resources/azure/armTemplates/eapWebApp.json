@@ -1,0 +1,103 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "type": "string",
+      "defaultValue": "eapAppService"
+    },
+    "linuxFxVersion": {
+      "type": "string",
+      "defaultValue": "JBOSSEAP|7-java11"
+    }
+  },
+  "variables": {
+    "planName": "[concat(parameters('appName'),'-plan')]",
+    "vnetName": "[concat(parameters('appName'),'-vnet')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2018-11-01",
+      "name": "[variables('planName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "kind": "linux",
+      "tags": null,
+      "properties": {
+        "name": "[variables('planName')]",
+        "workerSize": "1",
+        "workerSizeId": "1",
+        "numberOfWorkers": "1",
+        "reserved": true
+      },
+      "sku": {
+        "Tier": "PremiumV3",
+        "Name": "P1V3"
+      }
+    },
+    {
+      "name": "[variables('vnetName')]",
+      "type": "Microsoft.Network/VirtualNetworks",
+      "apiVersion": "2021-01-01",
+      "location": "[resourceGroup().location]",
+      "extendedLocation": null,
+      "dependsOn": [],
+      "tags": {},
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.1.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "jbossnodes",
+            "properties": {
+              "addressPrefix": "10.1.0.0/24",
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Web"
+                }
+              ],
+              "delegations": [
+                {
+                  "name": "delegation",
+                  "properties": {
+                    "serviceName": "Microsoft.Web/serverfarms"
+                  }
+                }
+              ],
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          }
+        ],
+        "enableDdosProtection": "false"
+      }
+    },
+    {
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('appName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "tags": null,
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('planName'))]",
+        "[concat('Microsoft.Network/VirtualNetworks/', variables('vnetName'))]"
+      ],
+      "properties": {
+        "name": "[parameters('appName')]",
+        "siteConfig": {
+          "appCommandLine": "/home/site/deployments/tools/startup_script.sh",
+          "vnetRouteAllEnabled": true,
+          "appSettings": [],
+          "linuxFxVersion": "[parameters('linuxFxVersion')]",
+          "alwaysOn": "true"
+        },
+        "serverFarmId": "[extensionResourceId(resourceGroup().Id , 'Microsoft.Web/serverfarms', variables('planName'))]",
+        "clientAffinityEnabled": false,
+        "virtualNetworkSubnetId": "[concat(extensionResourceId(resourceGroup().Id , 'Microsoft.Network/VirtualNetworks', variables('vnetName')), '/subnets/jbossnodes')]"
+      }
+    }
+  ]
+}
