@@ -9,7 +9,7 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.api.EapMode;
 import sunstone.api.Parameter;
 import sunstone.api.StandaloneMode;
-import sunstone.api.WithAwsCfTemplate;
+import aws.api.WithAwsCfTemplate;
 
 import java.io.IOException;
 

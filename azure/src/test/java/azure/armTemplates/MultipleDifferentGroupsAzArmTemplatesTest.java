@@ -6,7 +6,7 @@ import com.azure.resourcemanager.network.models.Network;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Parameter;
-import sunstone.api.WithAzureArmTemplate;
+import azure.api.WithAzureArmTemplate;
 
 import static azure.armTemplates.MultipleDifferentGroupsAzArmTemplatesTest.GROUP1;
 import static azure.armTemplates.MultipleDifferentGroupsAzArmTemplatesTest.GROUP2;

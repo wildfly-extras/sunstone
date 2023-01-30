@@ -8,7 +8,7 @@ import okhttp3.Response;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Parameter;
-import sunstone.api.WithAzureArmTemplate;
+import azure.api.WithAzureArmTemplate;
 import sunstone.api.inject.Hostname;
 
 import java.io.IOException;

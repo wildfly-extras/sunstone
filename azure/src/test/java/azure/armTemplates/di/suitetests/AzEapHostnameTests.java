@@ -5,7 +5,7 @@ import azure.core.identification.AzureVirtualMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Parameter;
-import sunstone.api.WithAzureArmTemplate;
+import azure.api.WithAzureArmTemplate;
 import sunstone.api.inject.Hostname;
 
 import static azure.armTemplates.AzureTestConstants.IMAGE_REF;

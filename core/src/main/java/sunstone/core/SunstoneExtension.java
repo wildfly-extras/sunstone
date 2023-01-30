@@ -11,11 +11,10 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import sunstone.api.AbstractSetupTask;
 import sunstone.api.Setup;
+import sunstone.api.SunstoneCloudDeployAnnotation;
 import sunstone.api.SunstoneInjectionAnnotation;
 import sunstone.api.SunstoneArchiveDeployTargetAnotation;
 import sunstone.api.Deployment;
-import sunstone.api.WithAwsCfTemplate;
-import sunstone.api.WithAzureArmTemplate;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.api.SunstoneResourceInjector;
@@ -51,7 +50,7 @@ import static java.lang.String.format;
 import static sunstone.core.SunstoneStore.get;
 
 /**
- * Extension handles {@link WithAzureArmTemplate} annotation, serves and orchestrate/delegate all the work,
+ * Extension handles cloud deployment annotations, serves and orchestrate/delegate all the work,
  * initialize resources, ...
  * <p>
  * Uses {@link AutoCloseable} LIFO queue (a.k.a. Stack) for registering resources that needs to be cleaned/closed -
@@ -65,13 +64,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
 
     @Override
     public void beforeAll(ExtensionContext ctx) throws Exception {
-        if (ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class).length > 0) {
-            handleAzureArmTemplateAnnotations(ctx);
-        }
-
-        if (ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class).length > 0) {
-            handleAwsCloudFormationAnnotations(ctx);
-        }
+        handleCloudDeployAnnotations(ctx);
         if (ctx.getRequiredTestClass().getAnnotationsByType(Setup.class).length > 0) {
             handleSetup(ctx);
         }
@@ -104,23 +97,23 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         }
     }
 
-    static void handleAwsCloudFormationAnnotations(ExtensionContext ctx) {
-        Optional<SunstoneCloudDeployer> deployer = getDeployer(WithAwsCfTemplate.class);
-        deployer.orElseThrow(() -> new RuntimeException("Unable to load a service via SPI that handles " + WithAwsCfTemplate.class.getName() + " annotation."));
-        for (WithAwsCfTemplate withAwsCfTemplate : ctx.getRequiredTestClass().getAnnotationsByType(WithAwsCfTemplate.class)) {
-            deployer.get().deploy(withAwsCfTemplate, ctx);
-        }
+    protected static void handleCloudDeployAnnotations(ExtensionContext ctx) {
+        Annotation[] annotations = ctx.getRequiredTestClass().getAnnotations();
+        Arrays.stream(ctx.getRequiredTestClass().getAnnotations())
+                .filter(ann -> AnnotationUtils.isAnnotatedBy(ann.annotationType(), SunstoneCloudDeployAnnotation.class))
+                .forEachOrdered(ann -> {
+                    Optional<SunstoneCloudDeployer> deployer = getDeployer(ann);
+                    deployer.orElseThrow(() -> new RuntimeException("Unable to load a service via SPI that handles " + ann.annotationType() + " annotation."));
+                    try {
+                        deployer.get().deploy(ann, ctx);
+                    } catch (SunstoneException e) {
+                        throw new RuntimeException("Unable to deploy " + ann, e);
+                    }
+
+                });
     }
 
-    protected static void handleAzureArmTemplateAnnotations(ExtensionContext ctx) {
-        Optional<SunstoneCloudDeployer> deployer = getDeployer(WithAzureArmTemplate.class);
-        deployer.orElseThrow(() -> new RuntimeException("Unable to load a service via SPI that handles " + WithAzureArmTemplate.class.getName() + " annotation."));
-        for (WithAzureArmTemplate withAzureArmTemplate : ctx.getRequiredTestClass().getAnnotationsByType(WithAzureArmTemplate.class)) {
-            deployer.get().deploy(withAzureArmTemplate, ctx);
-        }
-    }
-
-    static <A extends Annotation> Optional<SunstoneCloudDeployer> getDeployer(Class<A> annotation) {
+    static <A extends Annotation> Optional<SunstoneCloudDeployer> getDeployer(Annotation annotation) {
         for (SunstoneCloudDeployerProvider sunstoneCloudDeployerProvider : sunstoneCloudDeployerProviderLoader) {
             Optional<SunstoneCloudDeployer> deployer = sunstoneCloudDeployerProvider.create(annotation);
             if (deployer.isPresent()) {

@@ -5,7 +5,7 @@ import aws.core.identification.AwsEc2Instance;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Parameter;
-import sunstone.api.WithAwsCfTemplate;
+import aws.api.WithAwsCfTemplate;
 import sunstone.api.inject.Hostname;
 
 import static aws.cloudformation.AwsTestConstants.instanceName;
