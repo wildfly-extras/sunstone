@@ -2,7 +2,7 @@ package aws.cloudformation.archiveDeploy.ec2.suitetests;
 
 
 import aws.cloudformation.AwsTestConstants;
-import aws.core.identification.AwsEc2Instance;
+import sunstone.aws.api.AwsEc2Instance;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -13,7 +13,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Deployment;
 import sunstone.api.Parameter;
-import aws.api.WithAwsCfTemplate;
+import sunstone.aws.api.WithAwsCfTemplate;
 import sunstone.api.inject.Hostname;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import static aws.cloudformation.AwsTestConstants.region;
 @WithAwsCfTemplate(parameters = {
         @Parameter(k = "instanceName", v = AwsTestConstants.instanceName)
 },
-        template = "aws/cloudformation/eap.yaml", region = region, perSuite = true)
+        template = "sunstone/aws/cloudformation/eap.yaml", region = region, perSuite = true)
 public class AwsEc2DeployFirstTest {
     @AwsEc2Instance(nameTag = AwsTestConstants.instanceName, region = region)
     Hostname hostname;

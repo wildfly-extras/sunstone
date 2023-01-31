@@ -1,7 +1,7 @@
 package aws.cloudformation.di.suitetests;
 
 
-import aws.core.identification.AwsEc2Instance;
+import sunstone.aws.api.AwsEc2Instance;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.extras.creaper.core.online.CliException;
@@ -9,7 +9,7 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.api.EapMode;
 import sunstone.api.Parameter;
 import sunstone.api.StandaloneMode;
-import aws.api.WithAwsCfTemplate;
+import sunstone.aws.api.WithAwsCfTemplate;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithAwsCfTemplate(parameters = {
         @Parameter(k = "instanceName", v = instanceName)
 },
-        template = "aws/cloudformation/eap.yaml", region = region, perSuite = true)
+        template = "sunstone/aws/cloudformation/eap.yaml", region = region, perSuite = true)
 public class AwsEapStandaloneManagementClientTests {
 
     @AwsEc2Instance(nameTag = instanceName)

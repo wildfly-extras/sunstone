@@ -5,6 +5,6 @@ import org.slf4j.LoggerFactory;
 
 public final class SunstoneLogger {
     private SunstoneLogger() {} // avoid instantiation
-    public static final Logger DEFAULT = LoggerFactory.getLogger("sunstone.clouds.core");
+    public static final Logger DEFAULT = LoggerFactory.getLogger("sunstone.core");
 
 }

@@ -1,1 +1,1 @@
-aws.core.AwsArchiveDeployerProvider
+sunstone.aws.impl.AwsArchiveDeployerProvider

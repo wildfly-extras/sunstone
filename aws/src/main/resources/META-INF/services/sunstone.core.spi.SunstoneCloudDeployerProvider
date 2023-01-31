@@ -1,1 +1,1 @@
-aws.core.AwsSunstoneDeployerProvider
+sunstone.aws.impl.AwsSunstoneDeployerProvider
