@@ -9,7 +9,7 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.api.EapMode;
 import sunstone.api.Parameter;
 import sunstone.api.StandaloneMode;
-import sunstone.api.WithAzureArmTemplate;
+import azure.api.WithAzureArmTemplate;
 
 import java.io.IOException;
 

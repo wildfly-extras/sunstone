@@ -12,7 +12,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Deployment;
 import sunstone.api.Parameter;
-import sunstone.api.WithAzureArmTemplate;
+import azure.api.WithAzureArmTemplate;
 import sunstone.api.inject.Hostname;
 
 import java.io.IOException;

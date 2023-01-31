@@ -13,7 +13,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Deployment;
 import sunstone.api.Parameter;
-import sunstone.api.WithAwsCfTemplate;
+import aws.api.WithAwsCfTemplate;
 import sunstone.api.inject.Hostname;
 
 import java.io.IOException;

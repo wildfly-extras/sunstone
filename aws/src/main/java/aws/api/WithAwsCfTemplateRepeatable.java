@@ -1,4 +1,6 @@
-package sunstone.api;
+package aws.api;
+
+import sunstone.api.SunstoneCloudDeployAnnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -13,7 +15,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@SunstoneCloudDeployAnnotation
 @Inherited
-public @interface WithAzureArmTemplateRepeatable {
-    WithAzureArmTemplate[] value();
+public @interface WithAwsCfTemplateRepeatable {
+    WithAwsCfTemplate[] value();
 }

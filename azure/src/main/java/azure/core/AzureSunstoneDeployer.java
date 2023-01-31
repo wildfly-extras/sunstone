@@ -1,15 +1,20 @@
 package azure.core;
 
 
+import azure.api.WithAzureArmTemplateRepeatable;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import sunstone.api.WithAzureArmTemplate;
+import azure.api.WithAzureArmTemplate;
 import sunstone.core.AbstractSunstoneCloudDeployer;
 import sunstone.core.SunstoneExtension;
+import sunstone.core.exceptions.IllegalArgumentSunstoneException;
+import sunstone.core.exceptions.SunstoneException;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+
+import static java.lang.String.format;
 
 /**
  * Purpose: handles creating resources on clouds. Resources may be defined by Azure ARM template
@@ -22,11 +27,19 @@ import java.util.Map;
  */
 public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
     @Override
-    public void deploy(Annotation annotation, ExtensionContext ctx) {
+    public void deploy(Annotation annotation, ExtensionContext ctx) throws SunstoneException {
         verify(annotation);
-        WithAzureArmTemplate armTemplateDefinition = (WithAzureArmTemplate) annotation;
-
         AzureSunstoneStore store = AzureSunstoneStore.get(ctx);
+        if (WithAzureArmTemplate.class.isAssignableFrom(annotation.annotationType())) {
+            deployArmTemplate((WithAzureArmTemplate) annotation, store);
+        } else if (WithAzureArmTemplateRepeatable.class.isAssignableFrom(annotation.annotationType())) {
+            for (WithAzureArmTemplate withAzureArmTemplate : ((WithAzureArmTemplateRepeatable) annotation).value()) {
+                deployArmTemplate(withAzureArmTemplate, store);
+            }
+        }
+    }
+
+    private void deployArmTemplate(WithAzureArmTemplate armTemplateDefinition, AzureSunstoneStore store) throws SunstoneException {
         AzureArmTemplateCloudDeploymentManager deploymentManager = store.getAzureArmTemplateDeploymentManagerOrCreate();
 
         String content = null;
@@ -34,12 +47,12 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
             content = getResourceContent(armTemplateDefinition.template());
             String group = resolveOrGetFromSunstoneProperties(armTemplateDefinition.group(), AzureConfig.GROUP);
             if (group == null) {
-                throw new IllegalArgumentException("Resource group for Azure ARM template is not defined. "
+                throw new IllegalArgumentSunstoneException("Resource group for Azure ARM template is not defined. "
                         + "It must be specified either in the annotation or in sunstone.properties file");
             }
             String region = resolveOrGetFromSunstoneProperties(armTemplateDefinition.region(), AzureConfig.REGION);
             if (region == null) {
-                throw new IllegalArgumentException("Region for Azure ARM template is not defined. It must be specified either"
+                throw new IllegalArgumentSunstoneException("Region for Azure ARM template is not defined. It must be specified either"
                         + "in the annotation or in sunstone.properties file");
             }
 
@@ -56,16 +69,20 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SunstoneException(e);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new SunstoneException(e);
         }
     }
 
-    private void verify(Annotation clazz) {
-        if (!AzureUtils.propertiesForArmClientArePresent()) {
-            throw new RuntimeException("Missing credentials for Azure.");
+    private void verify(Annotation clazz) throws IllegalArgumentSunstoneException {
+        if (!AzureUtils.propertiesForArmClientArePresent()){
+            throw new IllegalArgumentSunstoneException("Missing credentials for Azure.");
         }
-        WithAzureArmTemplate.class.isAssignableFrom(clazz.getClass());
+        if (!WithAzureArmTemplate.class.isAssignableFrom(clazz.annotationType())
+                && !WithAzureArmTemplateRepeatable.class.isAssignableFrom(clazz.annotationType())) {
+            throw new IllegalArgumentSunstoneException(format("AzureSunstoneDeployer expects %s or %s annotations",
+                    WithAzureArmTemplate.class, WithAzureArmTemplateRepeatable.class));
+        }
     }
 }

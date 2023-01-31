@@ -1,8 +1,10 @@
-package sunstone.api;
+package azure.api;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
+import sunstone.api.Parameter;
+import sunstone.api.SunstoneCloudDeployAnnotation;
 import sunstone.core.SunstoneExtension;
 
 import java.lang.annotation.ElementType;
@@ -22,6 +24,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Repeatable(WithAzureArmTemplateRepeatable.class)
 @ExtendWith({SunstoneExtension.class})
+@SunstoneCloudDeployAnnotation
 @Inherited
 public @interface WithAzureArmTemplate {
     String template();

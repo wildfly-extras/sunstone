@@ -9,7 +9,7 @@ import okhttp3.Response;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Parameter;
-import sunstone.api.WithAwsCfTemplate;
+import aws.api.WithAwsCfTemplate;
 import sunstone.api.inject.Hostname;
 
 import java.io.IOException;
