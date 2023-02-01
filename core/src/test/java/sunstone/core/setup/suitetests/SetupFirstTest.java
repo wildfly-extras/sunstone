@@ -17,7 +17,7 @@ public class SetupFirstTest {
 
     static class StaticClassTask extends AbstractSetupTask {
         static boolean setupCalled = false;
-        static boolean cleanupCalled = false;
+        static boolean teardownCalled = false;
 
         @Override
         public void setup() throws Exception {
@@ -25,13 +25,13 @@ public class SetupFirstTest {
         }
 
         @Override
-        public void cleanup() throws Exception {
-            cleanupCalled = true;
+        public void teardown() throws Exception {
+            teardownCalled = true;
         }
 
         public static void reset() {
             setupCalled = false;
-            cleanupCalled = false;
+            teardownCalled = false;
         }
     }
 

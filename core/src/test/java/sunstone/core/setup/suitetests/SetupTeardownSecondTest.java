@@ -5,12 +5,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
-public class SetupCleanupSecondTest {
+public class SetupTeardownSecondTest {
 
     @Test
     public void test() {
-        Assertions.assertThat(SetupFirstTest.StaticClassTask.cleanupCalled).isTrue();
-        Assertions.assertThat(RegularClassTask.cleanupCalled).isTrue();
+        Assertions.assertThat(SetupFirstTest.StaticClassTask.teardownCalled).isTrue();
+        Assertions.assertThat(RegularClassTask.teardownCalled).isTrue();
     }
 
     @AfterAll

@@ -17,15 +17,10 @@ class StaticDITask extends AbstractStaticDITask {
     @IndirectlyAnnotatedInject
     String indirectNonStaticInject;
     static boolean setupCalled = false;
-    static boolean cleanupCalled = false;
+    static boolean teardownCalled = false;
 
     @Override
     public void setup() throws Exception {
-        setupCalled = true;
-    }
-
-    @Override
-    public void cleanup() throws Exception {
         assertThat(directStaticInject).isEqualTo("set");
         assertThat(directStaticInjectInAbstract).isEqualTo("set");
         assertThat(indirectStaticInject).isEqualTo("set");
@@ -34,11 +29,16 @@ class StaticDITask extends AbstractStaticDITask {
         assertThat(directNonStaticInjectInAbstract).isEqualTo("set");
         assertThat(indirectNonStaticInject).isEqualTo("set");
         assertThat(indirectNonStaticInjectInAbstract).isEqualTo("set");
-        cleanupCalled = true;
+        setupCalled = true;
+    }
+
+    @Override
+    public void teardown() throws Exception {
+        teardownCalled = true;
     }
 
     public static void reset() {
         setupCalled = false;
-        cleanupCalled = false;
+        teardownCalled = false;
     }
 }

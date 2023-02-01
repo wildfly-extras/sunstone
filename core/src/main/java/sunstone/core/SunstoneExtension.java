@@ -89,7 +89,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
             try {
                 abstractSetupTask = (AbstractSetupTask) constructor.get().newInstance();
                 injectInstanceResources(ctx, abstractSetupTask);
-                store.addClosable((AutoCloseable) abstractSetupTask::cleanup);
+                store.addClosable((AutoCloseable) abstractSetupTask::teardown);
                 abstractSetupTask.setup();
             } catch (Exception e) {
                 throw new RuntimeException(e);
