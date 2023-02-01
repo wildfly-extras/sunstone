@@ -1,11 +1,11 @@
 package aws.cloudformation.di.suitetests;
 
 
-import aws.core.identification.AwsEc2Instance;
+import sunstone.aws.api.AwsEc2Instance;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.api.Parameter;
-import aws.api.WithAwsCfTemplate;
+import sunstone.aws.api.WithAwsCfTemplate;
 import sunstone.api.inject.Hostname;
 
 import static aws.cloudformation.AwsTestConstants.instanceName;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithAwsCfTemplate(parameters = {
         @Parameter(k = "instanceName", v = instanceName)
 },
-        template = "aws/cloudformation/eap.yaml", region = region, perSuite = true)
+        template = "sunstone/aws/cloudformation/eap.yaml", region = region, perSuite = true)
 public class AwsEapHostnameTests {
 
     @AwsEc2Instance(nameTag = instanceName)

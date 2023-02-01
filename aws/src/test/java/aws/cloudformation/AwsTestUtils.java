@@ -10,7 +10,7 @@ import software.amazon.awssdk.services.ec2.model.DescribeKeyPairsRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeKeyPairsResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.KeyPairInfo;
-import aws.core.AwsConfig;
+import sunstone.aws.impl.AwsConfig;
 import sunstone.core.properties.ObjectProperties;
 import sunstone.core.properties.ObjectType;
 

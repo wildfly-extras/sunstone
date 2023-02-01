@@ -1,1 +1,1 @@
-azure.core.AzureSunstoneDeployerProvider
+sunstone.azure.impl.AzureSunstoneDeployerProvider

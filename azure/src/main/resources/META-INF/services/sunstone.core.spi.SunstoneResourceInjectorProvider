@@ -1,1 +1,1 @@
-azure.core.AzureSunstoneResourceInjectorProvider
+sunstone.azure.impl.AzureSunstoneResourceInjectorProvider

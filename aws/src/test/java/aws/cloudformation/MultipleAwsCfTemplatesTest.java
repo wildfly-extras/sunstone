@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.KeyPairInfo;
 import sunstone.api.Parameter;
-import aws.api.WithAwsCfTemplate;
+import sunstone.aws.api.WithAwsCfTemplate;
 
 import java.util.List;
 
@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
         @Parameter(k = "keyTag", v = AwsTestConstants.TAG),
         @Parameter(k = "keyName", v = AwsTestConstants.NAME_1)
 },
-        template = "aws/cloudformation/keyPair.yaml", region = "us-east-1")
+        template = "sunstone/aws/cloudformation/keyPair.yaml", region = "us-east-1")
 
 @WithAwsCfTemplate(parameters = {
         @Parameter(k = "keyTag", v = AwsTestConstants.TAG),
         @Parameter(k = "keyName", v = AwsTestConstants.NAME_2)
 },
-        template = "aws/cloudformation/keyPair.yaml", region = "us-east-1")
+        template = "sunstone/aws/cloudformation/keyPair.yaml", region = "us-east-1")
 public class MultipleAwsCfTemplatesTest {
     static Ec2Client client;
 
