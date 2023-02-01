@@ -18,31 +18,31 @@ import static org.assertj.core.api.Assertions.assertThat;
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
         template = "sunstone/azure/armTemplates/eap.json", group = SunstoneResourceAzSuiteTests.group, perSuite = true)
-public class AzEapHostnameTests {
+public class AzHostnameTests {
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
-    static Hostname staticEapHostname;
+    static Hostname staticHostname;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = SunstoneResourceAzSuiteTests.group)
-    static Hostname staticEapHostnameWithRegion;
+    static Hostname staticHostnameWithRegion;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
-    Hostname eapHostname;
+    Hostname hostname;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = SunstoneResourceAzSuiteTests.group)
-    Hostname eapHostnameWithRegion;
+    Hostname hostnameWithRegion;
 
     @BeforeAll
     public static void verifyStaticDI() {
-        assertThat(staticEapHostname).isNotNull();
-        assertThat(staticEapHostnameWithRegion).isNotNull();
+        assertThat(staticHostname).isNotNull();
+        assertThat(staticHostnameWithRegion).isNotNull();
     }
 
     @Test
     public void hostnamesNotEmpty() {
-        assertThat(staticEapHostname.get()).isNotBlank();
-        assertThat(staticEapHostnameWithRegion.get()).isNotBlank();
-        assertThat(eapHostname.get()).isNotBlank();
-        assertThat(eapHostnameWithRegion.get()).isNotBlank();
+        assertThat(staticHostname.get()).isNotBlank();
+        assertThat(staticHostnameWithRegion.get()).isNotBlank();
+        assertThat(hostname.get()).isNotBlank();
+        assertThat(hostnameWithRegion.get()).isNotBlank();
     }
 }

@@ -1,12 +1,12 @@
 package aws.cloudformation.di;
 
 
-import aws.cloudformation.di.suitetests.AwsEapHostnameTests;
-import aws.cloudformation.di.suitetests.AwsEapStandaloneManagementClientTests;
+import aws.cloudformation.di.suitetests.AwsHostnameTests;
+import aws.cloudformation.di.suitetests.AwsStandaloneManagementClientTests;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
-@SelectClasses({AwsEapHostnameTests.class, AwsEapStandaloneManagementClientTests.class})
+@SelectClasses({AwsHostnameTests.class, AwsStandaloneManagementClientTests.class})
 public class SunstoneResourceAwsSuiteTests {
 }

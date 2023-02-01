@@ -66,7 +66,7 @@ Injection is based on a field's type and annotation. For injecting the hostname 
 
 ```java
     @AzureVirtualMachine(name = "instanceName")
-static Hostname staticEapHostname;
+static Hostname hostname;
 ```
 
 Following table shows what can be injected (type of the field) for what cloud resources (resource identification annotation)
@@ -111,19 +111,19 @@ If WildFly is running in standalone mode:
 ```java
 @AzureVirtualMachine(
         name = "instanceName",
-        group = "grpup",
-        mode = EapMode.STANDALONE,
+        group = "group",
+        mode = OperatingMode.STANDALONE,
         standalone = @StandaloneMode(
                 user = "mngmtUser",
                 password = "mngmtPassword",
                 port = "mngmtPort"))
-static OnlineManagementClient staticEapClientSpecified;
+static OnlineManagementClient client;
 ```
 
 All values may contain expressions (`${my.property}`):
 - `name` - mandatory, name of the virtual machine
 - `group` - optional, if empty, `sunstone.azure.group` from `sunstone.properties` will be used
-- mode - optional, default to EapMode.STANDALONE
+- mode - optional, default to OperatingMode.STANDALONE
 - standalone - optional
   - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` from `sunstone.properties` will be used
   - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` from `sunstone.properties` will be used

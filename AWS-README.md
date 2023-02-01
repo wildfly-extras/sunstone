@@ -64,7 +64,7 @@ Injection is based on a field's type and annotation. For injecting the hostname 
 
 ```java
 @AwsEc2Instance(nameTag = "instanceName")
-static Hostname staticEapHostname;
+static Hostname hostname;
 ```
 
 Following table shows what can be injected (type of the field) for what cloud resources (resource identification annotation)
@@ -109,18 +109,18 @@ If WildFly is running in standalone mode:
 @AwsEc2Instance(
         nameTag = "instanceName",
         region = "region",
-        mode = EapMode.STANDALONE,
+        mode = OperatingMode.STANDALONE,
         standalone = @StandaloneMode(
                 user = "mngmtUser",
                 password = "mngmtPassword",
                 port = "mngmtPort"))
-static OnlineManagementClient staticEapClientSpecified;
+static OnlineManagementClient client;
 ```
 
 All values may contain expressions (`${my.property}`):
 - `nameTag` - mandatory, value of `name` tag of EC2 Instance
 - `region` - optional, if empty, `sunstone.aws.region` from `sunstone.properties` will be used
-- mode - optional, default to EapMode.STANDALONE
+- mode - optional, default to OperatingMode.STANDALONE
 - standalone - optional
   - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` from `sunstone.properties` will be used
   - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` from `sunstone.properties` will be used
