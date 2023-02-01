@@ -103,7 +103,7 @@
                             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                         </systemPropertyVariables>
 
-                        <testFailureIgnore>true</testFailureIgnore>
+                        <testFailureIgnore>false</testFailureIgnore>
                         <includes>
                             <!--
                             These are surefire default values explicitly stated
