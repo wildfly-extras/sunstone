@@ -5,7 +5,7 @@ import sunstone.api.AbstractSetupTask;
 
 class RegularClassTask extends AbstractSetupTask {
     static boolean setupCalled = false;
-    static boolean cleanupCalled = false;
+    static boolean teardownCalled = false;
 
     @Override
     public void setup() throws Exception {
@@ -13,12 +13,12 @@ class RegularClassTask extends AbstractSetupTask {
     }
 
     @Override
-    public void cleanup() throws Exception {
-        cleanupCalled = true;
+    public void teardown() throws Exception {
+        teardownCalled = true;
     }
 
     public static void reset() {
         setupCalled = false;
-        cleanupCalled = false;
+        teardownCalled = false;
     }
 }
