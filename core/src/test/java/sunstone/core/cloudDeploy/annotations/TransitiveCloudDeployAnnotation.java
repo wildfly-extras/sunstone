@@ -1,7 +1,6 @@
 package sunstone.core.cloudDeploy.annotations;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import sunstone.api.SunstoneArchiveDeployTargetAnotation;
 import sunstone.core.SunstoneExtension;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +11,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@SunstoneArchiveDeployTargetAnotation
+@CustomSunstoneCloudDeployAnnotation
 @ExtendWith(SunstoneExtension.class)
 @Inherited
 public @interface TransitiveCloudDeployAnnotation {
