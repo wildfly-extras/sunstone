@@ -23,31 +23,31 @@ import static org.assertj.core.api.Assertions.assertThat;
         @Parameter(k = "instanceName", v = instanceName)
 },
         template = "sunstone/aws/cloudformation/eap.yaml", region = region, perSuite = true)
-public class AwsEapHostnameTests {
+public class AwsHostnameTests {
 
     @AwsEc2Instance(nameTag = instanceName)
-    static Hostname staticEapHostname;
+    static Hostname staticHostname;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
-    static Hostname staticEapHostnameWithRegion;
+    static Hostname staticHostnameWithRegion;
 
     @AwsEc2Instance(nameTag = instanceName)
-    Hostname eapHostname;
+    Hostname hostname;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
-    Hostname eapHostnameWithRegion;
+    Hostname hostnameWithRegion;
 
     @BeforeAll
     public static void verifyStaticDI() {
-        assertThat(staticEapHostname).isNotNull();
-        assertThat(staticEapHostnameWithRegion).isNotNull();
+        assertThat(staticHostname).isNotNull();
+        assertThat(staticHostnameWithRegion).isNotNull();
     }
 
     @Test
     public void resourceCreated() {
-        assertThat(staticEapHostname.get()).isNotBlank();
-        assertThat(staticEapHostnameWithRegion.get()).isNotBlank();
-        assertThat(eapHostname.get()).isNotBlank();
-        assertThat(eapHostnameWithRegion.get()).isNotBlank();
+        assertThat(staticHostname.get()).isNotBlank();
+        assertThat(staticHostnameWithRegion.get()).isNotBlank();
+        assertThat(hostname.get()).isNotBlank();
+        assertThat(hostnameWithRegion.get()).isNotBlank();
     }
 }

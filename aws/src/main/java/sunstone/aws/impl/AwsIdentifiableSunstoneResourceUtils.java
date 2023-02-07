@@ -4,7 +4,7 @@ package sunstone.aws.impl;
 import sunstone.aws.api.AwsEc2Instance;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import software.amazon.awssdk.services.ec2.model.Instance;
-import sunstone.api.EapMode;
+import sunstone.api.OperatingMode;
 import sunstone.api.inject.Hostname;
 import sunstone.core.CreaperUtils;
 import sunstone.core.exceptions.SunstoneException;
@@ -27,7 +27,7 @@ public class AwsIdentifiableSunstoneResourceUtils {
         try {
             if (identification.type == AwsIdentifiableSunstoneResource.EC2_INSTANCE) {
                 AwsEc2Instance annotation = (AwsEc2Instance) identification.identification;
-                if (annotation.mode() == EapMode.STANDALONE) {
+                if (annotation.mode() == OperatingMode.STANDALONE) {
                     return CreaperUtils.createStandaloneManagementClient(resolveHostname(identification, store).get(), annotation.standalone());
                 } else {
                     throw new UnsupportedSunstoneOperationException("Only standalone mode is supported for injecting OnlineManagementClient.");

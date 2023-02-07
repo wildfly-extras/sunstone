@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.extras.creaper.core.online.CliException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.api.EapMode;
+import sunstone.api.OperatingMode;
 import sunstone.api.Parameter;
 import sunstone.api.StandaloneMode;
 import sunstone.azure.api.WithAzureArmTemplate;
@@ -23,31 +23,31 @@ import static org.assertj.core.api.Assertions.assertThat;
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
         template = "sunstone/azure/armTemplates/eap.json", group = SunstoneResourceAzSuiteTests.group, perSuite = true)
-public class AzEapStandaloneManagementClientTests {
+public class AzStandaloneManagementClientTests {
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
-    static OnlineManagementClient staticEapClient;
+    static OnlineManagementClient staticMngmtClient;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = SunstoneResourceAzSuiteTests.group, mode = EapMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.eapMngmtUser, password = AzureTestConstants.eapMngmtPassword, port = AzureTestConstants.eapMngmtPort))
-    static OnlineManagementClient staticEapClientSpecified;
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = SunstoneResourceAzSuiteTests.group, mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mngmtUser, password = AzureTestConstants.mngmtPassword, port = AzureTestConstants.mngmtPort))
+    static OnlineManagementClient staticMngmtClientSpecified;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
-    OnlineManagementClient eapClient;
+    OnlineManagementClient mngmtClient;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = SunstoneResourceAzSuiteTests.group, mode = EapMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.eapMngmtUser, password = AzureTestConstants.eapMngmtPassword, port = AzureTestConstants.eapMngmtPort))
-    OnlineManagementClient eapClientSpecified;
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = SunstoneResourceAzSuiteTests.group, mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mngmtUser, password = AzureTestConstants.mngmtPassword, port = AzureTestConstants.mngmtPort))
+    OnlineManagementClient mngmtClientSpecified;
 
     @BeforeAll
     public static void verifyStaticDI() {
-        assertThat(staticEapClient).isNotNull();
-        assertThat(staticEapClientSpecified).isNotNull();
+        assertThat(staticMngmtClient).isNotNull();
+        assertThat(staticMngmtClientSpecified).isNotNull();
     }
 
     @Test
     public void testManagementClients() throws CliException, IOException {
-        staticEapClient.execute(":whoami").assertSuccess();
-        staticEapClientSpecified.execute(":whoami").assertSuccess();
-        eapClient.execute(":whoami").assertSuccess();
-        eapClientSpecified.execute(":whoami").assertSuccess();
+        staticMngmtClient.execute(":whoami").assertSuccess();
+        staticMngmtClientSpecified.execute(":whoami").assertSuccess();
+        mngmtClient.execute(":whoami").assertSuccess();
+        mngmtClientSpecified.execute(":whoami").assertSuccess();
     }
 }

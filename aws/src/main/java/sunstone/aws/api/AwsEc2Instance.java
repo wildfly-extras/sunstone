@@ -4,7 +4,7 @@ package sunstone.aws.api;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.api.Deployment;
 import sunstone.api.DomainMode;
-import sunstone.api.EapMode;
+import sunstone.api.OperatingMode;
 import sunstone.api.StandaloneMode;
 import sunstone.api.inject.Hostname;
 
@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 public @interface AwsEc2Instance {
     String nameTag();
     String region() default "";
-    EapMode mode() default EapMode.STANDALONE;
+    OperatingMode mode() default OperatingMode.STANDALONE;
     StandaloneMode standalone()  default @StandaloneMode();
     DomainMode domain()  default @DomainMode();
 }

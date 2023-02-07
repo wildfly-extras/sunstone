@@ -1,6 +1,6 @@
 package sunstone.api;
 
-public enum EapMode {
+public enum OperatingMode {
     STANDALONE,
     DOMAIN;
 }
