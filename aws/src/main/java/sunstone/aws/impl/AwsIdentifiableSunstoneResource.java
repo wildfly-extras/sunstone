@@ -1,15 +1,15 @@
 package sunstone.aws.impl;
 
 
-import sunstone.aws.api.AwsAutoResolve;
-import sunstone.aws.api.AwsEc2Instance;
+import sunstone.aws.annotation.AwsAutoResolve;
+import sunstone.aws.annotation.AwsEc2Instance;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.core.properties.ObjectProperties;
 import sunstone.core.properties.ObjectType;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.s3.S3Client;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.inject.Hostname;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;

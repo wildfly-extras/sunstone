@@ -1,11 +1,11 @@
 package sunstone.azure.impl;
 
 
-import sunstone.azure.api.AzureInjectionAnnotation;
+import sunstone.azure.annotation.AzureInjectionAnnotation;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.inject.Hostname;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.SunstoneException;

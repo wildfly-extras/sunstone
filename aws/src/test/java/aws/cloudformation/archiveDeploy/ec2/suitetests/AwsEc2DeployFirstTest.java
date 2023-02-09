@@ -2,7 +2,7 @@ package aws.cloudformation.archiveDeploy.ec2.suitetests;
 
 
 import aws.cloudformation.AwsTestConstants;
-import sunstone.aws.api.AwsEc2Instance;
+import sunstone.aws.annotation.AwsEc2Instance;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,10 +11,10 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Deployment;
-import sunstone.api.Parameter;
-import sunstone.aws.api.WithAwsCfTemplate;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.Deployment;
+import sunstone.annotation.Parameter;
+import sunstone.aws.annotation.WithAwsCfTemplate;
+import sunstone.annotation.inject.Hostname;
 
 import java.io.IOException;
 

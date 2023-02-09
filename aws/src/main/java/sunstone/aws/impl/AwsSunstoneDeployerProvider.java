@@ -1,8 +1,8 @@
 package sunstone.aws.impl;
 
 
-import sunstone.aws.api.WithAwsCfTemplate;
-import sunstone.aws.api.WithAwsCfTemplateRepeatable;
+import sunstone.aws.annotation.WithAwsCfTemplate;
+import sunstone.aws.annotation.WithAwsCfTemplateRepeatable;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 

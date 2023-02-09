@@ -1,7 +1,7 @@
 package sunstone.azure.armTemplates.di;
 
 
-import sunstone.azure.api.AzureAutoResolve;
+import sunstone.azure.annotation.AzureAutoResolve;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

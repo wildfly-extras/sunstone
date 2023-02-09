@@ -1,6 +1,6 @@
 package sunstone.core.cloudDeploy.annotations;
 
-import sunstone.api.SunstoneCloudDeployAnnotation;
+import sunstone.annotation.SunstoneCloudDeployAnnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

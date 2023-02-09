@@ -2,7 +2,7 @@ package sunstone.core;
 
 
 import com.google.common.io.BaseEncoding;
-import sunstone.api.Parameter;
+import sunstone.annotation.Parameter;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.properties.ObjectProperties;
 import sunstone.core.properties.ObjectType;

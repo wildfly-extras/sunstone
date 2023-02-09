@@ -5,7 +5,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.extension.ExtendWith;
-import sunstone.api.Deployment;
+import sunstone.annotation.Deployment;
 import sunstone.core.SunstoneExtension;
 
 import java.io.File;

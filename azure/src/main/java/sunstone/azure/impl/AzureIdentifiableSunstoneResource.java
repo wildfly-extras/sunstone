@@ -1,14 +1,14 @@
 package sunstone.azure.impl;
 
 
-import sunstone.azure.api.AzureAutoResolve;
-import sunstone.azure.api.AzureVirtualMachine;
-import sunstone.azure.api.AzureWebApplication;
+import sunstone.azure.annotation.AzureAutoResolve;
+import sunstone.azure.annotation.AzureVirtualMachine;
+import sunstone.azure.annotation.AzureWebApplication;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.inject.Hostname;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;

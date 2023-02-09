@@ -3,12 +3,12 @@ package sunstone.azure.armTemplates.di.suitetests;
 
 import sunstone.azure.armTemplates.AzureTestConstants;
 import sunstone.azure.armTemplates.di.SunstoneResourceAzSuiteTests;
-import sunstone.azure.api.AzureVirtualMachine;
+import sunstone.azure.annotation.AzureVirtualMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Parameter;
-import sunstone.azure.api.WithAzureArmTemplate;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.Parameter;
+import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.annotation.inject.Hostname;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

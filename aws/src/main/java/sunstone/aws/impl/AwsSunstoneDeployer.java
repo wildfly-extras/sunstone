@@ -1,10 +1,10 @@
 package sunstone.aws.impl;
 
 
-import sunstone.aws.api.WithAwsCfTemplateRepeatable;
+import sunstone.aws.annotation.WithAwsCfTemplateRepeatable;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
-import sunstone.aws.api.WithAwsCfTemplate;
+import sunstone.aws.annotation.WithAwsCfTemplate;
 import sunstone.core.AbstractSunstoneCloudDeployer;
 import sunstone.core.SunstoneExtension;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;

@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.KeyPairInfo;
-import sunstone.api.Parameter;
-import sunstone.aws.api.WithAwsCfTemplate;
+import sunstone.annotation.Parameter;
+import sunstone.aws.annotation.WithAwsCfTemplate;
 
 import java.util.List;
 

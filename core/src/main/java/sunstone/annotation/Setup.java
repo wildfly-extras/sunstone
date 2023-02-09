@@ -1,4 +1,4 @@
-package sunstone.api;
+package sunstone.annotation;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import sunstone.core.SunstoneExtension;

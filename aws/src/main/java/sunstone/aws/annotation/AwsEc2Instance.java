@@ -1,12 +1,12 @@
-package sunstone.aws.api;
+package sunstone.aws.annotation;
 
 
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.api.Deployment;
-import sunstone.api.DomainMode;
-import sunstone.api.OperatingMode;
-import sunstone.api.StandaloneMode;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.Deployment;
+import sunstone.annotation.DomainMode;
+import sunstone.annotation.OperatingMode;
+import sunstone.annotation.StandaloneMode;
+import sunstone.annotation.inject.Hostname;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

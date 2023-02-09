@@ -1,6 +1,6 @@
 package sunstone.core.di;
 
-import sunstone.api.SunstoneInjectionAnnotation;
+import sunstone.annotation.SunstoneInjectionAnnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

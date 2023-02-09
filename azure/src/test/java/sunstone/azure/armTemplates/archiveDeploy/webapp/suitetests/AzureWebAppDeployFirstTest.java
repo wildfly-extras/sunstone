@@ -3,7 +3,7 @@ package sunstone.azure.armTemplates.archiveDeploy.webapp.suitetests;
 
 import sunstone.azure.armTemplates.AzureTestConstants;
 import sunstone.azure.armTemplates.archiveDeploy.webapp.WebAppDeploySuiteTests;
-import sunstone.azure.api.AzureWebApplication;
+import sunstone.azure.annotation.AzureWebApplication;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -12,10 +12,10 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Deployment;
-import sunstone.api.Parameter;
-import sunstone.azure.api.WithAzureArmTemplate;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.Deployment;
+import sunstone.annotation.Parameter;
+import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.annotation.inject.Hostname;
 
 import java.io.IOException;
 

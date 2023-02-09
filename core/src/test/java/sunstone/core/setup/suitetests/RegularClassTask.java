@@ -1,7 +1,7 @@
 package sunstone.core.setup.suitetests;
 
 
-import sunstone.api.AbstractSetupTask;
+import sunstone.annotation.AbstractSetupTask;
 
 class RegularClassTask extends AbstractSetupTask {
     static boolean setupCalled = false;

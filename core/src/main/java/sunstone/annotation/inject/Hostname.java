@@ -1,4 +1,4 @@
-package sunstone.api.inject;
+package sunstone.annotation.inject;
 
 /**
  * Provides the hostname of a resource.

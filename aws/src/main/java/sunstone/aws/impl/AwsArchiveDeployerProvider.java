@@ -1,7 +1,7 @@
 package sunstone.aws.impl;
 
 
-import sunstone.aws.api.AwsArchiveDeploymentAnnotation;
+import sunstone.aws.annotation.AwsArchiveDeploymentAnnotation;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.spi.SunstoneArchiveDeployerProvider;

@@ -2,7 +2,7 @@ package sunstone.core.cloudDeploy.annotations;
 
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import sunstone.api.SunstoneCloudDeployAnnotation;
+import sunstone.annotation.SunstoneCloudDeployAnnotation;
 import sunstone.core.SunstoneExtension;
 
 import java.lang.annotation.ElementType;

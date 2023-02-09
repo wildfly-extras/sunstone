@@ -1,9 +1,9 @@
 package sunstone.azure.impl;
 
 
-import sunstone.azure.api.WithAzureArmTemplateRepeatable;
+import sunstone.azure.annotation.WithAzureArmTemplateRepeatable;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import sunstone.azure.api.WithAzureArmTemplate;
+import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.core.AbstractSunstoneCloudDeployer;
 import sunstone.core.SunstoneExtension;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;

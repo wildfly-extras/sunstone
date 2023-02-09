@@ -1,7 +1,7 @@
 package aws.cloudformation.di;
 
 
-import sunstone.aws.api.AwsAutoResolve;
+import sunstone.aws.annotation.AwsAutoResolve;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

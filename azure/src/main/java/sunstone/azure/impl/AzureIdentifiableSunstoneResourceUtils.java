@@ -1,12 +1,12 @@
 package sunstone.azure.impl;
 
 
-import sunstone.azure.api.AzureVirtualMachine;
+import sunstone.azure.annotation.AzureVirtualMachine;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.api.OperatingMode;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.OperatingMode;
+import sunstone.annotation.inject.Hostname;
 import sunstone.core.CreaperUtils;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;

@@ -3,8 +3,8 @@ package sunstone.core.setup.suitetests;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sunstone.api.AbstractSetupTask;
-import sunstone.api.Setup;
+import sunstone.annotation.AbstractSetupTask;
+import sunstone.annotation.Setup;
 
 @Setup({SetupFirstTest.StaticClassTask.class, RegularClassTask.class})
 public class SetupFirstTest {

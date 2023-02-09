@@ -1,4 +1,4 @@
-package sunstone.azure.api;
+package sunstone.azure.annotation;
 
 
 import java.lang.annotation.ElementType;
