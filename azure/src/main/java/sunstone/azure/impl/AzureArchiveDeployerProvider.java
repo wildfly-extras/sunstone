@@ -2,7 +2,7 @@ package sunstone.azure.impl;
 
 
 import sunstone.azure.impl.AzureIdentifiableSunstoneResource.Identification;
-import sunstone.azure.api.AzureArchiveDeploymentAnnotation;
+import sunstone.azure.annotation.AzureArchiveDeploymentAnnotation;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.spi.SunstoneArchiveDeployerProvider;

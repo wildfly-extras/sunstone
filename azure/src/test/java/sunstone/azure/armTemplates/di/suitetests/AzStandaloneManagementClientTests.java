@@ -3,15 +3,15 @@ package sunstone.azure.armTemplates.di.suitetests;
 
 import sunstone.azure.armTemplates.AzureTestConstants;
 import sunstone.azure.armTemplates.di.SunstoneResourceAzSuiteTests;
-import sunstone.azure.api.AzureVirtualMachine;
+import sunstone.azure.annotation.AzureVirtualMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.extras.creaper.core.online.CliException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.api.OperatingMode;
-import sunstone.api.Parameter;
-import sunstone.api.StandaloneMode;
-import sunstone.azure.api.WithAzureArmTemplate;
+import sunstone.annotation.OperatingMode;
+import sunstone.annotation.Parameter;
+import sunstone.annotation.StandaloneMode;
+import sunstone.azure.annotation.WithAzureArmTemplate;
 
 import java.io.IOException;
 

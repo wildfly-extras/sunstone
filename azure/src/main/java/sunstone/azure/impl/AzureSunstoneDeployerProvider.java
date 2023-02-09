@@ -1,8 +1,8 @@
 package sunstone.azure.impl;
 
 
-import sunstone.azure.api.WithAzureArmTemplate;
-import sunstone.azure.api.WithAzureArmTemplateRepeatable;
+import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.azure.annotation.WithAzureArmTemplateRepeatable;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 

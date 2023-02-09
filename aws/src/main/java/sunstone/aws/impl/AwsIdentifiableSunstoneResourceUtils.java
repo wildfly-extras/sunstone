@@ -1,11 +1,11 @@
 package sunstone.aws.impl;
 
 
-import sunstone.aws.api.AwsEc2Instance;
+import sunstone.aws.annotation.AwsEc2Instance;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import software.amazon.awssdk.services.ec2.model.Instance;
-import sunstone.api.OperatingMode;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.OperatingMode;
+import sunstone.annotation.inject.Hostname;
 import sunstone.core.CreaperUtils;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;

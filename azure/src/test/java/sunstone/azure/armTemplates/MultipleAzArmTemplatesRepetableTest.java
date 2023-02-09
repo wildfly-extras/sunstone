@@ -5,9 +5,9 @@ import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.network.models.Network;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Parameter;
-import sunstone.azure.api.WithAzureArmTemplate;
-import sunstone.azure.api.WithAzureArmTemplateRepeatable;
+import sunstone.annotation.Parameter;
+import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.azure.annotation.WithAzureArmTemplateRepeatable;
 
 import static sunstone.azure.armTemplates.MultipleAzArmTemplatesRepetableTest.GROUP;
 import static org.assertj.core.api.Assertions.assertThat;

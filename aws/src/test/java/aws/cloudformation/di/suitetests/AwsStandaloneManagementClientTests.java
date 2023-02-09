@@ -1,15 +1,15 @@
 package aws.cloudformation.di.suitetests;
 
 
-import sunstone.aws.api.AwsEc2Instance;
+import sunstone.aws.annotation.AwsEc2Instance;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.extras.creaper.core.online.CliException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.api.OperatingMode;
-import sunstone.api.Parameter;
-import sunstone.api.StandaloneMode;
-import sunstone.aws.api.WithAwsCfTemplate;
+import sunstone.annotation.OperatingMode;
+import sunstone.annotation.Parameter;
+import sunstone.annotation.StandaloneMode;
+import sunstone.aws.annotation.WithAwsCfTemplate;
 
 import java.io.IOException;
 

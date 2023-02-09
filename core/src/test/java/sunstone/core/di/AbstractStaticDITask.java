@@ -1,7 +1,7 @@
 package sunstone.core.di;
 
 
-import sunstone.api.AbstractSetupTask;
+import sunstone.annotation.AbstractSetupTask;
 
 abstract class AbstractStaticDITask extends AbstractSetupTask {
     @DirectlyAnnotatedInject

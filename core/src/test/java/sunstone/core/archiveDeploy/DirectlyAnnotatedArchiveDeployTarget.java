@@ -1,6 +1,6 @@
 package sunstone.core.archiveDeploy;
 
-import sunstone.api.SunstoneArchiveDeployTargetAnotation;
+import sunstone.annotation.SunstoneArchiveDeployTargetAnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

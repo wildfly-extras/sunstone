@@ -1,8 +1,8 @@
-package sunstone.azure.api;
+package sunstone.azure.annotation;
 
 
-import sunstone.api.Deployment;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.Deployment;
+import sunstone.annotation.inject.Hostname;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * <br>
  * For more information about possible injection, see {@link AzureInjectionAnnotation}
  * <br>
- * Archive deploy operation (using {@link sunstone.api.Deployment}) is supported. Always deployed as a <b>ROOT.war</b> ignoring {@link Deployment#name()}.
+ * Archive deploy operation (using {@link sunstone.annotation.Deployment}) is supported. Always deployed as a <b>ROOT.war</b> ignoring {@link Deployment#name()}.
  * <br>
  * For more information about possible archive deploy operation, see {@link AzureArchiveDeploymentAnnotation}
  */

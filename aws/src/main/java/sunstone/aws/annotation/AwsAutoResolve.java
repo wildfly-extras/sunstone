@@ -1,4 +1,4 @@
-package sunstone.aws.api;
+package sunstone.aws.annotation;
 
 
 import software.amazon.awssdk.services.ec2.Ec2Client;

@@ -6,7 +6,7 @@ import org.wildfly.extras.creaper.core.ManagementClient;
 import org.wildfly.extras.creaper.core.online.ManagementProtocol;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineOptions;
-import sunstone.api.StandaloneMode;
+import sunstone.annotation.StandaloneMode;
 import sunstone.core.properties.ObjectProperties;
 import sunstone.core.properties.ObjectType;
 

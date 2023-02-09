@@ -1,10 +1,10 @@
-package sunstone.aws.api;
+package sunstone.aws.annotation;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
-import sunstone.api.Parameter;
-import sunstone.api.SunstoneCloudDeployAnnotation;
+import sunstone.annotation.Parameter;
+import sunstone.annotation.SunstoneCloudDeployAnnotation;
 import sunstone.core.SunstoneExtension;
 
 import java.lang.annotation.ElementType;

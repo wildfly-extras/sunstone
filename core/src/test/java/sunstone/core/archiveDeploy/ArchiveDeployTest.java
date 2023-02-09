@@ -6,7 +6,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Deployment;
+import sunstone.annotation.Deployment;
 import sunstone.core.di.TestSunstoneResourceInjector;
 
 import java.io.File;

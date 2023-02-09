@@ -1,12 +1,12 @@
 package aws.cloudformation.di.suitetests;
 
 
-import sunstone.aws.api.AwsEc2Instance;
+import sunstone.aws.annotation.AwsEc2Instance;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Parameter;
-import sunstone.aws.api.WithAwsCfTemplate;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.Parameter;
+import sunstone.aws.annotation.WithAwsCfTemplate;
+import sunstone.annotation.inject.Hostname;
 
 import static aws.cloudformation.AwsTestConstants.instanceName;
 import static aws.cloudformation.AwsTestConstants.region;

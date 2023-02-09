@@ -3,15 +3,15 @@ package sunstone.azure.armTemplates.archiveDeploy.vm.suitetests;
 
 import sunstone.azure.armTemplates.AzureTestConstants;
 import sunstone.azure.armTemplates.archiveDeploy.vm.VmDeploySuiteTests;
-import sunstone.azure.api.AzureVirtualMachine;
+import sunstone.azure.annotation.AzureVirtualMachine;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Parameter;
-import sunstone.azure.api.WithAzureArmTemplate;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.Parameter;
+import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.annotation.inject.Hostname;
 
 import java.io.IOException;
 

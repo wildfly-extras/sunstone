@@ -4,7 +4,7 @@ package sunstone.core.di;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import sunstone.api.Setup;
+import sunstone.annotation.Setup;
 
 @Setup({StaticDITask.class})
 public class SetupTaskDITest {

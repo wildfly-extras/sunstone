@@ -1,15 +1,15 @@
 package sunstone.aws.impl;
 
 
-import sunstone.aws.api.AwsAutoResolve;
-import sunstone.aws.api.AwsInjectionAnnotation;
+import sunstone.aws.annotation.AwsAutoResolve;
+import sunstone.aws.annotation.AwsInjectionAnnotation;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.core.properties.ObjectProperties;
 import sunstone.core.properties.ObjectType;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.s3.S3Client;
-import sunstone.api.inject.Hostname;
+import sunstone.annotation.inject.Hostname;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.SunstoneException;

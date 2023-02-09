@@ -5,9 +5,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.KeyPairInfo;
-import sunstone.api.Parameter;
-import sunstone.aws.api.WithAwsCfTemplate;
-import sunstone.aws.api.WithAwsCfTemplateRepeatable;
+import sunstone.annotation.Parameter;
+import sunstone.aws.annotation.WithAwsCfTemplate;
+import sunstone.aws.annotation.WithAwsCfTemplateRepeatable;
 
 import java.util.List;
 
