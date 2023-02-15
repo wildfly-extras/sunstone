@@ -1,0 +1,43 @@
+package aws.cloudformation.archiveDeploy.ec2Domain.suitetests;
+
+
+import aws.cloudformation.AwsTestConstants;
+import sunstone.annotation.OperatingMode;
+import sunstone.aws.annotation.AwsEc2Instance;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import sunstone.annotation.Parameter;
+import sunstone.aws.annotation.WithAwsCfTemplate;
+import sunstone.annotation.inject.Hostname;
+
+import java.io.IOException;
+
+import static aws.cloudformation.AwsTestConstants.region;
+
+@WithAwsCfTemplate(parameters = {
+        @Parameter(k = "instanceName", v = AwsTestConstants.instanceName)
+},
+        template = "sunstone/aws/cloudformation/eapDomain.yaml", region = region, perSuite = true)
+public class AwsDomainEc2UndeployedSecondTest {
+    @AwsEc2Instance(nameTag = AwsTestConstants.instanceName, region = region, mode = OperatingMode.DOMAIN)
+    Hostname hostname;
+
+    @Test
+    public void test() throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        //check all servers in group
+        int[] ports = {8080,8230};
+        for (int port : ports) {
+            Request request = new Request.Builder()
+                    .url("http://" + hostname.get() + ":" + port + "/testapp")
+                    .method("GET", null)
+                    .build();
+            Response response = client.newCall(request).execute();
+            Assertions.assertThat(response.body().string()).isNotEqualTo("Hello World");
+        }
+    }
+}

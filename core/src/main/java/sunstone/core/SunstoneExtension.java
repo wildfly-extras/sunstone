@@ -170,7 +170,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                 field.set(instance, injectObject);
             }
         } catch (SunstoneException e) {
-            throw new RuntimeException(format("Unable to injec %s %s in %s", field.getType().getName(), field.getName(), field.getDeclaringClass()), e);
+            throw new RuntimeException(format("Unable to inject %s %s in %s", field.getType().getName(), field.getName(), field.getDeclaringClass()), e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
