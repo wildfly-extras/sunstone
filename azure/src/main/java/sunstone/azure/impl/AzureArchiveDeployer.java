@@ -96,7 +96,7 @@ public class AzureArchiveDeployer implements SunstoneArchiveDeployer {
 
         switch (identification.type) {
             case VM_INSTANCE:
-                if (deploymentName.isEmpty()) {
+                if (deploymentName.isBlank()) {
                     throw new IllegalArgumentSunstoneException("Deployment name can not be empty for Azure virtual machine.");
                 }
                 deployToVmInstance(deploymentName, identification, deployment, store);

@@ -5,8 +5,7 @@ import sunstone.aws.annotation.AwsAutoResolve;
 import sunstone.aws.annotation.AwsInjectionAnnotation;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.core.properties.ObjectProperties;
-import sunstone.core.properties.ObjectType;
+import sunstone.core.SunstoneConfig;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.s3.S3Client;
 import sunstone.annotation.inject.Hostname;
@@ -21,7 +20,6 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import static java.lang.String.format;
-import static sunstone.core.properties.ObjectProperties.*;
 
 
 /**
@@ -35,13 +33,11 @@ import static sunstone.core.properties.ObjectProperties.*;
  * Closable resources are registered in extension store so that they are closed once the store is closed
  */
 public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
-    static ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
-
     static Ec2Client resolveEc2ClientDI(AwsIdentifiableSunstoneResource.Identification identification, AwsSunstoneStore store) throws SunstoneException {
         Ec2Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getEC2Client(annotation.region().isEmpty() ? objectProperties.getProperty(AwsConfig.REGION) : replaceSystemProperties(annotation.region()));
+            client = AwsUtils.getEC2Client(annotation.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }
@@ -52,7 +48,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         S3Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getS3Client(annotation.region().isEmpty() ? objectProperties.getProperty(AwsConfig.REGION) : replaceSystemProperties(annotation.region()));
+            client = AwsUtils.getS3Client(annotation.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }

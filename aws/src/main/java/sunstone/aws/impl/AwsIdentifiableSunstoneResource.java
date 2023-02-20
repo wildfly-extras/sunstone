@@ -4,8 +4,7 @@ package sunstone.aws.impl;
 import sunstone.aws.annotation.AwsAutoResolve;
 import sunstone.aws.annotation.AwsEc2Instance;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.core.properties.ObjectProperties;
-import sunstone.core.properties.ObjectType;
+import sunstone.core.SunstoneConfig;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -20,7 +19,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static sunstone.core.properties.ObjectProperties.replaceSystemProperties;
 
 /**
  * Used by {@link AwsSunstoneResourceInjector}
@@ -80,8 +78,8 @@ enum AwsIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AwsEc2Instance vm = (AwsEc2Instance) injectionAnnotation;
-            String vmNameTag = replaceSystemProperties(vm.nameTag());
-            String region = vm.region().isEmpty() ? objectProperties.getProperty(AwsConfig.REGION) : replaceSystemProperties(vm.region());
+            String vmNameTag = SunstoneConfig.resolveExpressionToString(vm.nameTag());
+            String region = vm.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(vm.region());
             Optional<Instance> awsEc2 = AwsUtils.findEc2InstanceByNameTag(store.getAwsEc2ClientOrCreate(region), vmNameTag);
             return clazz.cast(awsEc2.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' AWS EC2 instance in '%s' region.", vmNameTag, region))));
         }
@@ -104,8 +102,6 @@ enum AwsIdentifiableSunstoneResource {
             return format("%s representing %s injection annotation", this.name(), representedInjectionAnnotation.getName());
         }
     }
-
-    private static final ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
 
     boolean isTypeSupportedForInject(Class<?> type) {
         return false;

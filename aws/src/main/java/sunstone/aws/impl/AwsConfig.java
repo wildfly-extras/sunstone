@@ -6,7 +6,7 @@ package sunstone.aws.impl;
  */
 public class AwsConfig {
 
-    public static final String ACCESS_KEY_ID = "aws.accessKeyID";
-    public static final String SECRET_ACCESS_KEY = "aws.secretAccessKey";
-    public static final String REGION = "aws.region";
+    public static final String ACCESS_KEY_ID = "sunstone.aws.accessKeyID";
+    public static final String SECRET_ACCESS_KEY = "sunstone.aws.secretAccessKey";
+    public static final String REGION = "sunstone.aws.region";
 }

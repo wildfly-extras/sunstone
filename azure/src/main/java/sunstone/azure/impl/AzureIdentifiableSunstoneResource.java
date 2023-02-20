@@ -9,19 +9,17 @@ import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.annotation.inject.Hostname;
+import sunstone.core.SunstoneConfig;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
-import sunstone.core.properties.ObjectProperties;
-import sunstone.core.properties.ObjectType;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static sunstone.core.properties.ObjectProperties.replaceSystemProperties;
 
 /**
  * Used by {@link AzureSunstoneResourceInjector}
@@ -81,8 +79,8 @@ enum AzureIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AzureVirtualMachine vm = (AzureVirtualMachine) injectionAnnotation;
-            String vmName = replaceSystemProperties(vm.name());
-            String vmGroup = vm.group().isEmpty() ? objectProperties.getProperty(AzureConfig.GROUP) : replaceSystemProperties(vm.group());
+            String vmName = SunstoneConfig.resolveExpressionToString(vm.name());
+            String vmGroup = vm.group().isBlank() ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(vm.group());
             Optional<VirtualMachine> azureVM = AzureUtils.findAzureVM(store.getAzureArmClientOrCreate(), vmName, vmGroup);
             return clazz.cast(azureVM.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure VM in '%s' resource group.", vmName, vmGroup))));
         }
@@ -113,8 +111,8 @@ enum AzureIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AzureWebApplication webApp = (AzureWebApplication) injectionAnnotation;
-            String appName = replaceSystemProperties(webApp.name());
-            String appGroup = webApp.group().isEmpty() ? objectProperties.getProperty(AzureConfig.GROUP) : replaceSystemProperties(webApp.group());
+            String appName = SunstoneConfig.resolveExpressionToString(webApp.name());
+            String appGroup = webApp.group().isBlank() ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(webApp.group());
             Optional<WebApp> azureWebApp = AzureUtils.findAzureWebApp(store.getAzureArmClientOrCreate(), appName, appGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure Web App in '%s' resource group.", appName, appGroup))));
         }
@@ -137,8 +135,6 @@ enum AzureIdentifiableSunstoneResource {
             return format("%s representing %s injection annotation", this.name(), representedInjectionAnnotation.getName());
         }
     }
-
-    private static final ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
 
     boolean isTypeSupportedForInject(Class<?> type) {
         return false;

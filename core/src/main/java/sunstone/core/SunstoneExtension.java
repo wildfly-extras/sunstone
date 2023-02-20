@@ -21,7 +21,6 @@ import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
-import sunstone.core.properties.ObjectProperties;
 import sunstone.core.spi.SunstoneArchiveDeployerProvider;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 import sunstone.core.spi.SunstoneResourceInjectorProvider;
@@ -198,7 +197,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                     throw new IllegalArgumentSunstoneException("Deployment method must have 0 parameters");
                 }
                 Deployment annotation = method.getAnnotation(Deployment.class);
-                String deploymentName = ObjectProperties.replaceSystemProperties(annotation.name());
+                String deploymentName = SunstoneConfig.resolveExpressionToString(annotation.name());
 
                 method.setAccessible(true);
                 Object invoke = method.invoke(null);

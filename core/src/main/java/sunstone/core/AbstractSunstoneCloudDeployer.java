@@ -4,8 +4,6 @@ package sunstone.core;
 import com.google.common.io.BaseEncoding;
 import sunstone.annotation.Parameter;
 import sunstone.core.api.SunstoneCloudDeployer;
-import sunstone.core.properties.ObjectProperties;
-import sunstone.core.properties.ObjectType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,23 +30,13 @@ public abstract class AbstractSunstoneCloudDeployer implements SunstoneCloudDepl
         byte[] digest = sha256.digest();
         return BaseEncoding.base16().encode(digest);
     }
-    protected static String resolveOrGetFromSunstoneProperties(String toResolve, String sunstoneProperty) {
-        String resolved = null;
-        if (!toResolve.isEmpty()) {
-            resolved = ObjectProperties.replaceSystemProperties(toResolve);
-        } else if (sunstoneProperty != null) {
-            ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
-            resolved = objectProperties.getProperty(sunstoneProperty);
-        }
-        return resolved;
-    }
 
     protected static Map<String, String> getParameters(Parameter[] parameters) {
         Map<String, String> parametersMap = new HashMap<>();
         for (int i = 0; i < parameters.length; i++) {
             parametersMap.put(parameters[i].k(), parameters[i].v());
         }
-        parametersMap.forEach((key, value) -> parametersMap.put(key, ObjectProperties.replaceSystemProperties(value)));
+        parametersMap.forEach((key, value) -> parametersMap.put(key, SunstoneConfig.resolveExpressionToString(value)));
         return Collections.unmodifiableMap(parametersMap);
     }
 

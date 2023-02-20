@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * <p>
  * Used by {@link AwsSunstoneDeployer}. Deploys to a stack with a random name (which is deleted as a whole later).
  * <p>
- * CloudFormation client credentials are taken from Sunstone.properties. See {@link AwsUtils}.
+ * CloudFormation client credentials are from  Sunstone Config properties. See {@link AwsUtils}.
  */
 class AwsCloudFormationCloudDeploymentManager implements Closeable {
     static Logger LOGGER = AwsLogger.DEFAULT;
