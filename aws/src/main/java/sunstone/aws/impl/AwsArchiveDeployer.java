@@ -49,7 +49,7 @@ public class AwsArchiveDeployer implements SunstoneArchiveDeployer {
 
         switch (identification.type) {
             case EC2_INSTANCE:
-                if (deploymentName.isEmpty()) {
+                if (deploymentName.isBlank()) {
                     throw new IllegalArgumentSunstoneException("Deployment name can not be empty for AWS EC2 instance.");
                 }
                 deployToEc2Instance(deploymentName, identification, deployment, store);

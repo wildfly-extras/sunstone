@@ -11,8 +11,7 @@ import com.azure.resourcemanager.compute.models.VirtualMachine;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import sunstone.core.properties.ObjectProperties;
-import sunstone.core.properties.ObjectType;
+import sunstone.core.SunstoneConfig;
 import sunstone.core.TimeoutUtils;
 
 import java.io.IOException;
@@ -20,27 +19,25 @@ import java.net.SocketTimeoutException;
 import java.util.Optional;
 
 public class AzureUtils {
-    private static ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
-
     static AzureResourceManager getResourceManager() {
         return AzureResourceManager
                 .authenticate(getCredentials(), new AzureProfile(AzureEnvironment.AZURE))
-                .withSubscription(objectProperties.getProperty(AzureConfig.SUBSCRIPTION_ID));
+                .withSubscription(SunstoneConfig.getString(AzureConfig.SUBSCRIPTION_ID));
     }
 
     private static TokenCredential getCredentials() {
         return new ClientSecretCredentialBuilder()
-                .tenantId(objectProperties.getProperty(AzureConfig.TENANT_ID))
-                .clientId(objectProperties.getProperty(AzureConfig.APPLICATION_ID))
-                .clientSecret(objectProperties.getProperty(AzureConfig.PASSWORD))
+                .tenantId(SunstoneConfig.getString(AzureConfig.TENANT_ID))
+                .clientId(SunstoneConfig.getString(AzureConfig.APPLICATION_ID))
+                .clientSecret(SunstoneConfig.getString(AzureConfig.PASSWORD))
                 .build();
     }
 
     static boolean propertiesForArmClientArePresent() {
-        return objectProperties.getProperty(AzureConfig.SUBSCRIPTION_ID) != null
-                && objectProperties.getProperty(AzureConfig.TENANT_ID) != null
-                && objectProperties.getProperty(AzureConfig.APPLICATION_ID) != null
-                && objectProperties.getProperty(AzureConfig.PASSWORD) != null;
+        return SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.SUBSCRIPTION_ID)
+                && SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.TENANT_ID)
+                && SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.APPLICATION_ID)
+                && SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.PASSWORD);
     }
 
     static Optional<VirtualMachine> findAzureVM(AzureResourceManager arm, String name, String resourceGroup) {

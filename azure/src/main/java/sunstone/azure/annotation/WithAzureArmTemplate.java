@@ -16,9 +16,8 @@ import java.lang.annotation.Target;
 
 /**
  * Deploy Azure template
- * Deployed as into resource group defined in sunstone.properties.
  * Deployed in {@link BeforeAllCallback} and whole resource group is deleted and recreated in {@link  AfterAllCallback}
- * or once the suite is finished (see {@link WithAzureArmTemplate#perSuite()})
+ * once the suite is finished (see {@link WithAzureArmTemplate#perSuite()})
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
@@ -32,7 +31,7 @@ public @interface WithAzureArmTemplate {
     /**
      * Array of parameters.
      *
-     * Values may can be an expression - {@code abc-${variable:default}-xyz} - var is resolved from system properties.
+     * Values may can be an expression - {@code abc-${variable:default}-xyz}.
      * <p>
      * Not all types are supported https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/data-types
      * Since all parameters are string, the Sunstone looks into the template to determine the type and parse the value
@@ -49,19 +48,17 @@ public @interface WithAzureArmTemplate {
     Parameter[] parameters() default {};
 
     /**
-     * Resource group that should be used for deployment. Expression is allowed, e.g. {@code abc-${var:default}-xyz} -
-     * var is resolved from system properties. Resources in a group share lifecycle and the group is deleted as it is for
-     * undeploy operation.
+     * Resource group that should be used for deployment. Expression is allowed, e.g. {@code abc-${var:default}-xyz}.
+     * Resources in a group share lifecycle and the group is deleted as it is for undeploy operation.
      *
-     * If empty, {@code sunstone.azure.group} from {@code sunstone.properties} is used.
+     * If empty, {@code sunstone.azure.group} Sunstone Config property is used.
      */
     String group() default "";
 
     /**
-     * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz} -
-     * var is resolved from system properties.
+     * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz}.
      *
-     * If empty, {@code sunstone.azure.region} from {@code sunstone.properties} is used.
+     * If empty, {@code sunstone.azure.region} Sunstone Config property is used.
      *
      * For the list of available regions see {@link com.azure.core.management.Region}
      */

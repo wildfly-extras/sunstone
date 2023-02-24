@@ -5,6 +5,7 @@ import sunstone.azure.annotation.WithAzureArmTemplateRepeatable;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.core.AbstractSunstoneCloudDeployer;
+import sunstone.core.SunstoneConfig;
 import sunstone.core.SunstoneExtension;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -45,15 +46,15 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
         String content = null;
         try {
             content = getResourceContent(armTemplateDefinition.template());
-            String group = resolveOrGetFromSunstoneProperties(armTemplateDefinition.group(), AzureConfig.GROUP);
+            String group = armTemplateDefinition.group().isBlank() ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(armTemplateDefinition.group());
             if (group == null) {
                 throw new IllegalArgumentSunstoneException("Resource group for Azure ARM template is not defined. "
-                        + "It must be specified either in the annotation or in sunstone.properties file");
+                        + "It must be specified either in the annotation or as Sunstone Config property.");
             }
-            String region = resolveOrGetFromSunstoneProperties(armTemplateDefinition.region(), AzureConfig.REGION);
+            String region = armTemplateDefinition.region().isBlank() ? SunstoneConfig.getString(AzureConfig.REGION) : SunstoneConfig.resolveExpressionToString(armTemplateDefinition.region());
             if (region == null) {
-                throw new IllegalArgumentSunstoneException("Region for Azure ARM template is not defined. It must be specified either"
-                        + "in the annotation or in sunstone.properties file");
+                throw new IllegalArgumentSunstoneException("Region for Azure ARM template is not defined. It must be specified either "
+                        + "in the annotation or as Sunstone Config property.");
             }
 
             Map<String, String> parameters = getParameters(armTemplateDefinition.parameters());

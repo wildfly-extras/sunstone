@@ -41,6 +41,16 @@ For more information about specific clouds, see:
 * [Azure README](Azure-README.md)
 * [AWS README](AWS-README.md)
 
+##### Configuration
+
+Configuration is done by setting properties:
+* In `sunstone.properties` file located in your `resources` folder. 
+* As system variable.
+* As environment variable.
+
+Nested expressions and their resolution to other properties are supported, i.e. ${my.property-${different.property}}.
+Sunstone Config properties and their resolutions are backed by SmallRye Config so most of SR Config capabilities are also supported.
+
 ##### Cloud deployment
 Sunstone deploys and manages lifecycle of cloud resources - deploys resources before tests and deletes them once tests are finished. Various deploy methods are supported.
 

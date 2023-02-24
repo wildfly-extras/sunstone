@@ -1,8 +1,6 @@
 package sunstone.aws.impl;
 
 
-import sunstone.core.properties.ObjectProperties;
-import sunstone.core.properties.ObjectType;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -16,21 +14,20 @@ import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.Tag;
 import software.amazon.awssdk.services.s3.S3Client;
+import sunstone.core.SunstoneConfig;
 
 import java.util.Optional;
 
 class AwsUtils {
 
-    private static ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
-
     private static AwsCredentialsProvider getCredentialsProvider() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(objectProperties.getProperty(AwsConfig.ACCESS_KEY_ID), objectProperties.getProperty(AwsConfig.SECRET_ACCESS_KEY));
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(SunstoneConfig.getString(AwsConfig.ACCESS_KEY_ID), SunstoneConfig.getString(AwsConfig.SECRET_ACCESS_KEY));
         return StaticCredentialsProvider.create(credentials);
     }
 
     static boolean propertiesForAwsClientArePresent() {
-        return objectProperties.getProperty(AwsConfig.ACCESS_KEY_ID) != null
-                && objectProperties.getProperty(AwsConfig.SECRET_ACCESS_KEY) != null;
+        return SunstoneConfig.unwrap().isPropertyPresent(AwsConfig.ACCESS_KEY_ID)
+                && SunstoneConfig.unwrap().isPropertyPresent(AwsConfig.SECRET_ACCESS_KEY);
     }
 
     static Region getAndCheckRegion(String regionStr) {

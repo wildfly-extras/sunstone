@@ -22,9 +22,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
 /**
  * Purpose: the class handles Azure template - deploy and undeploy the template to and from a stack.
  * <p>
- * Used by {@link AzureSunstoneDeployer}. Deploys to a group defined in Sunstone.properties (which is deleted as a whole later).
+ * Used by {@link AzureSunstoneDeployer}.
  * <p>
- * Azure ARM client credentials are taken from Sunstone.properties. See {@link AzureUtils}.
+ * Azure ARM client credentials comes from annotation or MP Config. See {@link AzureUtils}.
  */
 
 class AzureArmTemplateCloudDeploymentManager {

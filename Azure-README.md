@@ -8,7 +8,7 @@ You need to have programmatic access to Azure, which means you have created a se
 
 ## Begin
 
-Add the following properties into `Sunstone.properties` located in your resources folder:
+Add the following properties into `sunstone.properties` located in your resources folder:
 
 ```properties
 sunstone.azure.subscriptionId=${azure.subscriptionId}
@@ -56,8 +56,8 @@ Only Azure ARM templates are supported for deploying resources to Azure:
 About `AzureArmTemplate` parameters:
 - `parameters` - define key-value parameters for Azure ARM template. String, integer, securestring and boolean types are supported. String values are converted into correct JSON structure for Azure ARM template.
 - `template` - specify JSON template in resources
-- `region` - define region where the template shall be deployed. If empty, value of `sunstone.azure.region` in `sunstone.properties` will be used
-- `group` - define group where the template shall be deployed. If empty, value of `sunstone.azure.group` in `sunstone.properties` will be used
+- `region` - define region where the template shall be deployed. If empty, value of `sunstone.azure.region` Sunstone Config property will be used
+- `group` - define group where the template shall be deployed. If empty, value of `sunstone.azure.group` Sunstone Config property will be used
 - `perSuite` - see above.
 
 ### Injection
@@ -98,7 +98,7 @@ static WebArchive deploy() {
 }
 ```
 
-The default mode is `Standalone`, and credentials come from `sunstone.properties`. You can also specify them in the annotation.
+The default mode is `Standalone`, and credentials come from Sunstone Config properties. You can also specify them in the annotation.
 
 ### About cloud resource identification annotations
 
@@ -122,12 +122,12 @@ static OnlineManagementClient client;
 
 All values may contain expressions (`${my.property}`):
 - `name` - mandatory, name of the virtual machine
-- `group` - optional, if empty, `sunstone.azure.group` from `sunstone.properties` will be used
+- `group` - optional, if empty, `sunstone.azure.group` Sunstone Config property will be used
 - mode - optional, default to OperatingMode.STANDALONE
 - standalone - optional
-  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` from `sunstone.properties` will be used
-  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` from `sunstone.properties` will be used
-  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` from `sunstone.properties` will be used
+  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` Sunstone Config property will be used
+  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` Sunstone Config property will be used
+  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` Sunstone Config property will be used
 
 Domain mode is not supported.
 
@@ -149,12 +149,12 @@ static WebArchive deploy() {
 
 All values may contain expressions (`${my.property}`):
 - `name` - mandatory, name of the virtual machine
-- `group` - optional, if empty, `sunstone.azure.group` from `sunstone.properties` will be used
-- 
+- `group` - optional, if empty, `sunstone.azure.group` Sunstone Config property will be used
+-
 Domain mode is not supported - WildFly on web app is currently running only in standalone mode.
 
 ###### AzureAutoResolve
 Annotation is used to identify Azure objects and clients with auto-resolution.
 - injection supported, see [injection](Azure-README.md#wildfly-deployment) chapter
 
-`group` parameter is optional. If empty, `sunstone.azure.group` from `sunstone.properties` will be used 
+`group` parameter is optional. If empty, `sunstone.azure.group` Sunstone Config property will be used 

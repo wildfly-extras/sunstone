@@ -8,7 +8,7 @@ You need to have programmatic access to AWS, which mean you have to have access 
 
 ## Begin
 
-Add the following properties into `Sunstone.properties` located in your resources folder:
+Add the following properties into `sunstone.properties` located in your resources folder:
 
 ```properties
 sunstone.aws.accessKeyID=${aws.accessKeyID}
@@ -54,7 +54,7 @@ public class SingleAwsCfTemplateTest
 About `WithAwsCfTemplate` parameters:
 - `parameters` - define key-value parameters for CloudFormation template
 - `template` - specify YAML template in resources
-- `region` - define region where the template shall be deployed. If empty, value of `sunstone.aws.region` in `sunstone.properties` will be used
+- `region` - define region where the template shall be deployed. If empty, value of `sunstone.aws.region` Sunstone Config property will be used
 - `perSuite` - see above.
 
 ### Injection
@@ -95,7 +95,7 @@ static WebArchive deploy() {
 }
 ```
 
-The default mode is `Standalone`, and credentials come from `sunstone.properties`. You can also specify them in the annotation.
+The default mode is `Standalone`, and credentials come from Sunstone Config properties. You can also specify them in the annotation.
 
 ### About cloud resource identification annotations
 
@@ -119,12 +119,12 @@ static OnlineManagementClient client;
 
 All values may contain expressions (`${my.property}`):
 - `nameTag` - mandatory, value of `name` tag of EC2 Instance
-- `region` - optional, if empty, `sunstone.aws.region` from `sunstone.properties` will be used
+- `region` - optional, if empty, `sunstone.aws.region` Sunstone Config property will be used
 - mode - optional, default to OperatingMode.STANDALONE
 - standalone - optional
-  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` from `sunstone.properties` will be used
-  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` from `sunstone.properties` will be used
-  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` from `sunstone.properties` will be used
+  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` Sunstone Config property will be used
+  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` Sunstone Config property will be used
+  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` Sunstone Config property will be used
 
 Domain mode is not supported.
 
@@ -132,4 +132,4 @@ Domain mode is not supported.
 Annotation is used to identify AWS objects and clients with auto-resolution.
 - injection supported, see [injection](AWS-README.md#wildfly-deployment) chapter
 
-`region` parameter is optional. If empty, `sunstone.aws.region` from `sunstone.properties` will be used 
+`region` parameter is optional. If empty, `sunstone.aws.region` Sunstone Config property will be used 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import sunstone.aws.annotation.WithAwsCfTemplate;
 import sunstone.core.AbstractSunstoneCloudDeployer;
+import sunstone.core.SunstoneConfig;
 import sunstone.core.SunstoneExtension;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -48,10 +49,10 @@ public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
         try {
             String content = getResourceContent(awsTemplateDefinition.template());
             Map<String, String> parameters = getParameters(awsTemplateDefinition.parameters());
-            String region = resolveOrGetFromSunstoneProperties(awsTemplateDefinition.region(), AwsConfig.REGION);
+            String region = awsTemplateDefinition.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(awsTemplateDefinition.region());
             if (region == null) {
-                throw new IllegalArgumentSunstoneException("Region for AWS template is not defined. It must be specified either"
-                        + "in the annotation or in sunstone.properties file");
+                throw new IllegalArgumentSunstoneException("Region for AWS template is not defined. It must be specified either "
+                        + "in the annotation or as Sunstone Config property.");
             }
             String md5sum = md5sum(content);
 

@@ -6,24 +6,21 @@ import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
-import sunstone.core.properties.ObjectProperties;
-import sunstone.core.properties.ObjectType;
 import sunstone.azure.impl.AzureConfig;
+import sunstone.core.SunstoneConfig;
 
 public class AzureTestUtils {
-    private static ObjectProperties objectProperties = new ObjectProperties(ObjectType.CLOUDS, null);
-
     public static AzureResourceManager getResourceManager() {
         return AzureResourceManager
                 .authenticate(getCredentials(), new AzureProfile(AzureEnvironment.AZURE))
-                .withSubscription(objectProperties.getProperty(AzureConfig.SUBSCRIPTION_ID));
+                .withSubscription(SunstoneConfig.getString(AzureConfig.SUBSCRIPTION_ID));
     }
 
     private static TokenCredential getCredentials() {
         return new ClientSecretCredentialBuilder()
-                .tenantId(objectProperties.getProperty(AzureConfig.TENANT_ID))
-                .clientId(objectProperties.getProperty(AzureConfig.APPLICATION_ID))
-                .clientSecret(objectProperties.getProperty(AzureConfig.PASSWORD))
+                .tenantId(SunstoneConfig.getString(AzureConfig.TENANT_ID))
+                .clientId(SunstoneConfig.getString(AzureConfig.APPLICATION_ID))
+                .clientSecret(SunstoneConfig.getString(AzureConfig.PASSWORD))
                 .build();
     }
 }

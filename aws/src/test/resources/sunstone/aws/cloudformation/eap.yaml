@@ -57,7 +57,7 @@ Resources:
         Type: "AWS::EC2::Instance"
         CreationPolicy:
             ResourceSignal:
-                Timeout: PT5M
+                Timeout: PT10M
         DependsOn:
             - EC2KeyPair
         Properties:
@@ -123,7 +123,7 @@ Resources:
                         # start EAP
                         systemctl enable eap7-standalone
                         systemctl restart eap7-standalone
-                        sleep 20
+                        sleep 30
                         systemctl status eap7-standalone
                         STATUS=$?
                         cfn-signal -e $STATUS --stack ${AWS::StackName} --region ${AWS::Region} --resource EC2InstanceEAP

@@ -22,10 +22,14 @@
         </plugins>
     </build>
 
-    <dependencies><!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+    <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
+            <groupId>io.smallrye.config</groupId>
+            <artifactId>smallrye-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>
