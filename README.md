@@ -48,7 +48,10 @@ Configuration is done by setting properties:
 * As system variable.
 * As environment variable.
 
-Nested expressions and their resolution to other properties are supported, i.e. ${my.property-${different.property}}.
+Nested expressions and their resolution to other properties are supported, i.e.
+``` java
+${my.property-${different.property}}
+```
 Sunstone Config properties and their resolutions are backed by SmallRye Config so most of SR Config capabilities are also supported.
 
 ##### Cloud deployment
