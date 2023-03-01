@@ -8,7 +8,7 @@ You need to have programmatic access to Azure, which means you have created a se
 
 ## Begin
 
-Add the following properties into `sunstone.properties` located in your resources folder:
+Add the following properties into `sunstone.properties` located in your resources' folder:
 
 ```properties
 sunstone.azure.subscriptionId=${azure.subscriptionId}
@@ -74,7 +74,7 @@ Following table shows what can be injected (type of the field) for what cloud re
 | Type of the field        | annotation                                | note                                                   |
 |--------------------------|-------------------------------------------|--------------------------------------------------------|
 | `Hostname`               | `@AzureVirtualMachine`<hr/>`@AzureWebApp` | doesn't matter whether is standalone or domain <hr/> - |
-| `OnlineManagementClient` | `@AzureVirtualMachine`                    | only standalone mode is supported                      |
+| `OnlineManagementClient` | `@AzureVirtualMachine`                    | -                                                      |
 | `AzureResourceManager`   | `@AzureAutoResolve`                       | group name doesn't matter                              |
 
 
@@ -83,10 +83,10 @@ Following table shows what can be injected (type of the field) for what cloud re
 
 Deployment is based on method annotated by '@Deployment' annotation and resource identification annotation. For method requirements, see [README.md](README.md#wildfly-deployment). Following table shows a list of supported resources WildFly is running on for deploy operation.
 
-| Resource          | annotation              | note                              |
-|-------------------|-------------------------|-----------------------------------|
-| Virtual machine   | `@AzureVirtualMachine`  | only standalone mode is supported |
-| Web application   | `@AzureWebApp`          | -                                 |
+| Resource          | annotation              | note |
+|-------------------|-------------------------|------|
+| Virtual machine   | `@AzureVirtualMachine`  | -    |
+| Web application   | `@AzureWebApp`          | -    |
 
 Example:
 ```java
@@ -120,6 +120,22 @@ If WildFly is running in standalone mode:
 static OnlineManagementClient client;
 ```
 
+If WildFly is running in domain mode:
+```java
+@AzureVirtualMachine(
+        name = "instanceName",
+        group = "group")
+@WildFly(
+        mode = OperatingMode.DOMAIN,
+        domain = @DomainMode(
+                user = "mngmtUser",
+                password = "mngmtPassword",
+                port = "mngmtPort",
+                host = "mngmtHost",
+                profile = "mngmtProfile"))
+static OnlineManagementClient client;
+```
+
 All values may contain expressions (`${my.property}`):
 - `name` - mandatory, name of the virtual machine
 - `group` - optional, if empty, `sunstone.azure.group` Sunstone Config property will be used
@@ -128,8 +144,10 @@ All values may contain expressions (`${my.property}`):
   - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` Sunstone Config property will be used
   - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` Sunstone Config property will be used
   - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` Sunstone Config property will be used
-
-Domain mode is not supported.
+- domain - optional
+  - `user, password, port` - same as in standalone mode
+  - `host` - optional. Wildfly host controller. If empty, `sunstone.wildfly.mngmt.host` Sunstone Config property will be used
+  - `profile` - optional. Profile for WildFly. If empty, `sunstone.wildfly.mngmt.profile` Sunstone Config property will be used
 
 ###### AzureWebApp
 Annotation is used to identify Azure Web application. It may be expected, WildFly is running on it (for deployment operation):
@@ -151,10 +169,9 @@ All values may contain expressions (`${my.property}`):
 - `name` - mandatory, name of the virtual machine
 - `group` - optional, if empty, `sunstone.azure.group` Sunstone Config property will be used
 -
-Domain mode is not supported - WildFly on web app is currently running only in standalone mode.
 
 ###### AzureAutoResolve
 Annotation is used to identify Azure objects and clients with auto-resolution.
 - injection supported, see [injection](Azure-README.md#wildfly-deployment) chapter
 
-`group` parameter is optional. If empty, `sunstone.azure.group` Sunstone Config property will be used 
+`group` parameter is optional. If empty, `sunstone.azure.group` Sunstone Config property will be used

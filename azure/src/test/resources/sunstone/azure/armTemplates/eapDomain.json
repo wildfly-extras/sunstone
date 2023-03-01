@@ -1,0 +1,209 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachineName": {
+      "type": "string",
+      "defaultValue": "sunstoneVM"
+    },
+    "imageRefId": {
+      "type": "string",
+      "defaultValue": "/subscriptions/7dee6f21-9f05-414e-99fa-08d3215fb420/resourceGroups/istraka-test/providers/Microsoft.Compute/images/eap-test-image"
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "sunstone"
+    }
+  },
+  "variables": {
+    "customData": "#cloud-config\nruncmd:\n  - touch /log\n  - JBOSS_HOME=/opt/rh/eap7/root/usr/share/wildfly \n  - echo 'Setting JAVA_OPTS' >> /log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address.management=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo -e \"JAVA_OPTS=\\\"\\$JAVA_OPTS -Djboss.bind.address.private=$(hostname -I)\\\"\" >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo 'HOST_CONTROLLER_JAVA_OPTS=\"$HOST_CONTROLLER_JAVA_OPTS $JAVA_OPTS\"' >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo 'Enabling & restarting eap7-domain service' >> /log\n  - systemctl enable  eap7-domain.service >> /log 2>&1\n  - systemctl restart eap7-domain.service >> /log 2>&1\n  - echo 'Stopping the firewall' >> /log\n  - systemctl stop firewalld >> /log 2>&1\n  - echo 'Setting up EAP' >> /log\n  - ${JBOSS_HOME}/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e >> /log 2>&1",
+    "networkInterfaceName": "sunstoneInterface",
+    "networkSecurityGroupName": "sunstone-nsg",
+    "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
+    "subnetName": "default",
+    "vnetName": "sunstoneVnet",
+    "publicIpAddressName": "sunstone-ip",
+    "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('networkSecurityGroupName')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2019-02-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "any",
+            "properties": {
+              "priority": 100,
+              "protocol": "TCP",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "*"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('networkInterfaceName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2021-08-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
+        "[concat('Microsoft.Network/publicIpAddresses/', variables('publicIpAddressName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIpAddress": {
+                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('publicIpAddressName'))]",
+                "properties": {
+                  "deleteOption": "Detach"
+                }
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[variables('nsgId')]"
+        }
+      }
+    },
+    {
+      "name": "[variables('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-01-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+              "10.1.0.0/16"
+            ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "10.1.0.0/24"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('publicIpAddressName')]",
+      "type": "Microsoft.Network/publicIpAddresses",
+      "apiVersion": "2020-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIpAllocationMethod": "Static"
+      },
+      "sku": {
+        "name": "Standard"
+      }
+    },
+    {
+      "name": "[parameters('virtualMachineName')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-03-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2s"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            },
+            "deleteOption": "Detach"
+          },
+          "imageReference": {
+            "id": "[parameters('imageRefId')]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]",
+              "properties": {
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachineName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "customData": "[base64(variables('customData'))]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCbWLyxmSBH8XhikEs61USmxJHsUPIHEkrUc1HQoaw6AS0+DBIyLMBSDoGozC9Hp8hkZwMVqqrg+9ylMHyewm5Ta1Vbe8w/HDSl9Q+XY0cl3HaHTnmCmOBRGZTVNuHwYIba3PC2nd2wXUAEzyIwGM5No5QLw0XfzipzwkR6je6mBn8RzepaS+SJjwhZuJOcBzUtfLk6f3/ADgS3ENuAMecqBN6fclizl089STKLlBhnYo7xJNYOtbskWDuAB9XeuVO2cXDWXc6y77PptFC/8jHlZf/OFI4gTFlIbewC43ADaytA2Y4XKDyJDIRmpto8x3JIMyfKk0fyIYYx2XehfeIVrt63v/RaZ6qgSG4EN1j0hj7eGY+wO3CVbDoCvK/54vr2I+ZuPF77pDxoyU5BL3WWo2Ta1KXiTwb4lARS/Nl0oz3hm3/V6v6zsPTS9sCtQc/Q9XcB8amjaYr9Rznpkk/rgQUpvSsqHeA51CVJIxJRYTYztvgOG7fsRl75I3vFk9k= generated-by-azure"
+                }
+              ]
+            },
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "ImageDefault",
+              "assessmentMode": "ImageDefault"
+            },
+            "enableVMAgentPlatformUpdates": false
+          },
+          "secrets": [],
+          "allowExtensionOperations": true
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('virtualMachineName'),'/CustomScript')]",
+      "apiVersion": "2022-03-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.1",
+        "autoUpgradeMinorVersion": true,
+        "protectedSettings": {
+          "commandToExecute": "for server in {\"server-one\",\"server-two\"}; do for i in {1..6}; do sleep 10; /opt/rh/eap7/root/usr/share/wildfly/bin/jboss-cli.sh --connect --output-json --command=\"/host=master/server=${server}:read-attribute(name=server-state)\" | jq -r .result | grep -Fxq running && break; done; RET_VAL=$?; if [ \"$RET_VAL\" -ne 0 ]; then exit 1; fi; done"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "adminUsername": {
+      "type": "string",
+      "value": "[parameters('adminUsername')]"
+    }
+  }
+}
