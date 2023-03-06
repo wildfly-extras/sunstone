@@ -1,6 +1,13 @@
 # Changelog
 
-## 1.2.4-SNAPSHOT (not yet released)
+## 2.1.0-SNAPSHOT (not yet released)
+
+## 2.0.0 (2021-10-20)
+- Breaking change!
+- removed JClouds
+- support for Azure ARM templates & AWS CloudFormation templates
+- support injection for various Azure and AWS resources
+- support WildFly deployment to various cloud resources
 
 ## 1.2.3 (2021-10-20)
 - updated JClouds to 2.4.0
