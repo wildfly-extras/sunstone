@@ -20,6 +20,14 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>istraka</id>
+            <name>Ivan Straka</name>
+            <url>https://github.com/istraka/</url>
+        </developer>
+    </developers>
+
     <modules>
         <module>core</module>
         <module>azure</module>
