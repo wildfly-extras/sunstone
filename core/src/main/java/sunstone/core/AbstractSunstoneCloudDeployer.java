@@ -52,6 +52,6 @@ public abstract class AbstractSunstoneCloudDeployer implements SunstoneCloudDepl
                 result.write(buffer, 0, length);
             }
         }
-        return result.toString(StandardCharsets.UTF_8);
+        return result.toString(StandardCharsets.UTF_8.name());
     }
 }

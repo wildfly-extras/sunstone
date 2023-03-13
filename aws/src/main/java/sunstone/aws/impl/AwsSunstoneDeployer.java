@@ -1,6 +1,7 @@
 package sunstone.aws.impl;
 
 
+import org.junit.platform.commons.util.StringUtils;
 import sunstone.aws.annotation.WithAwsCfTemplateRepeatable;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
@@ -49,7 +50,7 @@ public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
         try {
             String content = getResourceContent(awsTemplateDefinition.template());
             Map<String, String> parameters = getParameters(awsTemplateDefinition.parameters());
-            String region = awsTemplateDefinition.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(awsTemplateDefinition.region());
+            String region = StringUtils.isBlank(awsTemplateDefinition.region()) ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(awsTemplateDefinition.region());
             if (region == null) {
                 throw new IllegalArgumentSunstoneException("Region for AWS template is not defined. It must be specified either "
                         + "in the annotation or as Sunstone Config property.");

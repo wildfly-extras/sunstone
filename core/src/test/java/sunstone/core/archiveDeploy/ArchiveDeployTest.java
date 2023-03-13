@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import sunstone.annotation.Deployment;
 import sunstone.core.di.TestSunstoneResourceInjector;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +45,7 @@ public class ArchiveDeployTest extends AbstractArchiveDeployTest {
     @DirectlyAnnotatedArchiveDeployTarget
     @IndirectlyAnnotatedSunstoneArchiveDeployTarget
     static InputStream deployInpuStream() {
-        return InputStream.nullInputStream();
+        return new ByteArrayInputStream(new byte[]{});
     }
 
 

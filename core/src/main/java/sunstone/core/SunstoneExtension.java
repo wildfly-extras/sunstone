@@ -25,6 +25,7 @@ import sunstone.core.spi.SunstoneArchiveDeployerProvider;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 import sunstone.core.spi.SunstoneResourceInjectorProvider;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +40,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -256,20 +258,24 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
 
     @Override
     public void afterAll(ExtensionContext ctx) throws Exception {
-        var ref = new Object() {
+        Object ref = new Object() {
             Exception e = null;
         };
-        get(ctx).getClosablesOrCreate().forEach(closeable -> {
+        Throwable thr = null;
+        Iterator<Closeable> iterator = get(ctx).getClosablesOrCreate().iterator();
+        while (iterator.hasNext()) {
             try {
-                closeable.close();
-            } catch (Exception e) {
-                if (ref.e == null) {
-                    ref.e = e;
+                iterator.next().close();
+            } catch (Throwable t) {
+                if (thr == null) {
+                    thr = t;
+                } else {
+                    t.printStackTrace();
                 }
             }
-        });
-        if (ref.e != null) {
-            throw ref.e;
+        }
+        if (thr != null) {
+            throw new RuntimeException(thr);
         }
     }
 }

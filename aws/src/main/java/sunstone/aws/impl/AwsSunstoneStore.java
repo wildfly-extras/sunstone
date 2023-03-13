@@ -33,7 +33,7 @@ class AwsSunstoneStore extends SunstoneStore {
     CloudFormationClient getAwsCfClientOrCreate(String regionStr) {
         ConcurrentMap<String, CloudFormationClient> region2cfClient = getStore().getOrComputeIfAbsent(AWS_REGION_2_CF_CLIENT, s -> new ConcurrentHashMap<>(), ConcurrentMap.class);
         return region2cfClient.computeIfAbsent(regionStr, r -> {
-            var client = AwsUtils.getCloudFormationClient(r);
+            CloudFormationClient client = AwsUtils.getCloudFormationClient(r);
             addSuiteLevelClosable(client);
             return client;
         });
@@ -42,7 +42,7 @@ class AwsSunstoneStore extends SunstoneStore {
     Ec2Client getAwsEc2ClientOrCreate(String regionStr) {
         ConcurrentMap<String, Ec2Client> region2Ec2Client = getStore().getOrComputeIfAbsent(AWS_REGION_2_EC2_CLIENT, s -> new ConcurrentHashMap<String, Ec2Client>(), ConcurrentMap.class);
         return  region2Ec2Client.computeIfAbsent(regionStr, r -> {
-            var client = AwsUtils.getEC2Client(r);
+            Ec2Client client = AwsUtils.getEC2Client(r);
             addSuiteLevelClosable(client);
             return client;
         });

@@ -4,6 +4,7 @@ package sunstone.core;
 import io.smallrye.config.SmallRyeConfig;
 import io.smallrye.config.SmallRyeConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.junit.platform.commons.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,7 +116,7 @@ public class SunstoneConfig {
      *
      */
     public static String resolveExpressionToString(String expression) {
-        return expression.isBlank() ? expression : resolveExpression(expression, String.class);
+        return StringUtils.isBlank(expression) ? expression : resolveExpression(expression, String.class);
     }
 
     /**

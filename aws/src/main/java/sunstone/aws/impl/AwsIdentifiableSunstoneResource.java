@@ -1,6 +1,7 @@
 package sunstone.aws.impl;
 
 
+import org.junit.platform.commons.util.StringUtils;
 import sunstone.aws.annotation.AwsAutoResolve;
 import sunstone.aws.annotation.AwsEc2Instance;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
@@ -79,7 +80,7 @@ enum AwsIdentifiableSunstoneResource {
             }
             AwsEc2Instance vm = (AwsEc2Instance) injectionAnnotation;
             String vmNameTag = SunstoneConfig.resolveExpressionToString(vm.nameTag());
-            String region = vm.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(vm.region());
+            String region = StringUtils.isBlank(vm.region()) ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(vm.region());
             Optional<Instance> awsEc2 = AwsUtils.findEc2InstanceByNameTag(store.getAwsEc2ClientOrCreate(region), vmNameTag);
             return clazz.cast(awsEc2.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' AWS EC2 instance in '%s' region.", vmNameTag, region))));
         }

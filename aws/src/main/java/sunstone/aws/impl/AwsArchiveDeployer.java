@@ -2,6 +2,7 @@ package sunstone.aws.impl;
 
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.util.StringUtils;
 import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.commands.deployments.Undeploy;
 import org.wildfly.extras.creaper.core.CommandFailedException;
@@ -49,7 +50,7 @@ public class AwsArchiveDeployer implements SunstoneArchiveDeployer {
 
         switch (identification.type) {
             case EC2_INSTANCE:
-                if (deploymentName.isBlank()) {
+                if (StringUtils.isBlank(deploymentName)) {
                     throw new IllegalArgumentSunstoneException("Deployment name can not be empty for AWS EC2 instance.");
                 }
                 deployToEc2Instance(deploymentName, identification, deployment, store);
