@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import sunstone.annotation.Deployment;
 import sunstone.core.SunstoneExtension;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,6 @@ public abstract class AbstractArchiveDeployTest {
     @DirectlyAnnotatedArchiveDeployTarget
     @IndirectlyAnnotatedSunstoneArchiveDeployTarget
     static InputStream deployInpuStreamAbstract() {
-        return InputStream.nullInputStream();
+        return new ByteArrayInputStream(new byte[]{});
     }
 }

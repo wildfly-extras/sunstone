@@ -1,6 +1,7 @@
 package sunstone.azure.impl;
 
 
+import org.junit.platform.commons.util.StringUtils;
 import sunstone.azure.annotation.AzureAutoResolve;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.AzureWebApplication;
@@ -80,7 +81,7 @@ enum AzureIdentifiableSunstoneResource {
             }
             AzureVirtualMachine vm = (AzureVirtualMachine) injectionAnnotation;
             String vmName = SunstoneConfig.resolveExpressionToString(vm.name());
-            String vmGroup = vm.group().isBlank() ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(vm.group());
+            String vmGroup = StringUtils.isBlank(vm.group()) ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(vm.group());
             Optional<VirtualMachine> azureVM = AzureUtils.findAzureVM(store.getAzureArmClientOrCreate(), vmName, vmGroup);
             return clazz.cast(azureVM.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure VM in '%s' resource group.", vmName, vmGroup))));
         }
@@ -112,7 +113,7 @@ enum AzureIdentifiableSunstoneResource {
             }
             AzureWebApplication webApp = (AzureWebApplication) injectionAnnotation;
             String appName = SunstoneConfig.resolveExpressionToString(webApp.name());
-            String appGroup = webApp.group().isBlank() ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(webApp.group());
+            String appGroup = StringUtils.isBlank(webApp.group()) ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(webApp.group());
             Optional<WebApp> azureWebApp = AzureUtils.findAzureWebApp(store.getAzureArmClientOrCreate(), appName, appGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure Web App in '%s' resource group.", appName, appGroup))));
         }

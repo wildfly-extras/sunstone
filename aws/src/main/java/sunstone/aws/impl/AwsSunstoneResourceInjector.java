@@ -1,6 +1,7 @@
 package sunstone.aws.impl;
 
 
+import org.junit.platform.commons.util.StringUtils;
 import sunstone.aws.annotation.AwsAutoResolve;
 import sunstone.aws.annotation.AwsInjectionAnnotation;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -37,7 +38,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         Ec2Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getEC2Client(annotation.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
+            client = AwsUtils.getEC2Client(StringUtils.isBlank(annotation.region()) ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }
@@ -48,7 +49,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         S3Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getS3Client(annotation.region().isBlank() ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
+            client = AwsUtils.getS3Client(StringUtils.isBlank(annotation.region()) ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }

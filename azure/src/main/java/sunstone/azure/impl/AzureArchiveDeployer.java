@@ -1,6 +1,7 @@
 package sunstone.azure.impl;
 
 
+import org.junit.platform.commons.util.StringUtils;
 import sunstone.azure.impl.AzureIdentifiableSunstoneResource.Identification;
 import com.azure.resourcemanager.appservice.models.DeployType;
 import com.azure.resourcemanager.appservice.models.PublishingProfile;
@@ -96,7 +97,7 @@ public class AzureArchiveDeployer implements SunstoneArchiveDeployer {
 
         switch (identification.type) {
             case VM_INSTANCE:
-                if (deploymentName.isBlank()) {
+                if (StringUtils.isBlank(deploymentName)) {
                     throw new IllegalArgumentSunstoneException("Deployment name can not be empty for Azure virtual machine.");
                 }
                 deployToVmInstance(deploymentName, identification, deployment, store);
