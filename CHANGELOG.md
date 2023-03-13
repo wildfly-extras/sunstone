@@ -1,8 +1,12 @@
 # Changelog
 
-## 2.1.0-SNAPSHOT (not yet released)
+## 2.0.2-SNAPSHOT (not yet released)
 
-## 2.0.0 (2021-10-20)
+## 2.0.1 (2023-03-13)
+- JDK8 compatibility
+- SR Config downgrade
+
+## 2.0.0 (2023-03-06)
 - Breaking change!
 - removed JClouds
 - support for Azure ARM templates & AWS CloudFormation templates
