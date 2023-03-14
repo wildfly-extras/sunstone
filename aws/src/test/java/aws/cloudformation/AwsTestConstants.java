@@ -11,4 +11,6 @@ public class AwsTestConstants {
     public static final String mngmtUser = "${non.existing:admin}";
     public static final String mngmtPassword = "${non.existing:pass.1234}";
     public static final String mngmtPort = "${non.existing:9990}";
+    public static final String mngmtHost = "${non.existing:master}";
+    public static final String mngmtProfile = "${non.existing:default}";
 }

@@ -29,8 +29,10 @@ public class AwsIdentifiableSunstoneResourceUtils {
                 AwsEc2Instance annotation = (AwsEc2Instance) identification.identification;
                 if (annotation.mode() == OperatingMode.STANDALONE) {
                     return CreaperUtils.createStandaloneManagementClient(resolveHostname(identification, store).get(), annotation.standalone());
+                } else if (annotation.mode() == OperatingMode.DOMAIN) {
+                    return CreaperUtils.createDomainManagementClient(resolveHostname(identification, store).get(), annotation.domain());
                 } else {
-                    throw new UnsupportedSunstoneOperationException("Only standalone mode is supported for injecting OnlineManagementClient.");
+                    throw new UnsupportedSunstoneOperationException("Unknown operating mode specified for injecting OnlineManagementClient.");
                 }
             } else {
                 throw new UnsupportedSunstoneOperationException("Only AWS EC2 instance is supported for injecting OnlineManagementClient.");

@@ -72,7 +72,7 @@ Following table shows what can be injected (type of the field) for what cloud re
 | Type of the field        | Annotation        | note                                           |
 |--------------------------|-------------------|------------------------------------------------|
 | `Hostname`               | `@AwsEc2Instance` | doesn't matter whether is standalone or domain |
-| `OnlineManagementClient` | `@AwsEc2Instance` | only standalone mode is supported              |
+| `OnlineManagementClient` | `@AwsEc2Instance` | -                                              |
 | `S3Client`               | `@AwsAutoResolve` | -                                              |
 | `Ec2Client`              | `@AwsAutoResolve` | -                                              |
 
@@ -81,9 +81,9 @@ Following table shows what can be injected (type of the field) for what cloud re
 
 Deployment is based on method annotated by '@Deployment' annotation and resource identification annotation. For method requirements, see [README.md](README.md#wildfly-deployment). Following table shows a list of supported resources WildFly is running on for deploy operation.
 
-| Resource                 | annotation        | note                              |
-|--------------------------|-------------------|-----------------------------------|
-| EC2 Instance             | `@AwsEc2Instance` | only standalone mode is supported |
+| Resource                 | annotation        | note |
+|--------------------------|-------------------|------|
+| EC2 Instance             | `@AwsEc2Instance` | -    |
 
 Example:
 ```java
@@ -125,8 +125,26 @@ All values may contain expressions (`${my.property}`):
   - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` Sunstone Config property will be used
   - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` Sunstone Config property will be used
   - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` Sunstone Config property will be used
+- domain - optional
+  - `user, password, port` - same as in standalone mode
+  - `host` - optional. Wildfly host controller. If empty, `sunstone.wildfly.mngmt.host` Sunstone Config property will be used
+  - `profile` - optional. Profile for WildFly. If empty, `sunstone.wildfly.mngmt.profile` Sunstone Config property will be used
 
-Domain mode is not supported.
+
+If WildFly is running in domain mode:
+```java
+@AwsEc2Instance(
+        nameTag = "instanceName",
+        region = "region",
+        mode = OperatingMode.STANDALONE,
+        standalone = @StandaloneMode(
+                user = "mngmtUser",
+                password = "mngmtPassword",
+                port = "mngmtPort",
+                host = "mngmtHost",
+                profile = "mngmtProfile"))
+static OnlineManagementClient client;
+```
 
 ###### AwsAutoResolve
 Annotation is used to identify AWS objects and clients with auto-resolution.
