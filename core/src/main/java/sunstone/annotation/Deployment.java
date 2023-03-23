@@ -17,6 +17,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Inherited
+@SunstoneAnnotation
 public @interface Deployment {
     /**
      * Name of the deployment. Some resources may not support the name and will ignore it.

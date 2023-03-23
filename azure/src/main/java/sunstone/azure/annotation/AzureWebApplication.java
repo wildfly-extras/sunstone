@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * <br>
  * Injectable: {@link Hostname}
  * <br>
- * For more information about possible injection, see {@link AzureInjectionAnnotation}
+ * For more information about possible injection, see {@link AzureResourceIdentificationAnnotation}
  * <br>
  * Archive deploy operation (using {@link sunstone.annotation.Deployment}) is supported. Always deployed as a <b>ROOT.war</b> ignoring {@link Deployment#name()}.
  * <br>
@@ -23,8 +23,7 @@ import java.lang.annotation.Target;
 // represented by AzureIdentifiableSunstoneResource#WEB_APP
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
-@AzureInjectionAnnotation
-@AzureArchiveDeploymentAnnotation
+@AzureResourceIdentificationAnnotation
 public @interface AzureWebApplication {
     String name();
 

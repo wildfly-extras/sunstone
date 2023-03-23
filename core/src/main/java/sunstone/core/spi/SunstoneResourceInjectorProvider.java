@@ -2,6 +2,7 @@ package sunstone.core.spi;
 
 import sunstone.core.api.SunstoneResourceInjector;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Optional;
 

@@ -1,7 +1,6 @@
 package sunstone.core;
 
 
-import com.google.common.io.BaseEncoding;
 import sunstone.annotation.Parameter;
 import sunstone.core.api.SunstoneCloudDeployer;
 
@@ -25,10 +24,21 @@ import java.util.Map;
 public abstract class AbstractSunstoneCloudDeployer implements SunstoneCloudDeployer {
 
     protected static String md5sum(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-        sha256.update(str.getBytes("UTF-8"));
-        byte[] digest = sha256.digest();
-        return BaseEncoding.base16().encode(digest);
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] encodedhash = digest.digest(
+                str.getBytes(StandardCharsets.UTF_8));
+        return bytesToHex(encodedhash);
+    }
+    private static String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder(2 * hash.length);
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if(hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
     protected static Map<String, String> getParameters(Parameter[] parameters) {

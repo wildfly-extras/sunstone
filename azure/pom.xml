@@ -91,24 +91,5 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
-        <!-- Creaper -->
-        <dependency>
-            <groupId>org.wildfly.extras.creaper</groupId>
-            <artifactId>creaper-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wildfly.extras.creaper</groupId>
-            <artifactId>creaper-commands</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.wildfly.core</groupId>
-            <artifactId>wildfly-controller-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wildfly.core</groupId>
-            <artifactId>wildfly-cli</artifactId>
-        </dependency>
     </dependencies>
 </project>

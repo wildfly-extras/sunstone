@@ -1,14 +1,15 @@
 package sunstone.azure.impl;
 
 
-import sunstone.azure.annotation.AzureInjectionAnnotation;
+import sunstone.azure.annotation.AzureResourceIdentificationAnnotation;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.annotation.inject.Hostname;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
+import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
+import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -30,20 +31,26 @@ import static java.lang.String.format;
  */
 public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
 
+    private AzureIdentifiableSunstoneResource.Identification identification;
+    private Class<?> fieldType;
+    public AzureSunstoneResourceInjector(AzureIdentifiableSunstoneResource.Identification identification, Class<?> fieldType) {
+        this.identification = identification;
+        this.fieldType = fieldType;
+    }
+
     static boolean canInject (Field field) {
         return Arrays.stream(field.getAnnotations())
-                .filter(ann -> AnnotationUtils.isAnnotatedBy(ann.annotationType(), AzureInjectionAnnotation.class))
+                .filter(ann -> AnnotationUtils.isAnnotatedBy(ann.annotationType(), AzureResourceIdentificationAnnotation.class))
                 .filter(AzureIdentifiableSunstoneResource::isSupported)
                 .anyMatch(a -> AzureIdentifiableSunstoneResource.getType(a).isTypeSupportedForInject(field.getType()));
 
     }
 
     @Override
-    public Object getAndRegisterResource(Annotation annotation, Class<?> fieldType, ExtensionContext ctx) throws SunstoneException {
+    public Object getResource(ExtensionContext ctx) throws SunstoneException {
         Object injected = null;
         AzureSunstoneStore store = AzureSunstoneStore.get(ctx);
 
-        AzureIdentifiableSunstoneResource.Identification identification = new AzureIdentifiableSunstoneResource.Identification(annotation);
         if (!identification.type.isTypeSupportedForInject(fieldType)) {
             throw new SunstoneException(format("%s is not supported for injection to %s",
                     identification.identification.annotationType(), fieldType));
@@ -55,12 +62,17 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
             // we can inject cached client because it is not closable and a user can not change it
             injected = store.getAzureArmClientOrCreate();
             Objects.requireNonNull(injected, "Unable to determine Azure ARM client.");
-        } else if (OnlineManagementClient.class.isAssignableFrom(fieldType)) {
-            OnlineManagementClient client = AzureIdentifiableSunstoneResourceUtils.resolveOnlineManagementClient(identification, store);
-            Objects.requireNonNull(client, "Unable to determine management client.");
-            store.addClosable(client);
-            injected = client;
         }
         return injected;
+    }
+
+    @Override
+    public void closeResource(Object obj) throws Exception {
+        if (Hostname.class.isAssignableFrom(obj.getClass()) || AzureResourceManager.class.isAssignableFrom(obj.getClass())) {
+            // nothing to close
+        } else {
+            throw new IllegalArgumentSunstoneException("Unknown type " + obj.getClass());
+        }
+
     }
 }

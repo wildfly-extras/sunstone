@@ -1,19 +1,12 @@
 package sunstone.azure.impl;
 
 
-import sunstone.azure.annotation.AzureVirtualMachine;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.annotation.OperatingMode;
 import sunstone.annotation.inject.Hostname;
-import sunstone.core.CreaperUtils;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 
-import java.io.IOException;
-
-import static sunstone.azure.impl.AzureIdentifiableSunstoneResource.VM_INSTANCE;
 
 public class AzureIdentifiableSunstoneResourceUtils {
 
@@ -27,23 +20,6 @@ public class AzureIdentifiableSunstoneResourceUtils {
                 return app::defaultHostname;
             default:
                 throw new UnsupportedSunstoneOperationException("Unsupported type for getting hostname: " + identification.type);
-        }
-    }
-
-    static OnlineManagementClient resolveOnlineManagementClient(AzureIdentifiableSunstoneResource.Identification identification, AzureSunstoneStore store) throws SunstoneException {
-        try {
-            if (identification.type == VM_INSTANCE) {
-                AzureVirtualMachine annotation = (AzureVirtualMachine) identification.identification;
-                if (annotation.mode() == OperatingMode.STANDALONE) {
-                    return CreaperUtils.createStandaloneManagementClient(resolveHostname(identification, store).get(), annotation.standalone());
-                } else {
-                    throw new UnsupportedSunstoneOperationException("Only standalone mode is supported for injecting OnlineManagementClient.");
-                }
-            } else {
-                throw new UnsupportedSunstoneOperationException("Only Azure VM instance is supported for injecting OnlineManagementClient.");
-            }
-        } catch (IOException e) {
-            throw new SunstoneException(e);
         }
     }
 }

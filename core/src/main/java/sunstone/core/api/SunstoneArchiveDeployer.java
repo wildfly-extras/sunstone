@@ -4,11 +4,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.core.exceptions.SunstoneException;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 
 /**
  *
  */
 public interface SunstoneArchiveDeployer {
-    void deployAndRegisterUndeploy(String deploymentName, Annotation targetAnnotation, InputStream deployment, ExtensionContext ctx) throws SunstoneException;
+    void deploy(String deploymentName, Object deployment, ExtensionContext ctx) throws SunstoneException;
+    void undeploy(String deploymentName, ExtensionContext ctx) throws SunstoneException;
 }

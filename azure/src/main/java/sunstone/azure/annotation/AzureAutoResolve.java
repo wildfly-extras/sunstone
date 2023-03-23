@@ -12,11 +12,11 @@ import java.lang.annotation.Target;
  * <br>
  * Injectable: {@link com.azure.resourcemanager.AzureResourceManager}
  * <br>
- * For more information about possible injection, see {@link AzureInjectionAnnotation}
+ * For more information about possible injection, see {@link AzureResourceIdentificationAnnotation}
  */
 // represented by AzureIdentifiableSunstoneResource#AUTO
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@AzureInjectionAnnotation
+@AzureResourceIdentificationAnnotation
 public @interface AzureAutoResolve {
 }
