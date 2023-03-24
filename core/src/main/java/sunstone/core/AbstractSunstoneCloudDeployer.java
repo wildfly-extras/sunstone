@@ -23,8 +23,8 @@ import java.util.Map;
  */
 public abstract class AbstractSunstoneCloudDeployer implements SunstoneCloudDeployer {
 
-    protected static String md5sum(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    protected static String sum(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-3");
         byte[] encodedhash = digest.digest(
                 str.getBytes(StandardCharsets.UTF_8));
         return bytesToHex(encodedhash);

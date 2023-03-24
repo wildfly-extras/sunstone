@@ -90,6 +90,7 @@ enum AzureWFIdentifiableSunstoneResource {
         this.representedInjectionAnnotation = representedInjectionAnnotation;
     }
 
+    @Override
     public String toString() {
         if (representedInjectionAnnotation == null) {
             return "unsupported AzureIdentifiableSunstoneResource type";

@@ -5,9 +5,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.exceptions.SunstoneException;
 
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-
 
 public class TestSunstoneArchiveDeployer implements SunstoneArchiveDeployer {
     static boolean called;

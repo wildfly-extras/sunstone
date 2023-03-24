@@ -9,7 +9,6 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import sunstone.annotation.AbstractSetupTask;
 import sunstone.annotation.Setup;
-import sunstone.annotation.SunstoneAnnotation;
 import sunstone.annotation.SunstoneCloudDeployAnnotation;
 import sunstone.annotation.CloudResourceIdentificationAnnotation;
 import sunstone.annotation.Deployment;
@@ -18,24 +17,17 @@ import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
-import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 import sunstone.core.spi.SunstoneArchiveDeployerProvider;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 import sunstone.core.spi.SunstoneResourceInjectorProvider;
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -164,7 +156,6 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         try {
             Optional<Annotation> injectionAnnotation = getAndCheckInjectionAnnotation(field);
             if (injectionAnnotation.isPresent()) {
-                Annotation[] sunstoneAnnotations = AnnotationUtils.findAnnotationsAnnotatedBy(field.getAnnotations(), SunstoneAnnotation.class).toArray(new Annotation[]{});
                 SunstoneResourceInjector injector = getSunstoneResourceInjector(field).orElseThrow(() -> new RuntimeException(format("Unable to load a service via SPI that can inject into %s %s in %s class", field.getType().getName(), field.getName(), field.getDeclaringClass().getName())));
                 Object injectObject = injector.getResource(ctx);
                 store.addClosable((AutoCloseable) () -> injector.closeResource(injectObject));
@@ -208,7 +199,6 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                     throw new RuntimeException(format("%s in %s returned null", method.getName(), method.getDeclaringClass().getName()));
                 }
                 SunstoneArchiveDeployer archiveDeployer = getArchiveDeployer(method).orElseThrow(() -> new SunstoneException("todo"));
-                Annotation[] sunstoneAnnotations = AnnotationUtils.findAnnotationsAnnotatedBy(method.getAnnotations(), SunstoneAnnotation.class).toArray(new Annotation[]{});
                 archiveDeployer.deploy(deploymentName, invoke, ctx);
                 store.addClosable((AutoCloseable) () -> archiveDeployer.undeploy(deploymentName, ctx));
 

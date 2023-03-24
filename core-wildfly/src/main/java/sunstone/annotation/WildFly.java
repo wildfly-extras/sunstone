@@ -16,7 +16,7 @@ public @interface WildFly {
     OperatingMode mode() default OperatingMode.STANDALONE;
     StandaloneMode standalone()  default @StandaloneMode();
     DomainMode domain()  default @DomainMode();
-    public class WildFlyDefault implements WildFly {
+    class WildFlyDefault implements WildFly {
         @Override
         public OperatingMode mode() {
             return OperatingMode.STANDALONE;

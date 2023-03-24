@@ -8,14 +8,8 @@ import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import sunstone.core.SunstoneConfig;
-import sunstone.core.TimeoutUtils;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.Optional;
 
 public class AzureUtils {

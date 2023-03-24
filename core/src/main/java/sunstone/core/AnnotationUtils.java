@@ -37,6 +37,7 @@ public class AnnotationUtils {
                 .findAny();
     }
 
+    @SuppressWarnings("unchecked")
     private static <A extends Annotation> A findAnnotation(Class<?> clazz, Class<A> annotationType, Set<Annotation> visited) {
         Annotation[] anns = clazz.getDeclaredAnnotations();
         for (Annotation ann : anns) {

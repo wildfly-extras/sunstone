@@ -6,11 +6,8 @@ import org.junit.jupiter.api.Test;
 import sunstone.annotation.Deployment;
 import sunstone.core.di.TestSunstoneResourceInjector;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

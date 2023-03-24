@@ -1,7 +1,6 @@
 package sunstone.azure.armTemplates.archiveDeploy.vm.suitetests;
 
 
-import sunstone.annotation.WildFly;
 import sunstone.azure.armTemplates.AzureTestConstants;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import okhttp3.OkHttpClient;

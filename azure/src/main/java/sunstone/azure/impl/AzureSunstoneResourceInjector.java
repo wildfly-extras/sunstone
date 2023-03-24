@@ -9,7 +9,6 @@ import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
-import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

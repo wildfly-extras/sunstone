@@ -31,6 +31,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import static java.lang.String.format;
+
 
 /**
  * Purpose: handle deploy operation to WildFly.
@@ -110,7 +112,7 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
         AzureSunstoneStore store = AzureSunstoneStore.get(ctx);
 
         if (!identification.type.deployToWildFlySupported()) {
-            throw new UnsupportedSunstoneOperationException("todo");
+            throw new UnsupportedSunstoneOperationException(format("%s does not support WildFly deploy operation", identification.type));
         }
         InputStream is;
         try {
@@ -128,26 +130,36 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
         } catch (FileNotFoundException e) {
             throw new SunstoneException(e);
         }
-
-        switch (identification.type) {
-            case VM_INSTANCE:
-                if (StringUtils.isBlank(deploymentName)) {
-                    throw new IllegalArgumentSunstoneException("Deployment name can not be empty for Azure virtual machine.");
-                }
-                deployToVmInstance(deploymentName, identification, wildFly, is, store);
-                break;
-            case WEB_APP:
-                try {
-                    if (!deploymentName.isEmpty()) {
-                        throw new IllegalArgumentSunstoneException("Deployment name must be empty for Azure Web App. It is always ROOT.war and only WAR is supported.");
+        try {
+            switch (identification.type) {
+                case VM_INSTANCE:
+                    if (StringUtils.isBlank(deploymentName)) {
+                        throw new IllegalArgumentSunstoneException("Deployment name can not be empty for Azure virtual machine.");
                     }
-                    deployToWebApp(identification, is, store);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    deployToVmInstance(deploymentName, identification, wildFly, is, store);
+                    break;
+                case WEB_APP:
+                    try {
+                        if (!deploymentName.isEmpty()) {
+                            throw new IllegalArgumentSunstoneException("Deployment name must be empty for Azure Web App. It is always ROOT.war and only WAR is supported.");
+                        }
+                        deployToWebApp(identification, is, store);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    break;
+                default:
+                    throw new UnsupportedSunstoneOperationException(format("Unknown resource type for deploy operation to %s", identification.type));
+            }
+        } catch (Exception e) {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    throw new SunstoneException(ex);
                 }
-                break;
-            default:
-                throw new UnsupportedSunstoneOperationException("todo");
+            }
+            throw e;
         }
     }
 
@@ -172,7 +184,7 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
                 }
                 break;
             default:
-                throw new UnsupportedSunstoneOperationException("todo");
+                throw new UnsupportedSunstoneOperationException(format("Unknown resource type for undeploy operation from %s", identification.type));
         }
     }
 }
