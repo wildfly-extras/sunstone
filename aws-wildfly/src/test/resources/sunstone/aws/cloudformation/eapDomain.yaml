@@ -1,0 +1,202 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+  Generator: "former2"
+Description: ""
+Parameters:
+  defaultTag:
+    Type: "String"
+    Default: "sunstone-template-tag"
+  instanceName:
+    Type: "String"
+    Default: "eapSunstoneInstance"
+  ImageID:
+    Type: String
+    NoEcho: true
+    Default: "ami-0e3314c4e353d52d5"
+
+Resources:
+  EC2KeyPair:
+    Type: "AWS::EC2::KeyPair"
+    Properties:
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
+      PublicKeyMaterial: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCJXDQ9nvcaUQz8wAamVsQD509M3+b7kFPfYkMZj1bIiMRYvDYAV9bNhumzwO195eA8207IWmTQvh9kPAEsu3jxPaPlF2q6VnNngR2lIbNHGUfPo1OlwJhoXXHaFPciwn38lp+Br2vXSDJXf1zjjV+6eiDAENll/mcp1q83tq7qbqta57ZeT7j3N97kDREB2EGFzK3H13qoSWrWwhYCxDK2cOcpqDvarFJpxcBnPnc1Qyvi289PvGHYA+GpXcic5RW6u6vIOR25NOjX7rePBUZzRTftt4jWz8c2A7viBkIrCr6sjbnx0wKntY+QuCN+u7//dcgFkZxDzoUIY1D+RMrb
+      KeyName: !Join ["-", ["jclouds-jenkins", !Ref AWS::StackId]]
+      KeyType: "rsa"
+  EC2VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
+      CidrBlock: "172.31.0.0/16"
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: "default"
+
+  EC2SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
+      GroupDescription: "Allows any connection"
+      GroupName: "allow-any"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2InstanceEAP:
+    Type: "AWS::EC2::Instance"
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT10M
+    DependsOn:
+      - EC2KeyPair
+    Properties:
+      ImageId: !Ref ImageID
+      InstanceType: "t3.medium"
+      KeyName: !Ref EC2KeyPair
+      AvailabilityZone: !GetAtt EC2Subnet.AvailabilityZone
+      Tenancy: "default"
+      SubnetId: !Ref EC2Subnet
+      EbsOptimized: false
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      SourceDestCheck: true
+      IamInstanceProfile: EC2InstanceRole
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sda1"
+          Ebs:
+            Encrypted: false
+            VolumeSize: 10
+            VolumeType: "gp2"
+            DeleteOnTermination: true
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
+        - Key: "cf-template-resource"
+          Value: !Join ["-", [!Ref defaultTag, "ec2instance"]]
+        - Key: "Name"
+          Value: !Ref instanceName
+      HibernationOptions:
+        Configured: false
+      CpuOptions:
+        CoreCount: 1
+        ThreadsPerCore: 2
+      EnclaveOptions:
+        Enabled: false
+      UserData:
+        Fn::Base64: !Sub |
+          #!/usr/bin/env bash
+          JBOSS_HOME=/opt/rh/eap7/root/usr/share/wildfly
+
+          yum install -y unzip python3-pip
+          subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"  --enable "rhel-ha-for-rhel-*-server-rpms"
+          yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rp jq -y
+          
+          pip3 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+
+          INTERNAL_IP_ADDRESS=`ip addr show | grep eth0 -A 2 | head -n 3 | tail -n 1 | awk '{ print $2 }' | sed "s-/24--g" | cut -d'/' -f1`
+          echo $INTERNAL_IP_ADDRESS > /root/internal-ip-address.txt
+          echo "JAVA_OPTS=\"\$JAVA_OPTS \\
+              -Djboss.bind.address=$INTERNAL_IP_ADDRESS \
+              -Djboss.bind.address.private=$INTERNAL_IP_ADDRESS \
+              -Djboss.bind.address.management=$INTERNAL_IP_ADDRESS\"" >> $JBOSS_HOME/bin/domain.conf
+          echo 'HOST_CONTROLLER_JAVA_OPTS="$HOST_CONTROLLER_JAVA_OPTS $JAVA_OPTS"' >> $JBOSS_HOME/bin/domain.conf
+
+          echo "" >> $JBOSS_HOME/bin/domain.conf
+
+          # set up users (for remote management connections and application connections)
+          $JBOSS_HOME/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e
+
+          # set up env vars
+          echo "export JAVA_HOME=/usr/lib/jvm/java" >> /root/.bashrc
+          echo "export JBOSS_HOME=$JBOSS_HOME" >> /root/.bashrc
+          echo "export JAVA_HOME=/usr/lib/jvm/java" >> /home/ec2-user/.bashrc
+          echo "export JBOSS_HOME=$JBOSS_HOME" >> /home/ec2-user/.bashrc
+
+          # start EAP
+          systemctl enable eap7-domain
+          systemctl restart eap7-domain
+
+          # wait up to 90 seconds
+          for server in {"server-one","server-two"}; do 
+            for i in {1..9}; do 
+              sleep 10; 
+              $JBOSS_HOME/bin/jboss-cli.sh \
+                --connect \
+                --controller=remote+http://$INTERNAL_IP_ADDRESS:9990 \
+                --output-json \
+                --command="/host=master/server=$server:read-attribute(name=server-state)" \
+                | jq -r .result | grep -Fxq running && RET_VAL=$? && break; 
+              done;  
+            if [ "$RET_VAL" -ne 0 ]; then
+              echo ok
+              #cfn-signal -e $RET_VAL --stack ${AWS::StackName} --region ${AWS::Region} --resource EC2InstanceEAP
+            fi; 
+          done
+
+          systemctl status eap7-domain
+          STATUS=$?
+          cfn-signal -e $STATUS --stack ${AWS::StackName} --region ${AWS::Region} --resource EC2InstanceEAP
+
+  EC2Subnet:
+    Type: "AWS::EC2::Subnet"
+    DependsOn:
+      - EC2VPC
+    Properties:
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
+      AvailabilityZone: !Sub "${AWS::Region}a"
+      CidrBlock: "172.31.0.0/20"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: true
+
+  EC2InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
+
+  EC2Route:
+    Type: "AWS::EC2::Route"
+    DependsOn:
+      - EC2Subnet
+      - EC2InternetGateway
+      - EC2RouteTable
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref EC2InternetGateway
+      RouteTableId: !Ref EC2RouteTable
+
+  EC2VPCGatewayAttachment:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      InternetGatewayId: !Ref EC2InternetGateway
+      VpcId: !Ref EC2VPC
+
+  EC2RouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
+      VpcId: !Ref EC2VPC
+
+  EC2SubnetRouteTableAssociation:
+    DependsOn:
+      - EC2Route
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable
+      SubnetId: !Ref EC2Subnet

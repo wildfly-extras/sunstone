@@ -8,7 +8,7 @@
         <version>2.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sunstone-aws</artifactId>
+    <artifactId>sunstone-aws-wildfly</artifactId>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -26,6 +26,14 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>sunstone-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sunstone-core-wildfly</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sunstone-aws</artifactId>
         </dependency>
 
         <dependency>
@@ -81,6 +89,25 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Creaper -->
+        <dependency>
+            <groupId>org.wildfly.extras.creaper</groupId>
+            <artifactId>creaper-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.extras.creaper</groupId>
+            <artifactId>creaper-commands</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.core</groupId>
+            <artifactId>wildfly-controller-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.core</groupId>
+            <artifactId>wildfly-cli</artifactId>
         </dependency>
     </dependencies>
 </project>

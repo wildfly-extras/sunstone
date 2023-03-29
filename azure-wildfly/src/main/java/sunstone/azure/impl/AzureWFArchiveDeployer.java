@@ -48,6 +48,11 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
     private final Identification identification;
     private WildFly wildFly;
 
+    AzureWFArchiveDeployer(Identification identification, WildFly wildFly) {
+        this.identification = identification;
+        this.wildFly = wildFly;
+    }
+
     static void deployToWebApp(Identification resourceIdentification, InputStream is, AzureSunstoneStore store) throws Exception {
         Path tempFile = Files.createTempFile("sunstone-war-deployment-", ".war");
         Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
@@ -100,11 +105,6 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    AzureWFArchiveDeployer(Identification identification, WildFly wildFly) {
-        this.identification = identification;
-        this.wildFly = wildFly;
     }
 
     @Override
