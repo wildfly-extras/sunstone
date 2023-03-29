@@ -24,7 +24,7 @@ import java.util.Map;
 public abstract class AbstractSunstoneCloudDeployer implements SunstoneCloudDeployer {
 
     protected static String sum(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-3");
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] encodedhash = digest.digest(
                 str.getBytes(StandardCharsets.UTF_8));
         return bytesToHex(encodedhash);
