@@ -1,8 +1,6 @@
 package sunstone.core;
 
 
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -12,32 +10,24 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 import sunstone.annotation.AbstractSetupTask;
 import sunstone.annotation.Setup;
 import sunstone.annotation.SunstoneCloudDeployAnnotation;
-import sunstone.annotation.SunstoneInjectionAnnotation;
-import sunstone.annotation.SunstoneArchiveDeployTargetAnotation;
+import sunstone.annotation.CloudResourceIdentificationAnnotation;
 import sunstone.annotation.Deployment;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.api.SunstoneCloudDeployer;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
-import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 import sunstone.core.spi.SunstoneArchiveDeployerProvider;
 import sunstone.core.spi.SunstoneCloudDeployerProvider;
 import sunstone.core.spi.SunstoneResourceInjectorProvider;
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -136,11 +126,11 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
 
     static Optional<Annotation> getAndCheckInjectionAnnotation(Field field) throws IllegalArgumentSunstoneException {
         List<Annotation> injectionAnnotations = Arrays.stream(field.getAnnotations())
-                .filter(ann -> AnnotationUtils.isAnnotatedBy(ann.annotationType(), SunstoneInjectionAnnotation.class))
+                .filter(ann -> AnnotationUtils.isAnnotatedBy(ann.annotationType(), CloudResourceIdentificationAnnotation.class))
                 .collect(Collectors.toList());
         if (injectionAnnotations.size() > 1) {
             throw new IllegalArgumentSunstoneException(format("More than one annotation (in)direrectly annotated by %s found on %s %s in %s class",
-                    SunstoneInjectionAnnotation.class, field.getType().getName(), field.getName(), field.getDeclaringClass()));
+                    CloudResourceIdentificationAnnotation.class, field.getType().getName(), field.getName(), field.getDeclaringClass()));
         }
         if (injectionAnnotations.isEmpty()) {
             return Optional.empty();
@@ -162,12 +152,13 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
     }
 
     static void handleInjection(ExtensionContext ctx, Object instance, Field field) {
+        SunstoneStore store = SunstoneStore.get(ctx);
         try {
             Optional<Annotation> injectionAnnotation = getAndCheckInjectionAnnotation(field);
             if (injectionAnnotation.isPresent()) {
-                Optional<SunstoneResourceInjector> injector = getSunstoneResourceInjector(field);
-                injector.orElseThrow(() -> new RuntimeException(format("Unable to load a service via SPI that can inject into %s %s in %s class", field.getType().getName(), field.getName(), field.getDeclaringClass().getName())));
-                Object injectObject = injector.get().getAndRegisterResource(injectionAnnotation.get(), field.getType(), ctx);
+                SunstoneResourceInjector injector = getSunstoneResourceInjector(field).orElseThrow(() -> new RuntimeException(format("Unable to load a service via SPI that can inject into %s %s in %s class", field.getType().getName(), field.getName(), field.getDeclaringClass().getName())));
+                Object injectObject = injector.getResource(ctx);
+                store.addClosable((AutoCloseable) () -> injector.closeResource(injectObject));
                 field.setAccessible(true);
                 field.set(instance, injectObject);
             }
@@ -178,9 +169,9 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
         }
     }
 
-    static Optional<SunstoneArchiveDeployer> getArchiveDeployer(Annotation annotation) {
+    static Optional<SunstoneArchiveDeployer> getArchiveDeployer(Method method) {
         for (SunstoneArchiveDeployerProvider sunstoneCloudDeployerProvider : sunstoneArchiveDeployerProviderLoader) {
-            Optional<SunstoneArchiveDeployer> deployer = sunstoneCloudDeployerProvider.create(annotation);
+            Optional<SunstoneArchiveDeployer> deployer = sunstoneCloudDeployerProvider.create(method);
             if (deployer.isPresent()) {
                 return deployer;
             }
@@ -189,6 +180,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
     }
     static void performDeploymentOperation(ExtensionContext ctx) throws SunstoneException {
         List<Method> annotatedMethods = AnnotationSupport.findAnnotatedMethods(ctx.getRequiredTestClass(), Deployment.class, HierarchyTraversalMode.TOP_DOWN);
+        SunstoneStore store = SunstoneStore.get(ctx);
 
         try {
             for (Method method : annotatedMethods) {
@@ -206,35 +198,14 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                 if (invoke == null) {
                     throw new RuntimeException(format("%s in %s returned null", method.getName(), method.getDeclaringClass().getName()));
                 }
-                InputStream is;
-                if (invoke instanceof Archive) {
-                    is = ((Archive) invoke).as(ZipExporter.class).exportAsInputStream();
-                } else if (invoke instanceof File) {
-                    is = new FileInputStream((File) invoke);
-                } else if (invoke instanceof Path) {
-                    is = new FileInputStream(((Path) invoke).toFile());
-                } else if (invoke instanceof InputStream) {
-                    is = (InputStream) invoke;
-                } else {
-                    throw new UnsupportedSunstoneOperationException("Unsupported type " + method.getName());
-                }
-                for (Annotation ann : AnnotationUtils.findAnnotationsAnnotatedBy(method.getAnnotations(), SunstoneArchiveDeployTargetAnotation.class)) {
-                    Optional<SunstoneArchiveDeployer> archiveDeployer = getArchiveDeployer(ann);
-                    archiveDeployer.orElseThrow(() -> new SunstoneException("todo"));
-                    archiveDeployer.get().deployAndRegisterUndeploy(deploymentName, ann, is, ctx);
-                }
-
-
-                is.close();
+                SunstoneArchiveDeployer archiveDeployer = getArchiveDeployer(method).orElseThrow(() -> new SunstoneException("todo"));
+                archiveDeployer.deploy(deploymentName, invoke, ctx);
+                store.addClosable((AutoCloseable) () -> archiveDeployer.undeploy(deploymentName, ctx));
 
             }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -30,8 +30,11 @@
 
     <modules>
         <module>core</module>
+        <module>core-wildfly</module>
         <module>azure</module>
-        <module>aws</module>
+        <module>azure-wildfly</module>
+<!--        temporal exclude-->
+<!--        <module>aws</module>-->
     </modules>
 
     <scm>
@@ -257,10 +260,26 @@
             </dependency>
 
             <dependency>
-                <groupId>org.wildfly.extras.sunstone</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>sunstone-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>sunstone-core-wildfly</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>sunstone-azure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+<!--            temporal exclude-->
+<!--            <dependency>-->
+<!--                <groupId>${project.groupId}</groupId>-->
+<!--                <artifactId>sunstone-aws</artifactId>-->
+<!--                <version>${project.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.jboss.shrinkwrap</groupId>

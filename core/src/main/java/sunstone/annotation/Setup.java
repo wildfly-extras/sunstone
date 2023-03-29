@@ -12,12 +12,13 @@ import java.lang.annotation.Target;
 /**
  * Define {@link AbstractSetupTask} that configure environment right after Cloud resources are deployed and before.
  *
- * The class may inject static/non-static resources using annotations annotated by {@link SunstoneInjectionAnnotation}
+ * The class may inject static/non-static resources using annotations annotated by {@link CloudResourceIdentificationAnnotation}
  * that are brought bu modules like sunstone-clouds-aws or sunstone-clouds-azure.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @ExtendWith(SunstoneExtension.class)
+@SunstoneAnnotation
 @Inherited
 public @interface Setup {
     Class<? extends AbstractSetupTask> [] value();

@@ -1,6 +1,6 @@
 package sunstone.core.di;
 
-import sunstone.annotation.SunstoneInjectionAnnotation;
+import sunstone.annotation.CloudResourceIdentificationAnnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@SunstoneInjectionAnnotation
+@CloudResourceIdentificationAnnotation
 public @interface DirectlyAnnotatedInject {
 }

@@ -1,8 +1,7 @@
 package sunstone.azure.annotation;
 
 import com.azure.resourcemanager.AzureResourceManager;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.annotation.SunstoneInjectionAnnotation;
+import sunstone.annotation.CloudResourceIdentificationAnnotation;
 import sunstone.annotation.inject.Hostname;
 
 import java.lang.annotation.ElementType;
@@ -11,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Aggregates {@link SunstoneInjectionAnnotation} annotation for Azure module purposes.
+ * Aggregates {@link CloudResourceIdentificationAnnotation} annotation for Azure module purposes.
  * <br>
  * Used to determine that the field has annotation marking Azure module ability to inject to the field.
  * <br>
@@ -31,9 +30,6 @@ import java.lang.annotation.Target;
  *         <th>Supported Azure identification annotations</th>
  *     </tr>
  *     <tr>
- *         <td>
- *             {@link OnlineManagementClient}
- *         </td>
  *         <td>
  *             {@link AzureVirtualMachine}
  *         </td>
@@ -61,6 +57,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-@SunstoneInjectionAnnotation
-public @interface AzureInjectionAnnotation {
+@CloudResourceIdentificationAnnotation
+public @interface AzureResourceIdentificationAnnotation {
 }

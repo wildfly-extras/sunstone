@@ -8,7 +8,6 @@ import sunstone.azure.annotation.AzureWebApplication;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.annotation.inject.Hostname;
 import sunstone.core.SunstoneConfig;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
@@ -32,8 +31,7 @@ import static java.lang.String.format;
  * can be injected with such use of the annotation.
  *
  * Another example is  {@link AzureIdentifiableSunstoneResource#VM_INSTANCE},
- * which effectively mean {@link AzureVirtualMachine} is used. A user can inject {@link Hostname} and
- * {@link OnlineManagementClient}.
+ * which effectively mean {@link AzureVirtualMachine} is used. A user can inject {@link Hostname}
  */
 enum AzureIdentifiableSunstoneResource {
     UNSUPPORTED(null),
@@ -57,20 +55,16 @@ enum AzureIdentifiableSunstoneResource {
     /**
      * Azure Virtual machine instance identification, representation for {@link AzureVirtualMachine}
      *
-     * Injectable: {@link Hostname} and {@link OnlineManagementClient}
+     * Injectable: {@link Hostname}
      *
      * Deployable: archive can be deployed to such resource
      */
     VM_INSTANCE(AzureVirtualMachine.class) {
-        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class, OnlineManagementClient.class};
+        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class};
 
         @Override
         boolean isTypeSupportedForInject(Class<?> type) {
             return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
-        }
-        @Override
-        boolean deployToWildFlySupported() {
-            return true;
         }
 
         @Override
@@ -100,10 +94,6 @@ enum AzureIdentifiableSunstoneResource {
         @Override
         boolean isTypeSupportedForInject(Class<?> type) {
             return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
-        }
-        @Override
-        boolean deployToWildFlySupported() {
-            return true;
         }
         @Override
         <T> T get(Annotation injectionAnnotation, AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {
@@ -138,9 +128,6 @@ enum AzureIdentifiableSunstoneResource {
     }
 
     boolean isTypeSupportedForInject(Class<?> type) {
-        return false;
-    }
-    boolean deployToWildFlySupported() {
         return false;
     }
     <T> T get(Annotation injectionAnnotation, AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {

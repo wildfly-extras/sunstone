@@ -59,7 +59,7 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
             }
 
             Map<String, String> parameters = getParameters(armTemplateDefinition.parameters());
-            String md5sum = md5sum(content);
+            String md5sum = sum(content);
 
             if (!armTemplateDefinition.perSuite() || !store.suiteLevelDeploymentExists(md5sum)) {
                 deploymentManager.deployAndRegister(group, region, content, parameters);

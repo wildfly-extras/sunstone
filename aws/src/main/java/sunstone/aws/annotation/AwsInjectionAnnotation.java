@@ -3,7 +3,7 @@ package sunstone.aws.annotation;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.s3.S3Client;
-import sunstone.annotation.SunstoneInjectionAnnotation;
+import sunstone.annotation.CloudResourceIdentificationAnnotation;
 import sunstone.annotation.inject.Hostname;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Aggregates {@link SunstoneInjectionAnnotation} annotation for AWS module purposes.
+ * Aggregates {@link CloudResourceIdentificationAnnotation} annotation for AWS module purposes.
  * <br>
  * Used to determine that the field has annotation marking AWS module ability to inject to the field.
  * <br>
@@ -74,6 +74,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-@SunstoneInjectionAnnotation
+@CloudResourceIdentificationAnnotation
 public @interface AwsInjectionAnnotation {
 }

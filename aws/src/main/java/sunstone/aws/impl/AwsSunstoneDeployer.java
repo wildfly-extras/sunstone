@@ -55,7 +55,7 @@ public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
                 throw new IllegalArgumentSunstoneException("Region for AWS template is not defined. It must be specified either "
                         + "in the annotation or as Sunstone Config property.");
             }
-            String md5sum = md5sum(content);
+            String md5sum = sum(content);
 
             if (!awsTemplateDefinition.perSuite() || !store.suiteLevelDeploymentExists(md5sum)) {
                 CloudFormationClient cfClient = store.getAwsCfClientOrCreate(region);

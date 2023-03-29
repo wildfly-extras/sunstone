@@ -3,8 +3,10 @@ package sunstone.core;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -28,6 +30,14 @@ public class AnnotationUtils {
         return result;
     }
 
+    public static <A extends Annotation> Optional<A> getAnnotation(Annotation[] annotations, Class<A> annotationType) {
+        return Arrays.stream(annotations)
+                .filter(ann -> annotationType.isAssignableFrom(ann.annotationType()))
+                .map(annotationType::cast)
+                .findAny();
+    }
+
+    @SuppressWarnings("unchecked")
     private static <A extends Annotation> A findAnnotation(Class<?> clazz, Class<A> annotationType, Set<Annotation> visited) {
         Annotation[] anns = clazz.getDeclaredAnnotations();
         for (Annotation ann : anns) {
