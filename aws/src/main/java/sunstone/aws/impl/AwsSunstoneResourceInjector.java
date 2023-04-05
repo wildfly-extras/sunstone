@@ -2,22 +2,19 @@ package sunstone.aws.impl;
 
 
 import org.junit.platform.commons.util.StringUtils;
+import software.amazon.awssdk.utils.SdkAutoCloseable;
 import sunstone.aws.annotation.AwsAutoResolve;
-import sunstone.aws.annotation.AwsInjectionAnnotation;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.core.SunstoneConfig;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.s3.S3Client;
 import sunstone.annotation.inject.Hostname;
-import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
+import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -34,6 +31,15 @@ import static java.lang.String.format;
  * Closable resources are registered in extension store so that they are closed once the store is closed
  */
 public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
+
+    private AwsIdentifiableSunstoneResource.Identification identification;
+    private Class<?> fieldType;
+
+    public AwsSunstoneResourceInjector(AwsIdentifiableSunstoneResource.Identification identification, Class<?> fieldType) {
+        this.identification = identification;
+        this.fieldType = fieldType;
+    }
+
     static Ec2Client resolveEc2ClientDI(AwsIdentifiableSunstoneResource.Identification identification, AwsSunstoneStore store) throws SunstoneException {
         Ec2Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
@@ -56,20 +62,11 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         return client;
     }
 
-    static boolean canInject (Field field) {
-        return Arrays.stream(field.getAnnotations())
-                .filter(ann -> AnnotationUtils.isAnnotatedBy(ann.annotationType(), AwsInjectionAnnotation.class))
-                .filter(AwsIdentifiableSunstoneResource::isSupported)
-                .anyMatch(a -> AwsIdentifiableSunstoneResource.getType(a).isTypeSupportedForInject(field.getType()));
-
-    }
-
     @Override
-    public Object getAndRegisterResource(Annotation annotation, Class<?> fieldType, ExtensionContext ctx) throws SunstoneException {
+    public Object getResource(ExtensionContext ctx) throws SunstoneException {
         Object injected = null;
         AwsSunstoneStore store = AwsSunstoneStore.get(ctx);
 
-        AwsIdentifiableSunstoneResource.Identification identification = new AwsIdentifiableSunstoneResource.Identification(annotation);
         if (!identification.type.isTypeSupportedForInject(fieldType)) {
             throw new SunstoneException(format("%s is not supported for injection to %s",
                     identification.identification.annotationType(), fieldType));
@@ -80,21 +77,25 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         } else if (Ec2Client.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
             Ec2Client client = resolveEc2ClientDI(identification, store);
-            store.addClosable(client);
             injected = client;
             Objects.requireNonNull(injected, "Unable to determine AWS EC2 client.");
         } else if (S3Client.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
             S3Client client = resolveS3ClientDI(identification, store);
-            store.addClosable(client);
             injected = client;
             Objects.requireNonNull(injected, "Unable to determine AWS S3 client.");
-        } else if (OnlineManagementClient.class.isAssignableFrom(fieldType)) {
-            OnlineManagementClient client = AwsIdentifiableSunstoneResourceUtils.resolveOnlineManagementClient(identification, store);
-            Objects.requireNonNull(client, "Unable to determine management client.");
-            store.addClosable(client);
-            injected = client;
         }
         return injected;
+    }
+
+    @Override
+    public void closeResource(Object obj) throws Exception {
+        if (Hostname.class.isAssignableFrom(obj.getClass())) {
+            // nothing to close
+        } else if(SdkAutoCloseable.class.isAssignableFrom(obj.getClass())) {
+            ((SdkAutoCloseable) obj).close();
+        } else {
+            throw new IllegalArgumentSunstoneException("Unknown type " + obj.getClass());
+        }
     }
 }

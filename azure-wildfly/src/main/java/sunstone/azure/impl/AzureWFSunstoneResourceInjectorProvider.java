@@ -33,7 +33,10 @@ public class AzureWFSunstoneResourceInjectorProvider implements SunstoneResource
             if (resourceIdentifications.size() > 1) {
                 AzureWFLogger.DEFAULT.warn(format("Injected field %s is supposed to be annotated only by one annotation identifying a cloud resource. %s is accepted.", field, resourceIdentifications.get(0).toString()));
             }
-            if (identification.type == AzureWFIdentifiableSunstoneResource.WEB_APP && !wildFly.isPresent()) {
+            if (identification.type == AzureWFIdentifiableSunstoneResource.WEB_APP && wildFly.isPresent()) {
+                AzureWFLogger.DEFAULT.info("Injecting from Azure Web App. WildFly always runs in standalone mode there, hence WildFly annotation doesn't matter");
+            }
+            if (!wildFly.isPresent()) {
                 AzureWFLogger.DEFAULT.info(format("%s is missing %s annotation, sunstone azure-wildfly is going with standalone defaults", field, WildFly.class));
             }
             return Optional.of(new AzureWFSunstoneResourceInjector(identification, wildFly.orElse(new WildFly.WildFlyDefault()), field.getType()));

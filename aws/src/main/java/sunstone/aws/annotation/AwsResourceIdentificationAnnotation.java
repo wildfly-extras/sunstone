@@ -1,6 +1,5 @@
 package sunstone.aws.annotation;
 
-import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.s3.S3Client;
 import sunstone.annotation.CloudResourceIdentificationAnnotation;
@@ -33,7 +32,6 @@ import java.lang.annotation.Target;
  *     </tr>
  *     <tr>
  *         <td>
- *             {@link OnlineManagementClient}
  *         </td>
  *         <td>
  *             {@link AwsEc2Instance}
@@ -55,9 +53,6 @@ import java.lang.annotation.Target;
  *         <td>
  *             {@link AwsAutoResolve}
  *         </td>
- *         <td>
- *             {@link AwsRegion}
- *         </td>
  *     </tr>
  *     <tr>
  *         <td>
@@ -66,14 +61,11 @@ import java.lang.annotation.Target;
  *         <td>
  *             {@link AwsAutoResolve}
  *         </td>
- *         <td>
- *             {@link AwsRegion}
- *         </td>
  *     </tr>
  * </table>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
 @CloudResourceIdentificationAnnotation
-public @interface AwsInjectionAnnotation {
+public @interface AwsResourceIdentificationAnnotation {
 }

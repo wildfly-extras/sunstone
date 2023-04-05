@@ -15,12 +15,12 @@ import java.lang.annotation.Target;
  * <br>
  * Injectable: {@link S3Client}, {@link Ec2Client}
  * <br>
- * For more information about possible injection, see {@link AwsInjectionAnnotation}
+ * For more information about possible injection, see {@link AwsResourceIdentificationAnnotation}
  */
 // represented by AwsIdentifiableSunstoneResource#AUTO
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@AwsInjectionAnnotation
+@AwsResourceIdentificationAnnotation
 public @interface AwsAutoResolve {
     String region() default "";
 }
