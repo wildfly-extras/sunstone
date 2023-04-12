@@ -96,7 +96,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                     Optional<SunstoneCloudDeployer> deployer = getDeployer(ann);
                     deployer.orElseThrow(() -> new RuntimeException("Unable to load a service via SPI that handles " + ann.annotationType() + " annotation."));
                     try {
-                        deployer.get().deploy(ann, ctx);
+                        deployer.get().deployAndRegisterForUndeploy(ctx);
                     } catch (SunstoneException e) {
                         throw new RuntimeException("Unable to deploy " + ann, e);
                     }
