@@ -57,7 +57,7 @@ class AzureArmTemplateCloudDeploymentManager {
                     .withRegion(region)
                     .create();
         } else {
-            LOGGER.warn("Azure resource group '{}' already exists! It will be reused and deleted when tests arre finished.", group);
+            LOGGER.warn("Azure resource group '{}' already exists! It will be reused and deleted when tests are finished.", group);
         }
 
         armManager.deployments().define(deploymentName)

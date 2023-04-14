@@ -35,8 +35,11 @@ public class AzureWFIdentifiableSunstoneResourceUtils {
             if (identification.type == VM_INSTANCE) {
                 if (wildfly.mode() == OperatingMode.STANDALONE) {
                     return CreaperUtils.createStandaloneManagementClient(resolveHostname(identification, store).get(), wildfly.standalone());
-                } else {
-                    throw new UnsupportedSunstoneOperationException("Only standalone mode is supported for injecting OnlineManagementClient.");
+                } else if (wildfly.mode() == OperatingMode.DOMAIN) {
+                    return CreaperUtils.createDomainManagementClient(resolveHostname(identification, store).get(), wildfly.domain());
+                }
+                else {
+                    throw new UnsupportedSunstoneOperationException("Unknown operating mode specified for injecting OnlineManagementClient.");
                 }
             } else {
                 throw new UnsupportedSunstoneOperationException("Only Azure VM instance is supported for injecting OnlineManagementClient.");
