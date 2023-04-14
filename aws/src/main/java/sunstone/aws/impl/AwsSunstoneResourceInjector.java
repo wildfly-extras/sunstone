@@ -2,6 +2,7 @@ package sunstone.aws.impl;
 
 
 import org.junit.platform.commons.util.StringUtils;
+import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.utils.SdkAutoCloseable;
 import sunstone.aws.annotation.AwsAutoResolve;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -74,6 +75,9 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         if (Hostname.class.isAssignableFrom(fieldType)) {
             injected = AwsIdentifiableSunstoneResourceUtils.resolveHostname(identification, store);
             Objects.requireNonNull(injected, "Unable to determine hostname.");
+        } else if (Instance.class.isAssignableFrom(fieldType)) {
+            injected = identification.get(store, Instance.class);
+            Objects.requireNonNull(injected, "Unable to get EC2 Instance obstraction object.");
         } else if (Ec2Client.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
             Ec2Client client = resolveEc2ClientDI(identification, store);
@@ -90,7 +94,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
 
     @Override
     public void closeResource(Object obj) throws Exception {
-        if (Hostname.class.isAssignableFrom(obj.getClass())) {
+        if (Hostname.class.isAssignableFrom(obj.getClass()) || Instance.class.isAssignableFrom(obj.getClass())) {
             // nothing to close
         } else if(SdkAutoCloseable.class.isAssignableFrom(obj.getClass())) {
             ((SdkAutoCloseable) obj).close();

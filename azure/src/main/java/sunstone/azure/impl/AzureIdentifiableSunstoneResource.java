@@ -60,7 +60,7 @@ enum AzureIdentifiableSunstoneResource {
      * Deployable: archive can be deployed to such resource
      */
     VM_INSTANCE(AzureVirtualMachine.class) {
-        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class};
+        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class, VirtualMachine.class};
 
         @Override
         boolean isTypeSupportedForInject(Class<?> type) {
@@ -89,7 +89,7 @@ enum AzureIdentifiableSunstoneResource {
      * Deployable: archive can be deployed to such resource
      */
     WEB_APP(AzureWebApplication.class) {
-        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class};
+        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class, WebApp.class};
 
         @Override
         boolean isTypeSupportedForInject(Class<?> type) {
