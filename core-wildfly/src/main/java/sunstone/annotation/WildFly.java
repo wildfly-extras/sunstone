@@ -40,17 +40,17 @@ public @interface WildFly {
         static class StandaloneDefault implements StandaloneMode {
             @Override
             public String user() {
-                return "${" + WildFlyConfig.MNGMT_USERNAME + "}";
+                return "${" + WildFlyConfig.MGMT_USERNAME + "}";
             }
 
             @Override
             public String password() {
-                return "${" + WildFlyConfig.MNGMT_PASSWORD + "}";
+                return "${" + WildFlyConfig.MGMT_PASSWORD + "}";
             }
 
             @Override
             public String port() {
-                return "${" + WildFlyConfig.MNGMT_PORT + "}";
+                return "${" + WildFlyConfig.MGMT_PORT + "}";
             }
 
             @Override

@@ -18,10 +18,10 @@ sunstone.azure.password=${azure.password}
 sunstone.azure.region=${azure.region:eastus2}
 sunstone.azure.group=${azure.group}
 
-sunstone.wildfly.mngmt.port=9990
-sunstone.wildfly.mngmt.user=admin
-sunstone.wildfly.mngmt.password=pass.1234
-sunstone.wildfly.mngmt.connection.timeout=120000
+sunstone.wildfly.mgmt.port=9990
+sunstone.wildfly.mgmt.user=admin
+sunstone.wildfly.mgmt.password=pass.1234
+sunstone.wildfly.mgmt.connection.timeout=120000
 ```
 
 Mind that only subscription id, tentant id, application id and password are mandatory. Everything else you can also set in the annotations.
@@ -114,9 +114,9 @@ If WildFly is running in standalone mode:
         group = "group",
         mode = OperatingMode.STANDALONE,
         standalone = @StandaloneMode(
-                user = "mngmtUser",
-                password = "mngmtPassword",
-                port = "mngmtPort"))
+                user = "mgmtUser",
+                password = "mgmtPassword",
+                port = "mgmtPort"))
 static OnlineManagementClient client;
 ```
 
@@ -128,11 +128,11 @@ If WildFly is running in domain mode:
 @WildFly(
         mode = OperatingMode.DOMAIN,
         domain = @DomainMode(
-                user = "mngmtUser",
-                password = "mngmtPassword",
-                port = "mngmtPort",
-                host = "mngmtHost",
-                profile = "mngmtProfile"))
+                user = "mgmtUser",
+                password = "mgmtPassword",
+                port = "mgmtPort",
+                host = "mgmtHost",
+                profile = "mgmtProfile"))
 static OnlineManagementClient client;
 ```
 
@@ -141,13 +141,13 @@ All values may contain expressions (`${my.property}`):
 - `group` - optional, if empty, `sunstone.azure.group` Sunstone Config property will be used
 - mode - optional, default to OperatingMode.STANDALONE
 - standalone - optional
-  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` Sunstone Config property will be used
-  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` Sunstone Config property will be used
-  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` Sunstone Config property will be used
+  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mgmt.user` Sunstone Config property will be used
+  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mgmt.password` Sunstone Config property will be used
+  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mgmt.port` Sunstone Config property will be used
 - domain - optional
   - `user, password, port` - same as in standalone mode
-  - `host` - optional. Wildfly host controller. If empty, `sunstone.wildfly.mngmt.host` Sunstone Config property will be used
-  - `profile` - optional. Profile for WildFly. If empty, `sunstone.wildfly.mngmt.profile` Sunstone Config property will be used
+  - `host` - optional. Wildfly host controller. If empty, `sunstone.wildfly.mgmt.host` Sunstone Config property will be used
+  - `profile` - optional. Profile for WildFly. If empty, `sunstone.wildfly.mgmt.profile` Sunstone Config property will be used
 
 ###### AzureWebApp
 Annotation is used to identify Azure Web application. It may be expected, WildFly is running on it (for deployment operation):

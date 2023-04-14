@@ -27,7 +27,7 @@ public class CreaperUtils {
             int port = isExpression(standaloneMode.port()) ? SunstoneConfig.resolveExpression(standaloneMode.port(), Integer.class) : Integer.parseInt(standaloneMode.port());
             String user = isExpression(standaloneMode.user()) ? resolveExpressionToString(standaloneMode.user()) : standaloneMode.user();
             String pass = isExpression(standaloneMode.password()) ? resolveExpressionToString(standaloneMode.password()) : standaloneMode.password();
-            int timeout = (int) TimeoutUtils.adjust(getValue(WildFlyConfig.MNGMT_CONNECTION_TIMEOUT, 120000));
+            int timeout = (int) TimeoutUtils.adjust(getValue(WildFlyConfig.MGMT_CONNECTION_TIMEOUT, 120000));
             LOGGER.debug("Creating management client {}:{} using credentials {}:{} with timeout {}", hostname, port, user, pass, timeout);
             OnlineOptions.OptionalOnlineOptions clientOptions = OnlineOptions.standalone()
                     .hostAndPort(hostname, port)
@@ -46,7 +46,7 @@ public class CreaperUtils {
             int port = isExpression(domainMode.port()) ? SunstoneConfig.resolveExpression(domainMode.port(), Integer.class) : Integer.parseInt(domainMode.port());
             String user = isExpression(domainMode.user()) ? resolveExpressionToString(domainMode.user()) : getString(domainMode.user());
             String pass = isExpression(domainMode.password()) ? resolveExpressionToString(domainMode.password()) : domainMode.password();
-            int timeout = (int) TimeoutUtils.adjust(getValue(WildFlyConfig.MNGMT_CONNECTION_TIMEOUT, 120000));
+            int timeout = (int) TimeoutUtils.adjust(getValue(WildFlyConfig.MGMT_CONNECTION_TIMEOUT, 120000));
             String host = isExpression(domainMode.host()) ? resolveExpressionToString(domainMode.host()) : domainMode.host();
             String profile = isExpression(domainMode.profile()) ? resolveExpressionToString(domainMode.profile()) : domainMode.profile();
             LOGGER.debug("Creating management client {}:{} with profile {}:{} using credentials {}:{} with timeout {}", hostname, port, host, profile, user, pass, timeout);

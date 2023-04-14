@@ -14,9 +14,9 @@ import sunstone.aws.annotation.WithAwsCfTemplate;
 
 import java.io.IOException;
 
-import static aws.cloudformation.AwsTestConstants.mngmtPassword;
-import static aws.cloudformation.AwsTestConstants.mngmtPort;
-import static aws.cloudformation.AwsTestConstants.mngmtUser;
+import static aws.cloudformation.AwsTestConstants.mgmtPassword;
+import static aws.cloudformation.AwsTestConstants.mgmtPort;
+import static aws.cloudformation.AwsTestConstants.mgmtUser;
 import static aws.cloudformation.AwsTestConstants.instanceName;
 import static aws.cloudformation.AwsTestConstants.region;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,30 +35,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AwsStandaloneManagementClientTests {
 
     @AwsEc2Instance(nameTag = instanceName)
-    static OnlineManagementClient staticMngmtClient;
+    static OnlineManagementClient staticMgmtClient;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
-    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mngmtUser, password = mngmtPassword, port = mngmtPort))
-    static OnlineManagementClient staticMngmtClientSpecified;
+    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mgmtUser, password = mgmtPassword, port = mgmtPort))
+    static OnlineManagementClient staticMgmtClientSpecified;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
-    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mngmtUser, password = mngmtPassword, port = mngmtPort))
-    OnlineManagementClient mngmtClientSpecified;
+    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mgmtUser, password = mgmtPassword, port = mgmtPort))
+    OnlineManagementClient mgmtClientSpecified;
 
     @AwsEc2Instance(nameTag = instanceName)
-    OnlineManagementClient mngmtClient;
+    OnlineManagementClient mgmtClient;
 
     @BeforeAll
     public static void verifyStaticDI() {
-        assertThat(staticMngmtClient).isNotNull();
-        assertThat(staticMngmtClientSpecified).isNotNull();
+        assertThat(staticMgmtClient).isNotNull();
+        assertThat(staticMgmtClientSpecified).isNotNull();
     }
 
     @Test
     public void testManagementClients() throws CliException, IOException {
-        staticMngmtClient.execute(":whoami").assertSuccess();
-        staticMngmtClientSpecified.execute(":whoami").assertSuccess();
-        mngmtClientSpecified.execute(":whoami").assertSuccess();
-        mngmtClient.execute(":whoami").assertSuccess();
+        staticMgmtClient.execute(":whoami").assertSuccess();
+        staticMgmtClientSpecified.execute(":whoami").assertSuccess();
+        mgmtClientSpecified.execute(":whoami").assertSuccess();
+        mgmtClient.execute(":whoami").assertSuccess();
     }
 }

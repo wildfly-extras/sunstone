@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE_PARAMETER)
 public @interface StandaloneMode {
-    String user() default "${" + WildFlyConfig.MNGMT_USERNAME + "}";
-    String password() default "${" + WildFlyConfig.MNGMT_PASSWORD + "}";
-    String port() default "${" + WildFlyConfig.MNGMT_PORT + "}";
+    String user() default "${" + WildFlyConfig.MGMT_USERNAME + "}";
+    String password() default "${" + WildFlyConfig.MGMT_PASSWORD + "}";
+    String port() default "${" + WildFlyConfig.MGMT_PORT + "}";
 }

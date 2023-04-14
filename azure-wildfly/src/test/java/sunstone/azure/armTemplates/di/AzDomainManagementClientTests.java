@@ -26,31 +26,31 @@ public class AzDomainManagementClientTests {
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
     @WildFly(mode = OperatingMode.DOMAIN)
-    static OnlineManagementClient staticMngmtClient;
+    static OnlineManagementClient staticMgmtClient;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzDomainManagementClientTests.group)
-    @WildFly(mode = OperatingMode.DOMAIN, domain = @DomainMode(user = AzureTestConstants.mngmtUser, password = AzureTestConstants.mngmtPassword, port = AzureTestConstants.mngmtPort, host = AzureTestConstants.mngmtHost, profile = AzureTestConstants.mngmtProfile))
-    static OnlineManagementClient staticMngmtClientSpecified;
+    @WildFly(mode = OperatingMode.DOMAIN, domain = @DomainMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort, host = AzureTestConstants.mgmtHost, profile = AzureTestConstants.mgmtProfile))
+    static OnlineManagementClient staticMgmtClientSpecified;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
     @WildFly(mode = OperatingMode.DOMAIN)
-    OnlineManagementClient mngmtClient;
+    OnlineManagementClient mgmtClient;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzDomainManagementClientTests.group)
-    @WildFly(mode = OperatingMode.DOMAIN, domain = @DomainMode(user = AzureTestConstants.mngmtUser, password = AzureTestConstants.mngmtPassword, port = AzureTestConstants.mngmtPort, host = AzureTestConstants.mngmtHost, profile = AzureTestConstants.mngmtProfile))
-    OnlineManagementClient mngmtClientSpecified;
+    @WildFly(mode = OperatingMode.DOMAIN, domain = @DomainMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort, host = AzureTestConstants.mgmtHost, profile = AzureTestConstants.mgmtProfile))
+    OnlineManagementClient mgmtClientSpecified;
 
     @BeforeAll
     public static void verifyStaticDI() {
-        assertThat(staticMngmtClient).isNotNull();
-        assertThat(staticMngmtClientSpecified).isNotNull();
+        assertThat(staticMgmtClient).isNotNull();
+        assertThat(staticMgmtClientSpecified).isNotNull();
     }
 
     @Test
     public void testManagementClients() throws CliException, IOException {
-        staticMngmtClient.execute(":whoami").assertSuccess();
-        staticMngmtClientSpecified.execute(":whoami").assertSuccess();
-        mngmtClient.execute(":whoami").assertSuccess();
-        mngmtClientSpecified.execute(":whoami").assertSuccess();
+        staticMgmtClient.execute(":whoami").assertSuccess();
+        staticMgmtClientSpecified.execute(":whoami").assertSuccess();
+        mgmtClient.execute(":whoami").assertSuccess();
+        mgmtClientSpecified.execute(":whoami").assertSuccess();
     }
 }
