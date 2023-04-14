@@ -29,49 +29,49 @@ public class AwsDomainManagementClientTests {
 
     @AwsEc2Instance(nameTag = instanceName)
     @WildFly(mode = OperatingMode.DOMAIN)
-    static OnlineManagementClient staticMngmtClient;
+    static OnlineManagementClient staticMgmtClient;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
     @WildFly(
             mode = OperatingMode.DOMAIN,
             domain = @DomainMode(
-                    user = mngmtUser,
-                    password = mngmtPassword,
-                    port = mngmtPort,
-                    host = mngmtHost,
-                    profile = mngmtProfile
+                    user = mgmtUser,
+                    password = mgmtPassword,
+                    port = mgmtPort,
+                    host = mgmtHost,
+                    profile = mgmtProfile
             )
     )
-    static OnlineManagementClient staticMngmtClientSpecified;
+    static OnlineManagementClient staticMgmtClientSpecified;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
     @WildFly(
             mode = OperatingMode.DOMAIN,
             domain = @DomainMode(
-                    user = mngmtUser,
-                    password = mngmtPassword,
-                    port = mngmtPort,
-                    host = mngmtHost,
-                    profile = mngmtProfile
+                    user = mgmtUser,
+                    password = mgmtPassword,
+                    port = mgmtPort,
+                    host = mgmtHost,
+                    profile = mgmtProfile
             )
     )
-    OnlineManagementClient mngmtClientSpecified;
+    OnlineManagementClient mgmtClientSpecified;
 
     @AwsEc2Instance(nameTag = instanceName)
     @WildFly(mode = OperatingMode.DOMAIN)
-    OnlineManagementClient mngmtClient;
+    OnlineManagementClient mgmtClient;
 
     @BeforeAll
     public static void verifyStaticDI() {
-        assertThat(staticMngmtClient).isNotNull();
-        assertThat(staticMngmtClientSpecified).isNotNull();
+        assertThat(staticMgmtClient).isNotNull();
+        assertThat(staticMgmtClientSpecified).isNotNull();
     }
 
     @Test
     public void testManagementClients() throws CliException, IOException {
-        staticMngmtClient.execute(":whoami").assertSuccess();
-        staticMngmtClientSpecified.execute(":whoami").assertSuccess();
-        mngmtClientSpecified.execute(":whoami").assertSuccess();
-        mngmtClient.execute(":whoami").assertSuccess();
+        staticMgmtClient.execute(":whoami").assertSuccess();
+        staticMgmtClientSpecified.execute(":whoami").assertSuccess();
+        mgmtClientSpecified.execute(":whoami").assertSuccess();
+        mgmtClient.execute(":whoami").assertSuccess();
     }
 }

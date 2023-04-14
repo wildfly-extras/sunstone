@@ -27,30 +27,30 @@ public class AzStandaloneManagementClientTests {
     public static final String group = "${azure.group:sunstone-testing-group}";
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
-    static OnlineManagementClient staticMngmtClient;
+    static OnlineManagementClient staticMgmtClient;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzStandaloneManagementClientTests.group)
-    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mngmtUser, password = AzureTestConstants.mngmtPassword, port = AzureTestConstants.mngmtPort))
-    static OnlineManagementClient staticMngmtClientSpecified;
+    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort))
+    static OnlineManagementClient staticMgmtClientSpecified;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName)
-    OnlineManagementClient mngmtClient;
+    OnlineManagementClient mgmtClient;
 
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzStandaloneManagementClientTests.group)
-    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mngmtUser, password = AzureTestConstants.mngmtPassword, port = AzureTestConstants.mngmtPort))
-    OnlineManagementClient mngmtClientSpecified;
+    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort))
+    OnlineManagementClient mgmtClientSpecified;
 
     @BeforeAll
     public static void verifyStaticDI() {
-        assertThat(staticMngmtClient).isNotNull();
-        assertThat(staticMngmtClientSpecified).isNotNull();
+        assertThat(staticMgmtClient).isNotNull();
+        assertThat(staticMgmtClientSpecified).isNotNull();
     }
 
     @Test
     public void testManagementClients() throws CliException, IOException {
-        staticMngmtClient.execute(":whoami").assertSuccess();
-        staticMngmtClientSpecified.execute(":whoami").assertSuccess();
-        mngmtClient.execute(":whoami").assertSuccess();
-        mngmtClientSpecified.execute(":whoami").assertSuccess();
+        staticMgmtClient.execute(":whoami").assertSuccess();
+        staticMgmtClientSpecified.execute(":whoami").assertSuccess();
+        mgmtClient.execute(":whoami").assertSuccess();
+        mgmtClientSpecified.execute(":whoami").assertSuccess();
     }
 }

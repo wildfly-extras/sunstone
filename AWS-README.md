@@ -15,10 +15,10 @@ sunstone.aws.accessKeyID=${aws.accessKeyID}
 sunstone.aws.secretAccessKey=${aws.secretAccessKey}
 sunstone.aws.region=${aws.region}
 
-sunstone.wildfly.mngmt.port=9990
-sunstone.wildfly.mngmt.user=${wildfly.admin}
-sunstone.wildfly.mngmt.password=${wildfly.password}
-sunstone.wildfly.mngmt.connection.timeout=120000
+sunstone.wildfly.mgmt.port=9990
+sunstone.wildfly.mgmt.user=${wildfly.admin}
+sunstone.wildfly.mgmt.password=${wildfly.password}
+sunstone.wildfly.mgmt.connection.timeout=120000
 ```
 
 Mind that only access key and secret are mandatory. Everything else you can also set in the annotations.
@@ -111,9 +111,9 @@ If WildFly is running in standalone mode:
         region = "region",
         mode = OperatingMode.STANDALONE,
         standalone = @StandaloneMode(
-                user = "mngmtUser",
-                password = "mngmtPassword",
-                port = "mngmtPort"))
+                user = "mgmtUser",
+                password = "mgmtPassword",
+                port = "mgmtPort"))
 static OnlineManagementClient client;
 ```
 
@@ -122,13 +122,13 @@ All values may contain expressions (`${my.property}`):
 - `region` - optional, if empty, `sunstone.aws.region` Sunstone Config property will be used
 - mode - optional, default to OperatingMode.STANDALONE
 - standalone - optional
-  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mngmt.user` Sunstone Config property will be used
-  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.password` Sunstone Config property will be used
-  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mngmt.port` Sunstone Config property will be used
+  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mgmt.user` Sunstone Config property will be used
+  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mgmt.password` Sunstone Config property will be used
+  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mgmt.port` Sunstone Config property will be used
 - domain - optional
   - `user, password, port` - same as in standalone mode
-  - `host` - optional. Wildfly host controller. If empty, `sunstone.wildfly.mngmt.host` Sunstone Config property will be used
-  - `profile` - optional. Profile for WildFly. If empty, `sunstone.wildfly.mngmt.profile` Sunstone Config property will be used
+  - `host` - optional. Wildfly host controller. If empty, `sunstone.wildfly.mgmt.host` Sunstone Config property will be used
+  - `profile` - optional. Profile for WildFly. If empty, `sunstone.wildfly.mgmt.profile` Sunstone Config property will be used
 
 
 If WildFly is running in domain mode:
@@ -138,11 +138,11 @@ If WildFly is running in domain mode:
         region = "region",
         mode = OperatingMode.STANDALONE,
         standalone = @StandaloneMode(
-                user = "mngmtUser",
-                password = "mngmtPassword",
-                port = "mngmtPort",
-                host = "mngmtHost",
-                profile = "mngmtProfile"))
+                user = "mgmtUser",
+                password = "mgmtPassword",
+                port = "mgmtPort",
+                host = "mgmtHost",
+                profile = "mgmtProfile"))
 static OnlineManagementClient client;
 ```
 
