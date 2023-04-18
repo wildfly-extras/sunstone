@@ -6,26 +6,32 @@ import com.azure.resourcemanager.network.models.Network;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.Parameter;
+import sunstone.annotation.SunstoneProperty;
 import sunstone.azure.annotation.WithAzureArmTemplate;
-
-import static sunstone.azure.armTemplates.MultipleDifferentGroupsAzArmTemplatesTest.GROUP1;
-import static sunstone.azure.armTemplates.MultipleDifferentGroupsAzArmTemplatesTest.GROUP2;
 import static org.assertj.core.api.Assertions.assertThat;
+import static sunstone.azure.armTemplates.AzureTestConstants.deployGroup;
+import static sunstone.azure.armTemplates.MultipleDifferentGroupsAzArmTemplatesTest.groupName1;
+import static sunstone.azure.armTemplates.MultipleDifferentGroupsAzArmTemplatesTest.groupName2;
 
 @WithAzureArmTemplate(parameters = {
         @Parameter(k = "vnetName", v = AzureTestConstants.VNET_NAME_1),
         @Parameter(k = "vnetTag", v = AzureTestConstants.VNET_TAG)
 },
-        template = "sunstone/azure/armTemplates/vnet.json", region = "eastus2", group = GROUP1)
+        template = "sunstone/azure/armTemplates/vnet.json", group = groupName1)
 
 @WithAzureArmTemplate(parameters = {
         @Parameter(k = "vnetName", v = AzureTestConstants.VNET_NAME_2),
         @Parameter(k = "vnetTag", v = AzureTestConstants.VNET_TAG)
 },
-        template = "sunstone/azure/armTemplates/vnet.json", region = "eastus2", group = GROUP2)
+        template = "sunstone/azure/armTemplates/vnet.json", group = groupName2)
 public class MultipleDifferentGroupsAzArmTemplatesTest {
-    static final String GROUP1 = "MultipleAzArmTemplatesTest1";
-    static final String GROUP2 = "MultipleAzArmTemplatesTest2";
+    static final String groupName1 = "MultipleAzArmTemplatesTest1-" + deployGroup;
+    static final String groupName2 = "MultipleAzArmTemplatesTest2-" + deployGroup;
+
+    @SunstoneProperty(expression = groupName1)
+    static String classGroup1;
+    @SunstoneProperty(expression = groupName2)
+    static String classGroup2;
 
     static AzureResourceManager arm;
 
@@ -36,12 +42,12 @@ public class MultipleDifferentGroupsAzArmTemplatesTest {
 
     @Test
     public void group1ResourcesCreated() {
-        Network vnet = arm.networks().getByResourceGroup(GROUP1, AzureTestConstants.VNET_NAME_1);
+        Network vnet = arm.networks().getByResourceGroup(classGroup1, AzureTestConstants.VNET_NAME_1);
         assertThat(vnet).isNotNull();
     }
     @Test
     public void group2ResourcesCreated() {
-        Network vnet = arm.networks().getByResourceGroup(GROUP2, AzureTestConstants.VNET_NAME_2);
+        Network vnet = arm.networks().getByResourceGroup(classGroup2, AzureTestConstants.VNET_NAME_2);
         assertThat(vnet).isNotNull();
     }
 }

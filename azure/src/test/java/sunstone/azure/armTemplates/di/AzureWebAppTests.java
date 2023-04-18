@@ -19,29 +19,29 @@ import sunstone.azure.armTemplates.AzureTestConstants;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static sunstone.azure.armTemplates.AzureTestConstants.deployGroup;
 
 @WithAzureArmTemplate(template = "sunstone/azure/armTemplates/eapWebApp.json",
-        parameters = {@Parameter(k = "appName", v = AzureTestConstants.instanceName)}, group = AzureWebAppTests.group)
+        parameters = {@Parameter(k = "appName", v = AzureTestConstants.instanceName)}, group = AzureWebAppTests.groupName)
 public class AzureWebAppTests {
+    static final String groupName = "AzureWebAppTests-" + deployGroup;
 
-    public static final String group = "sunstone-web-app";
-
-    @AzureWebApplication(name = AzureTestConstants.instanceName, group = group)
+    @AzureWebApplication(name = AzureTestConstants.instanceName, group = groupName)
     static Hostname staticHostname;
 
-    @AzureWebApplication(name = AzureTestConstants.instanceName, group = group)
+    @AzureWebApplication(name = AzureTestConstants.instanceName, group = groupName)
     static WebApp staticWebApp;
 
-    @AzureAppServicePlan(name = AzureTestConstants.instanceName + "-plan", group = group)
+    @AzureAppServicePlan(name = AzureTestConstants.instanceName + "-plan", group = groupName)
     static AppServicePlan staticPlan;
 
-    @AzureWebApplication(name = AzureTestConstants.instanceName, group = group)
+    @AzureWebApplication(name = AzureTestConstants.instanceName, group = groupName)
     Hostname hostname;
 
-    @AzureWebApplication(name = AzureTestConstants.instanceName, group = group)
+    @AzureWebApplication(name = AzureTestConstants.instanceName, group = groupName)
     WebApp webApp;
 
-    @AzureAppServicePlan(name = AzureTestConstants.instanceName + "-plan", group = group)
+    @AzureAppServicePlan(name = AzureTestConstants.instanceName + "-plan", group = groupName)
     static AppServicePlan plan;
 
     @BeforeAll

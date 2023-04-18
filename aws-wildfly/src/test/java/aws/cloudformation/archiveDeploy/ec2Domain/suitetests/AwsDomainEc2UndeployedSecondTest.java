@@ -1,7 +1,7 @@
 package aws.cloudformation.archiveDeploy.ec2Domain.suitetests;
 
 
-import aws.cloudformation.AwsTestConstants;
+import aws.cloudformation.archiveDeploy.ec2Domain.DomainEc2DeploySuiteTests;
 import sunstone.annotation.OperatingMode;
 import sunstone.annotation.WildFly;
 import sunstone.aws.annotation.AwsEc2Instance;
@@ -19,11 +19,11 @@ import java.io.IOException;
 import static aws.cloudformation.AwsTestConstants.region;
 
 @WithAwsCfTemplate(parameters = {
-        @Parameter(k = "instanceName", v = AwsTestConstants.instanceName)
+        @Parameter(k = "instanceName", v = DomainEc2DeploySuiteTests.suiteInstanceName)
 },
         template = "sunstone/aws/cloudformation/eapDomain.yaml", region = region, perSuite = true)
 public class AwsDomainEc2UndeployedSecondTest {
-    @AwsEc2Instance(nameTag = AwsTestConstants.instanceName, region = region)
+    @AwsEc2Instance(nameTag = DomainEc2DeploySuiteTests.suiteInstanceName, region = region)
     @WildFly(mode = OperatingMode.DOMAIN)
     Hostname hostname;
 

@@ -1,6 +1,7 @@
 package aws.cloudformation.archiveDeploy.ec2Domain;
 
 
+import aws.cloudformation.AwsTestConstants;
 import aws.cloudformation.archiveDeploy.ec2Domain.suitetests.AwsDomainEc2DeployFirstTest;
 import aws.cloudformation.archiveDeploy.ec2Domain.suitetests.AwsDomainEc2UndeployedSecondTest;
 import org.junit.platform.suite.api.SelectClasses;
@@ -14,4 +15,5 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectClasses({AwsDomainEc2DeployFirstTest.class, AwsDomainEc2UndeployedSecondTest.class})
 public class DomainEc2DeploySuiteTests {
+    public static final String suiteInstanceName = "domain-ec2-deploy-" + AwsTestConstants.instanceName;
 }

@@ -14,28 +14,27 @@ import sunstone.annotation.Deployment;
 import sunstone.annotation.OperatingMode;
 import sunstone.annotation.Parameter;
 import sunstone.annotation.WildFly;
+import sunstone.azure.armTemplates.archiveDeploy.vmDomain.VmDomainDeploySuiteTests;
 import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;
-import static sunstone.azure.armTemplates.archiveDeploy.vm.VmDeploySuiteTests.vmDeployGroup;
 
 @WithAzureArmTemplate(parameters = {
         @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
-        template = "sunstone/azure/armTemplates/eapDomain.json", group = vmDeployGroup, perSuite = true)
+        template = "sunstone/azure/armTemplates/eapDomain.json", group = VmDomainDeploySuiteTests.groupName, perSuite = true)
 public class AzureDomainVmDeployFirstTest {
-
     @Deployment(name = "testapp.war")
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = vmDeployGroup)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDomainDeploySuiteTests.groupName)
     @WildFly(mode = OperatingMode.DOMAIN)
     static WebArchive deploy() {
         return ShrinkWrap.create(WebArchive.class)
                 .addAsWebResource(new StringAsset("Hello World"), "index.jsp");
     }
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = vmDeployGroup)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDomainDeploySuiteTests.groupName)
     @WildFly(mode = OperatingMode.DOMAIN)
     Hostname hostname;
 

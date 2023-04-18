@@ -1,5 +1,6 @@
 package sunstone.azure.armTemplates.di;
 
+import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.extras.creaper.core.online.CliException;
@@ -11,9 +12,6 @@ import sunstone.annotation.WildFly;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;
-
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WithAzureArmTemplate(
@@ -21,24 +19,23 @@ import static org.assertj.core.api.Assertions.assertThat;
             @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
             @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
         },
-        template = "sunstone/azure/armTemplates/eapDomain.json", group = AzDomainManagementClientTests.group)
+        template = "sunstone/azure/armTemplates/eapDomain.json", group = AzDomainManagementClientTests.groupName)
 public class AzDomainManagementClientTests {
+    static final String groupName = "AzDomainManagementClientTests-" + AzureTestConstants.deployGroup;
 
-    public static final String group = "${azure.group:sunstone-testing-group}";
-
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     @WildFly(mode = OperatingMode.DOMAIN)
     static OnlineManagementClient staticMgmtClient;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzDomainManagementClientTests.group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     @WildFly(mode = OperatingMode.DOMAIN, domain = @DomainMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort, host = AzureTestConstants.mgmtHost, profile = AzureTestConstants.mgmtProfile))
     static OnlineManagementClient staticMgmtClientSpecified;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     @WildFly(mode = OperatingMode.DOMAIN)
     OnlineManagementClient mgmtClient;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzDomainManagementClientTests.group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     @WildFly(mode = OperatingMode.DOMAIN, domain = @DomainMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort, host = AzureTestConstants.mgmtHost, profile = AzureTestConstants.mgmtProfile))
     OnlineManagementClient mgmtClientSpecified;
 

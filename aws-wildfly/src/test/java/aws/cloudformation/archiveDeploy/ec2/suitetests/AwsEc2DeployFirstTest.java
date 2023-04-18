@@ -1,7 +1,7 @@
 package aws.cloudformation.archiveDeploy.ec2.suitetests;
 
 
-import aws.cloudformation.AwsTestConstants;
+import aws.cloudformation.archiveDeploy.ec2.Ec2DeploySuiteTests;
 import sunstone.aws.annotation.AwsEc2Instance;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,15 +21,15 @@ import java.io.IOException;
 import static aws.cloudformation.AwsTestConstants.region;
 
 @WithAwsCfTemplate(parameters = {
-        @Parameter(k = "instanceName", v = AwsTestConstants.instanceName)
+        @Parameter(k = "instanceName", v = Ec2DeploySuiteTests.suiteInstanceName)
 },
         template = "sunstone/aws/cloudformation/eap.yaml", region = region, perSuite = true)
 public class AwsEc2DeployFirstTest {
-    @AwsEc2Instance(nameTag = AwsTestConstants.instanceName, region = region)
+    @AwsEc2Instance(nameTag = Ec2DeploySuiteTests.suiteInstanceName, region = region)
     Hostname hostname;
 
     @Deployment(name = "testapp.war")
-    @AwsEc2Instance(nameTag = AwsTestConstants.instanceName, region = region)
+    @AwsEc2Instance(nameTag = Ec2DeploySuiteTests.suiteInstanceName, region = region)
     static WebArchive deploy() {
         return ShrinkWrap.create(WebArchive.class)
                 .addAsWebResource(new StringAsset("Hello World"), "index.jsp");

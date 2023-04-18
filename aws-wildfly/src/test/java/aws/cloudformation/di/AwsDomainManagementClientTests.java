@@ -21,17 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * So the idea is to have only one testcase due to performance.
  */
 @WithAwsCfTemplate(parameters = {
-        @Parameter(k = "instanceName", v = instanceName)
+        @Parameter(k = "instanceName", v = AwsDomainManagementClientTests.classInstanceName)
 },
         template = "sunstone/aws/cloudformation/eapDomain.yaml", region = region)
 
 public class AwsDomainManagementClientTests {
+    protected static final String classInstanceName = "AwsDomainManagementClientTests-" + instanceName;
 
-    @AwsEc2Instance(nameTag = instanceName)
+    @AwsEc2Instance(nameTag = classInstanceName)
     @WildFly(mode = OperatingMode.DOMAIN)
     static OnlineManagementClient staticMgmtClient;
 
-    @AwsEc2Instance(nameTag = instanceName, region = region)
+    @AwsEc2Instance(nameTag = classInstanceName, region = region)
     @WildFly(
             mode = OperatingMode.DOMAIN,
             domain = @DomainMode(
@@ -44,7 +45,7 @@ public class AwsDomainManagementClientTests {
     )
     static OnlineManagementClient staticMgmtClientSpecified;
 
-    @AwsEc2Instance(nameTag = instanceName, region = region)
+    @AwsEc2Instance(nameTag = classInstanceName, region = region)
     @WildFly(
             mode = OperatingMode.DOMAIN,
             domain = @DomainMode(
@@ -57,7 +58,7 @@ public class AwsDomainManagementClientTests {
     )
     OnlineManagementClient mgmtClientSpecified;
 
-    @AwsEc2Instance(nameTag = instanceName)
+    @AwsEc2Instance(nameTag = classInstanceName)
     @WildFly(mode = OperatingMode.DOMAIN)
     OnlineManagementClient mgmtClient;
 
