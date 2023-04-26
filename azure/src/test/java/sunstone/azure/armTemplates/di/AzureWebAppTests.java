@@ -2,7 +2,6 @@ package sunstone.azure.armTemplates.di;
 
 
 import com.azure.resourcemanager.appservice.models.WebApp;
-import com.azure.resourcemanager.compute.models.VirtualMachine;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
