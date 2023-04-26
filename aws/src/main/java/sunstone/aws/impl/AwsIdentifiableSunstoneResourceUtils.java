@@ -2,7 +2,7 @@ package sunstone.aws.impl;
 
 
 import software.amazon.awssdk.services.ec2.model.Instance;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 

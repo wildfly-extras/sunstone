@@ -9,7 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.OperatingMode;
 import sunstone.annotation.Parameter;
-import sunstone.annotation.WildFly;import sunstone.annotation.inject.Hostname;
+import sunstone.annotation.WildFly;import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;

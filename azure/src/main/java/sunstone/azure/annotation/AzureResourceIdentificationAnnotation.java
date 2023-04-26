@@ -2,7 +2,7 @@ package sunstone.azure.annotation;
 
 import com.azure.resourcemanager.AzureResourceManager;
 import sunstone.annotation.CloudResourceIdentificationAnnotation;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -5,7 +5,7 @@ import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureResourceIdentificationAnnotation;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;

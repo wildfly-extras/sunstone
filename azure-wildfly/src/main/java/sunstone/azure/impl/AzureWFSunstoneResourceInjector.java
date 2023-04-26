@@ -5,7 +5,7 @@ import sunstone.annotation.WildFly;
 import sunstone.azure.annotation.AzureResourceIdentificationAnnotation;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;

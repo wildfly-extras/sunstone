@@ -5,7 +5,7 @@ import com.azure.resourcemanager.compute.models.VirtualMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.Parameter;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;

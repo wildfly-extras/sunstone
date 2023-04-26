@@ -4,7 +4,7 @@ package sunstone.aws.impl;
 import sunstone.annotation.WildFly;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;

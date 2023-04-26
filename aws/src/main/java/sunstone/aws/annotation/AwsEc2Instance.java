@@ -2,7 +2,7 @@ package sunstone.aws.annotation;
 
 
 import sunstone.annotation.Deployment;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
