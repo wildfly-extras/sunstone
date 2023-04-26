@@ -1,13 +1,12 @@
 package sunstone.azure.impl;
 
 
+import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
-import sunstone.azure.annotation.AzureResourceIdentificationAnnotation;
-import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.annotation.inject.Hostname;
-import sunstone.azure.annotation.AzureVirtualMachine;
+import sunstone.azure.annotation.AzureResourceIdentificationAnnotation;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
