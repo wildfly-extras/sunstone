@@ -60,7 +60,7 @@ enum AwsIdentifiableSunstoneResource {
      * Deployable: archive can be deployed to such resource
      */
     EC2_INSTANCE(AwsEc2Instance.class) {
-        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class};
+        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class, Instance.class};
 
         @Override
         boolean isTypeSupportedForInject(Class<?> type) {

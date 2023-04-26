@@ -1,10 +1,13 @@
 package sunstone.azure.impl;
 
 
+import com.azure.resourcemanager.appservice.models.WebApp;
+import com.azure.resourcemanager.compute.models.VirtualMachine;
 import sunstone.azure.annotation.AzureResourceIdentificationAnnotation;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.annotation.inject.Hostname;
+import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.core.AnnotationUtils;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
@@ -57,6 +60,12 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
         if (Hostname.class.isAssignableFrom(fieldType)) {
             injected = AzureIdentifiableSunstoneResourceUtils.resolveHostname(identification, store);
             Objects.requireNonNull(injected, "Unable to determine hostname.");
+        } else if (VirtualMachine.class.isAssignableFrom(fieldType)) {
+            injected = identification.get(store, VirtualMachine.class);
+            Objects.requireNonNull(injected, "Unable to get VM abstraction object");
+        } else if (WebApp.class.isAssignableFrom(fieldType)) {
+            injected = identification.get(store, WebApp.class);
+            Objects.requireNonNull(injected, "Unable to get Web App abstraction object");
         } else if (AzureResourceManager.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
             injected = store.getAzureArmClientOrCreate();
@@ -67,7 +76,10 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
 
     @Override
     public void closeResource(Object obj) throws Exception {
-        if (Hostname.class.isAssignableFrom(obj.getClass()) || AzureResourceManager.class.isAssignableFrom(obj.getClass())) {
+        if (Hostname.class.isAssignableFrom(obj.getClass())
+                || AzureResourceManager.class.isAssignableFrom(obj.getClass())
+                || WebApp.class.isAssignableFrom(obj.getClass())
+                || VirtualMachine.class.isAssignableFrom(obj.getClass())) {
             // nothing to close
         } else {
             throw new IllegalArgumentSunstoneException("Unknown type " + obj.getClass());
