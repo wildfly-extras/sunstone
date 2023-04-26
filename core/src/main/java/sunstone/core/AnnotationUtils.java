@@ -12,8 +12,8 @@ import java.util.Set;
 
 public class AnnotationUtils {
 
-    public static <A extends Annotation> A findAnnotation(Class<?> clazz, Class<A> annotationType) {
-        return findAnnotation(clazz, annotationType, new HashSet<Annotation>());
+    public static <A extends Annotation> Optional<A> findAnnotation(Class<?> clazz, Class<A> annotationType) {
+        return Optional.of(findAnnotation(clazz, annotationType, new HashSet<Annotation>()));
     }
 
     public static <A extends Annotation> boolean isAnnotatedBy(Class<?> clazz, Class<A> annotationType) {

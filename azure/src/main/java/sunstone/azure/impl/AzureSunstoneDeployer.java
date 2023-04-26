@@ -28,8 +28,15 @@ import static java.lang.String.format;
  * which handles deploy operation to particular cloud vendor.
  */
 public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
+
+    private final Annotation annotation;
+
+    AzureSunstoneDeployer(Annotation annotation) {
+        this.annotation = annotation;
+    }
+
     @Override
-    public void deploy(Annotation annotation, ExtensionContext ctx) throws SunstoneException {
+    public void deployAndRegisterForUndeploy(ExtensionContext ctx) throws SunstoneException {
         verify(annotation);
         AzureSunstoneStore store = AzureSunstoneStore.get(ctx);
         if (WithAzureArmTemplate.class.isAssignableFrom(annotation.annotationType())) {

@@ -29,8 +29,15 @@ import static java.lang.String.format;
  * which handles deploy operation to particular cloud vendor.
  */
 public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
+
+    private Annotation annotation;
+
+    AwsSunstoneDeployer(Annotation annotation) {
+        this.annotation = annotation;
+    }
+
     @Override
-    public void deploy(Annotation annotation, ExtensionContext ctx) throws SunstoneException {
+    public void deployAndRegisterForUndeploy(ExtensionContext ctx) throws SunstoneException {
         verify(annotation);
         AwsSunstoneStore store = AwsSunstoneStore.get(ctx);
 
