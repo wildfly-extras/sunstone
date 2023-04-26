@@ -6,7 +6,7 @@ import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.AzureWebApplication;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
 

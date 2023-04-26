@@ -8,7 +8,7 @@ import sunstone.azure.annotation.AzureWebApplication;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.core.SunstoneConfig;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;

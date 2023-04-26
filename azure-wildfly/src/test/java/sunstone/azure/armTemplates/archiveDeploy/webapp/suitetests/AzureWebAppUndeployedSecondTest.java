@@ -11,7 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.Parameter;
 import sunstone.azure.annotation.WithAzureArmTemplate;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 
 import java.io.IOException;
 

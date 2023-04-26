@@ -9,7 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.Parameter;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureWebApplication;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;

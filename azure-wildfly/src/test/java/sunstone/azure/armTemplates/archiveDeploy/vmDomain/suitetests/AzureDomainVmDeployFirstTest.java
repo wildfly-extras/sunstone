@@ -14,7 +14,7 @@ import sunstone.annotation.Deployment;
 import sunstone.annotation.OperatingMode;
 import sunstone.annotation.Parameter;
 import sunstone.annotation.WildFly;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;

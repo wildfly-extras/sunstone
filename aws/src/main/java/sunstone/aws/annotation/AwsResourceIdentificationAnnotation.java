@@ -3,7 +3,7 @@ package sunstone.aws.annotation;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.s3.S3Client;
 import sunstone.annotation.CloudResourceIdentificationAnnotation;
-import sunstone.annotation.inject.Hostname;
+import sunstone.inject.Hostname;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
