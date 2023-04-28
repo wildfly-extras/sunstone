@@ -17,7 +17,7 @@ public class CoreSunstoneResourceInjectorProvider implements SunstoneResourceInj
     public Optional<SunstoneResourceInjector> create(Field field) {
         // support only selected annotations
         Optional<SunstoneProperty> propertyIdentifications = AnnotationUtils.getAnnotation(field.getAnnotations(), SunstoneProperty.class);
-        if (propertyIdentifications.isPresent() && String.class.isAssignableFrom(field.getType())) {
+        if (propertyIdentifications.isPresent()) {
             return Optional.of(new CoreSunstoneResourceInjector(propertyIdentifications.get(), field.getType()));
         } else {
             return Optional.empty();

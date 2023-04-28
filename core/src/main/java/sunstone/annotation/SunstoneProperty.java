@@ -11,5 +11,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @CloudResourceIdentificationAnnotation
 public @interface SunstoneProperty {
-    String value();
+    /**
+     * Property name that should be resolved. Property can be defined in sunstone.properties, system prperties, ...
+     *
+     * This has higher priority than expression parameter. If both are set, expression won't be considered.
+     */
+    String value() default "";
+
+    /**
+     * If you need to resolve complicated expression, set this parameter, e.g. "${property-name}-${suffix}"
+     *
+     * @SunstoneProperty("propertyName") and @SunstoneProperty(expression="${propertyName}") injects same string.
+     */
+    String expression() default "";
 }
