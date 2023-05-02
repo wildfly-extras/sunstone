@@ -1,19 +1,18 @@
 package sunstone.azure.impl;
 
 
-import org.junit.platform.commons.util.StringUtils;
-import sunstone.azure.annotation.AzureAutoResolve;
-import sunstone.azure.annotation.AzureVirtualMachine;
-import sunstone.azure.annotation.AzureWebApplication;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
-import sunstone.inject.Hostname;
+import sunstone.azure.annotation.AzureAutoResolve;
+import sunstone.azure.annotation.AzureVirtualMachine;
+import sunstone.azure.annotation.AzureWebApplication;
 import sunstone.core.SunstoneConfig;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
+import sunstone.inject.Hostname;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -75,7 +74,7 @@ enum AzureIdentifiableSunstoneResource {
             }
             AzureVirtualMachine vm = (AzureVirtualMachine) injectionAnnotation;
             String vmName = SunstoneConfig.resolveExpressionToString(vm.name());
-            String vmGroup = StringUtils.isBlank(vm.group()) ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(vm.group());
+            String vmGroup = SunstoneConfig.resolveExpressionToString(vm.group());
             Optional<VirtualMachine> azureVM = AzureUtils.findAzureVM(store.getAzureArmClientOrCreate(), vmName, vmGroup);
             return clazz.cast(azureVM.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure VM in '%s' resource group.", vmName, vmGroup))));
         }
@@ -103,7 +102,7 @@ enum AzureIdentifiableSunstoneResource {
             }
             AzureWebApplication webApp = (AzureWebApplication) injectionAnnotation;
             String appName = SunstoneConfig.resolveExpressionToString(webApp.name());
-            String appGroup = StringUtils.isBlank(webApp.group()) ? SunstoneConfig.getString(AzureConfig.GROUP) : SunstoneConfig.resolveExpressionToString(webApp.group());
+            String appGroup = SunstoneConfig.resolveExpressionToString(webApp.group());
             Optional<WebApp> azureWebApp = AzureUtils.findAzureWebApp(store.getAzureArmClientOrCreate(), appName, appGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure Web App in '%s' resource group.", appName, appGroup))));
         }

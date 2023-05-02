@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import sunstone.annotation.Parameter;
 import sunstone.annotation.SunstoneCloudDeployAnnotation;
+import sunstone.aws.impl.AwsConfig;
 import sunstone.core.SunstoneExtension;
 
 import java.lang.annotation.ElementType;
@@ -40,7 +41,7 @@ public @interface WithAwsCfTemplate {
      *
      * For the list of available regions see {@link software.amazon.awssdk.regions.Region}
      */
-    String region() default "";
+    String region() default "${" + AwsConfig.REGION + "}";
 
     /**
      * Array of parameters

@@ -2,6 +2,7 @@ package sunstone.aws.annotation;
 
 
 import sunstone.annotation.Deployment;
+import sunstone.aws.impl.AwsConfig;
 import sunstone.inject.Hostname;
 
 import java.lang.annotation.ElementType;
@@ -25,5 +26,5 @@ import java.lang.annotation.Target;
 @AwsResourceIdentificationAnnotation
 public @interface AwsEc2Instance {
     String nameTag();
-    String region() default "";
+    String region() default "${" + AwsConfig.REGION + "}";
 }

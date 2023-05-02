@@ -3,6 +3,7 @@ package sunstone.aws.annotation;
 
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.s3.S3Client;
+import sunstone.aws.impl.AwsConfig;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,5 +23,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @AwsResourceIdentificationAnnotation
 public @interface AwsAutoResolve {
-    String region() default "";
+    String region() default "${" + AwsConfig.REGION + "}";
 }

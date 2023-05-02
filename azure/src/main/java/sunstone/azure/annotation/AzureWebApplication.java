@@ -2,6 +2,7 @@ package sunstone.azure.annotation;
 
 
 import sunstone.annotation.Deployment;
+import sunstone.azure.impl.AzureConfig;
 import sunstone.inject.Hostname;
 
 import java.lang.annotation.ElementType;
@@ -27,5 +28,5 @@ import java.lang.annotation.Target;
 public @interface AzureWebApplication {
     String name();
 
-    String group() default "";
+    String group() default "${" + AzureConfig.GROUP + "}";
 }

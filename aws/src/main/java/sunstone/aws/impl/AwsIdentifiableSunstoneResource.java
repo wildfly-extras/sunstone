@@ -1,18 +1,17 @@
 package sunstone.aws.impl;
 
 
-import org.junit.platform.commons.util.StringUtils;
-import sunstone.aws.annotation.AwsAutoResolve;
-import sunstone.aws.annotation.AwsEc2Instance;
-import sunstone.core.SunstoneConfig;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.s3.S3Client;
-import sunstone.inject.Hostname;
+import sunstone.aws.annotation.AwsAutoResolve;
+import sunstone.aws.annotation.AwsEc2Instance;
+import sunstone.core.SunstoneConfig;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
+import sunstone.inject.Hostname;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -75,7 +74,7 @@ enum AwsIdentifiableSunstoneResource {
             }
             AwsEc2Instance vm = (AwsEc2Instance) injectionAnnotation;
             String vmNameTag = SunstoneConfig.resolveExpressionToString(vm.nameTag());
-            String region = StringUtils.isBlank(vm.region()) ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(vm.region());
+            String region = SunstoneConfig.resolveExpressionToString(vm.region());
             Optional<Instance> awsEc2 = AwsUtils.findEc2InstanceByNameTag(store.getAwsEc2ClientOrCreate(region), vmNameTag);
             return clazz.cast(awsEc2.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' AWS EC2 instance in '%s' region.", vmNameTag, region))));
         }
