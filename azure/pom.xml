@@ -25,11 +25,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sunstone-aws</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sunstone-core-wildfly</artifactId>
+            <artifactId>sunstone-core</artifactId>
         </dependency>
 
         <dependency>
