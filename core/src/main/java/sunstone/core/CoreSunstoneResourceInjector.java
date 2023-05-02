@@ -2,6 +2,7 @@ package sunstone.core;
 
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.util.StringUtils;
 import sunstone.annotation.SunstoneProperty;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
@@ -28,11 +29,14 @@ public class CoreSunstoneResourceInjector implements SunstoneResourceInjector {
         if(!SunstoneProperty.class.isAssignableFrom(identification.annotationType())) {
             throw new IllegalArgumentSunstoneException(format("Only %s is supported for injection.", SunstoneProperty.class));
         }
-        if (!String.class.isAssignableFrom(fieldType)) {
-            throw new SunstoneException(format("%s is not supported for injection to %s", SunstoneProperty.class, fieldType));
-        }
         SunstoneProperty sunstoneProperty = SunstoneProperty.class.cast(identification);
-        return SunstoneConfig.getValue(sunstoneProperty.value(), fieldType);
+        if (!StringUtils.isBlank(sunstoneProperty.value())) {
+            return SunstoneConfig.getValue(sunstoneProperty.value(), fieldType);
+        }
+        if (!StringUtils.isBlank(sunstoneProperty.expression())) {
+            return SunstoneConfig.resolveExpression(sunstoneProperty.expression(), fieldType);
+        }
+        throw new IllegalArgumentSunstoneException("Both value and expression in @SunstoneProperty are blank, which is not allowed.");
     }
 
     @Override

@@ -11,9 +11,21 @@ import sunstone.core.SunstoneExtension;
 public class SunstonePropertyTest {
 
     @SunstoneProperty("property")
-    String property = null;
+    String property;
+
+    @SunstoneProperty("integerProperty")
+    int intPropertyConverted;
+
+    @SunstoneProperty("integerProperty")
+    Integer integerObjPropertyConverted;
 
     @SunstoneProperty("expressionToDefault")
+    String property2;
+
+    @SunstoneProperty(expression = "${expressionToDefault}")
+    String property2Expression;
+
+    @SunstoneProperty(expression = "prefix-${property}")
     String expression;
 
     @Test
@@ -22,7 +34,21 @@ public class SunstonePropertyTest {
     }
 
     @Test
-    public void expressionTest() {
-        Assertions.assertThat(expression).isEqualTo("expressionDefaultValue");
+    public void property2Test() {
+        Assertions.assertThat(property2).isEqualTo("expressionDefaultValue");
+        Assertions.assertThat(property2).isEqualTo(property2Expression);
+    }
+    @Test
+    public void expression() {
+        Assertions.assertThat(expression).isEqualTo("prefix-value");
+    }
+
+    @Test
+    public void conversionTestPrimitiveTypeTest() {
+        Assertions.assertThat(intPropertyConverted).isEqualTo(1);
+    }
+    @Test
+    public void conversionTestObjectTest() {
+        Assertions.assertThat(integerObjPropertyConverted).isEqualTo(1);
     }
 }
