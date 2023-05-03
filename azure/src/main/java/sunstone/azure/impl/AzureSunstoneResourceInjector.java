@@ -4,6 +4,7 @@ package sunstone.azure.impl;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
+import com.azure.resourcemanager.postgresql.models.Server;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureResourceIdentificationAnnotation;
@@ -65,6 +66,9 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
         } else if (WebApp.class.isAssignableFrom(fieldType)) {
             injected = identification.get(store, WebApp.class);
             Objects.requireNonNull(injected, "Unable to get Web App abstraction object");
+        } else if (Server.class.isAssignableFrom(fieldType)) {
+            injected = identification.get(store, Server.class);
+            Objects.requireNonNull(injected, "Unable to get PostgreSql abstraction object");
         } else if (AzureResourceManager.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
             injected = store.getAzureArmClientOrCreate();
@@ -78,6 +82,7 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
         if (Hostname.class.isAssignableFrom(obj.getClass())
                 || AzureResourceManager.class.isAssignableFrom(obj.getClass())
                 || WebApp.class.isAssignableFrom(obj.getClass())
+                || Server.class.isAssignableFrom(obj.getClass())
                 || VirtualMachine.class.isAssignableFrom(obj.getClass())) {
             // nothing to close
         } else {

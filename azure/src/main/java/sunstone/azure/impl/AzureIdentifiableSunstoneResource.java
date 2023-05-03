@@ -4,7 +4,9 @@ package sunstone.azure.impl;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
+import com.azure.resourcemanager.postgresql.models.Server;
 import sunstone.azure.annotation.AzureAutoResolve;
+import sunstone.azure.annotation.AzurePgSqlServer;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.AzureWebApplication;
 import sunstone.core.SunstoneConfig;
@@ -106,6 +108,32 @@ enum AzureIdentifiableSunstoneResource {
             Optional<WebApp> azureWebApp = AzureUtils.findAzureWebApp(store.getAzureArmClientOrCreate(), appName, appGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure Web App in '%s' resource group.", appName, appGroup))));
         }
+    },
+
+    /**
+     * Azure Web application (application service) identification, representation for {@link AzureWebApplication}
+     *
+     * Injectable: {@link Hostname}, {@link Server}
+     */
+    PGSQL_SERVER(AzurePgSqlServer.class) {
+        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class, Server.class};
+
+        @Override
+        boolean isTypeSupportedForInject(Class<?> type) {
+            return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
+        }
+        @Override
+        <T> T get(Annotation injectionAnnotation, AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {
+            if(!getRepresentedInjectionAnnotation().isAssignableFrom(injectionAnnotation.annotationType())) {
+                throw new IllegalArgumentSunstoneException(format("Expected %s annotation type but got %s",
+                        getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
+            }
+            AzurePgSqlServer pgsqlServer = (AzurePgSqlServer) injectionAnnotation;
+            String serverName = SunstoneConfig.resolveExpressionToString(pgsqlServer.name());
+            String serverGroup = SunstoneConfig.resolveExpressionToString(pgsqlServer.group());
+            Optional<Server> azureWebApp = AzureUtils.findAzurePgSqlServer(store.getAzurePgSqlManagerOrCreate(), serverName, serverGroup);
+            return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure PostgreSql Server in '%s' resource group.", serverName, serverGroup))));
+        }
     };
 
     private final Class<?> representedInjectionAnnotation;
@@ -142,6 +170,8 @@ enum AzureIdentifiableSunstoneResource {
             return VM_INSTANCE;
         } else if(AzureWebApplication.class.isAssignableFrom(annotation.annotationType())) {
             return WEB_APP;
+        } else if(AzurePgSqlServer.class.isAssignableFrom(annotation.annotationType())) {
+            return PGSQL_SERVER;
         } else if(AzureAutoResolve.class.isAssignableFrom(annotation.annotationType())) {
             return AUTO;
         } else {

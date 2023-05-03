@@ -1,0 +1,55 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "securestring"
+    },
+    "serverName": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "defaultValue": "9.6"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {}
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-12-01",
+      "kind": "",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('serverName')]",
+      "properties": {
+        "version": "[parameters('version')]",
+        "sslEnforcement": "Disabled",
+        "minimalTlsVersion": "TLSEnforcementDisabled",
+        "infrastructureEncryption": "Disabled",
+        "publicNetworkAccess": "Enabled",
+        "administratorLogin": "[parameters('username')]",
+        "administratorLoginPassword": "[parameters('password')]",
+        "storageProfile": {
+          "storageMB": 5120,
+          "backupRetentionDays": 7,
+          "geoRedundantBackup": "Disabled",
+          "storageAutoGrow": "Disabled"
+        }
+      },
+      "sku": {
+        "name": "B_Gen5_1",
+        "tier": "Basic",
+        "family": "Gen5",
+        "capacity": 1
+      },
+      "tags": "[parameters('tags')]",
+      "type": "Microsoft.DBforPostgreSQL/servers"
+    }
+  ],
+  "variables": {}
+}
