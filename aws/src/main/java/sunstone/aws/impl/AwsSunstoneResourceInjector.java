@@ -1,19 +1,18 @@
 package sunstone.aws.impl;
 
 
-import org.junit.platform.commons.util.StringUtils;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.utils.SdkAutoCloseable;
 import sunstone.aws.annotation.AwsAutoResolve;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.core.SunstoneConfig;
-import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.s3.S3Client;
-import sunstone.inject.Hostname;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
 import sunstone.core.exceptions.UnsupportedSunstoneOperationException;
+import sunstone.inject.Hostname;
 
 import java.lang.annotation.Annotation;
 import java.util.Objects;
@@ -45,7 +44,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         Ec2Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getEC2Client(StringUtils.isBlank(annotation.region()) ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
+            client = AwsUtils.getEC2Client(SunstoneConfig.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }
@@ -56,7 +55,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         S3Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getS3Client(StringUtils.isBlank(annotation.region()) ? SunstoneConfig.getString(AwsConfig.REGION) : SunstoneConfig.resolveExpressionToString(annotation.region()));
+            client = AwsUtils.getS3Client(SunstoneConfig.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }

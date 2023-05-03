@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import sunstone.annotation.Parameter;
 import sunstone.annotation.SunstoneCloudDeployAnnotation;
+import sunstone.azure.impl.AzureConfig;
 import sunstone.core.SunstoneExtension;
 
 import java.lang.annotation.ElementType;
@@ -53,7 +54,7 @@ public @interface WithAzureArmTemplate {
      *
      * If empty, {@code sunstone.azure.group} Sunstone Config property is used.
      */
-    String group() default "";
+    String group() default "${" + AzureConfig.GROUP + "}";
 
     /**
      * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz}.
@@ -62,7 +63,7 @@ public @interface WithAzureArmTemplate {
      *
      * For the list of available regions see {@link com.azure.core.management.Region}
      */
-    String region() default "";
+    String region() default "${" + AzureConfig.REGION + "}";
 
     /**
      * <p>
