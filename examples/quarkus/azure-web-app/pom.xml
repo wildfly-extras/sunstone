@@ -10,7 +10,7 @@
         <version>2.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>quarkusHelloWorld</artifactId>
+    <artifactId>quarkus-azure-web-app</artifactId>
 
     <properties>
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
