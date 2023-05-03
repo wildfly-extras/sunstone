@@ -51,6 +51,10 @@
             <groupId>com.azure</groupId>
             <artifactId>azure-core-http-netty</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.azure.resourcemanager</groupId>
+            <artifactId>azure-resourcemanager-postgresql</artifactId>
+        </dependency>
 
         <!--        JUnit5-->
         <dependency>
