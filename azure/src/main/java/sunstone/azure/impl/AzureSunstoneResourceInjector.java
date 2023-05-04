@@ -4,6 +4,7 @@ package sunstone.azure.impl;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
+import com.azure.resourcemanager.postgresql.PostgreSqlManager;
 import com.azure.resourcemanager.postgresql.models.Server;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.inject.Hostname;
@@ -73,6 +74,10 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
             // we can inject cached client because it is not closable and a user can not change it
             injected = store.getAzureArmClientOrCreate();
             Objects.requireNonNull(injected, "Unable to determine Azure ARM client.");
+        } else if (PostgreSqlManager.class.isAssignableFrom(fieldType)) {
+            // we can inject cached client because it is not closable and a user can not change it
+            injected = store.getAzurePgSqlManagerOrCreate();
+            Objects.requireNonNull(injected, "Unable to determine Azure ARM client.");
         }
         return injected;
     }
@@ -83,6 +88,7 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
                 || AzureResourceManager.class.isAssignableFrom(obj.getClass())
                 || WebApp.class.isAssignableFrom(obj.getClass())
                 || Server.class.isAssignableFrom(obj.getClass())
+                || PostgreSqlManager.class.isAssignableFrom(obj.getClass())
                 || VirtualMachine.class.isAssignableFrom(obj.getClass())) {
             // nothing to close
         } else {

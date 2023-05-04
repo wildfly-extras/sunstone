@@ -4,6 +4,7 @@ package sunstone.azure.impl;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
+import com.azure.resourcemanager.postgresql.PostgreSqlManager;
 import com.azure.resourcemanager.postgresql.models.Server;
 import sunstone.azure.annotation.AzureAutoResolve;
 import sunstone.azure.annotation.AzurePgSqlServer;
@@ -45,7 +46,7 @@ enum AzureIdentifiableSunstoneResource {
      * Deployable: archive can not be deployed to such resource
      */
     AUTO (AzureAutoResolve.class) {
-        final Class<?>[] supportedTypesForInjection = new Class[] {AzureResourceManager.class};
+        final Class<?>[] supportedTypesForInjection = new Class[] {AzureResourceManager.class, PostgreSqlManager.class};
 
         @Override
         boolean isTypeSupportedForInject(Class<?> type) {

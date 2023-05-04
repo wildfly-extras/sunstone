@@ -6,6 +6,15 @@ This guide explains how to develop tests running against AWS resources.
 
 You need to have programmatic access to AWS, which mean you have to have access key and secret.
 
+## Introduction
+
+There are two modules:
+- aws
+- aws-wildfly
+
+The first one provides product agnostic functionality such as deploying AWS CloudFormation template, injecting common objects and so on.
+Aws-wildfly is responsible for WildFly specific functionality - injecting OnlineManagementClient, deploying WAR to running WildFly and so on.
+
 ## Begin
 
 Add the following properties into `sunstone.properties` located in your resources folder:
@@ -14,12 +23,20 @@ Add the following properties into `sunstone.properties` located in your resource
 sunstone.aws.accessKeyID=${aws.accessKeyID}
 sunstone.aws.secretAccessKey=${aws.secretAccessKey}
 sunstone.aws.region=${aws.region}
+```
 
+If you are using WildFly, you may need to add:
+
+```properties
 sunstone.wildfly.mgmt.port=9990
 sunstone.wildfly.mgmt.user=${wildfly.admin}
 sunstone.wildfly.mgmt.password=${wildfly.password}
 sunstone.wildfly.mgmt.connection.timeout=120000
+
+sunstone.wildfly.mgmt.host=master
+sunstone.wildfly.mgmt.profile=default
 ```
+Last two are for domain mode.
 
 Mind that only access key and secret are mandatory. Everything else you can also set in the annotations.
 
@@ -33,121 +50,82 @@ Add the following dependency:
 </dependency>
 ```
 
+or product specific (which also gives you sunstone-aws)
+
+```xml
+<dependency>
+    <groupId>org.wildfly.extras.sunstone</groupId>
+    <artifactId>sunstone-aws-wildfly</artifactId>
+    <version>${sunstone.version}</version>
+</dependency>
+```
+
 ## Test development
-
-This chapter provides a guide and explains the logic behind the cloud deployment, injection and the WildFly deploy operation. See JavaDoc for relevant annotations.
-
-### Cloud deployment
+This chapter provides a guide and explains the logic behind cloud deployment, setup task, injection, deploy operation.
 
 Only CloudFormation templates are supported for deploying resources to AWS:
 
 ```java
-@WithAwsCfTemplate(
-        parameters = @Parameter(k = "my-tag", v = "value-for-tag"),
-        template = "mytemplate.yaml"
-)
-public class SingleAwsCfTemplateTest
-```
+(1)
+@WithAwsCfTemplate(parameters = {@Parameter(k = "instanceName", v = Example.NAME)},
+        template = "eap.json", region = "${sunstone.aws.region}", perSuite = true)
+(2)
+@Setup(Example.SetupTask.class)
+public class Example {
+  public static final String NAME = "eap";
 
-`mytemplate.yaml` is located in resources. If you wish to share cloud resources among multiple test classes, set `perSuite` parameter to true, include such test classes in a JUnit5 suite and run the suite, not the test classes. Resources will be deleted once the suite is finished. If the parameter is set to false, resources are undeployed after the test class finishes.
+  (3)
+  @AwsEc2Instance(nameTag = NAME)
+  static Hostname hostname;
 
-About `WithAwsCfTemplate` parameters:
-- `parameters` - define key-value parameters for CloudFormation template
-- `template` - specify YAML template in resources
-- `region` - define region where the template shall be deployed. If empty, value of `sunstone.aws.region` Sunstone Config property will be used
-- `perSuite` - see above.
+  @Test
+  public void test() {}
 
-### Injection
+  static class SetupTask extends AbstractSetupTask {
+    @AwsEc2Instance(nameTag = NAME)
+    OnlineManagementClient client;
 
-Injection is based on a field's type and annotation. For injecting the hostname of an EC2 instance:
-:
+    @Override
+    public void setup() throws Exception {}
 
-```java
-@AwsEc2Instance(nameTag = "instanceName")
-static Hostname hostname;
-```
-
-Following table shows what can be injected (type of the field) for what cloud resources (resource identification annotation)
-
-| Type of the field        | Annotation        | note                                           |
-|--------------------------|-------------------|------------------------------------------------|
-| `Hostname`               | `@AwsEc2Instance` | doesn't matter whether is standalone or domain |
-| `OnlineManagementClient` | `@AwsEc2Instance` | -                                              |
-| `S3Client`               | `@AwsAutoResolve` | -                                              |
-| `Ec2Client`              | `@AwsAutoResolve` | -                                              |
-
-
-### WildFly deployment
-
-Deployment is based on method annotated by '@Deployment' annotation and resource identification annotation. For method requirements, see [README.md](README.md#wildfly-deployment). Following table shows a list of supported resources WildFly is running on for deploy operation.
-
-| Resource                 | annotation        | note |
-|--------------------------|-------------------|------|
-| EC2 Instance             | `@AwsEc2Instance` | -    |
-
-Example:
-```java
-@Deployment(name = "testapp.war")
-@AwsEc2Instance(nameTag = AwsTestConstants.instanceName, region = region)
-static WebArchive deploy() {
-    return ShrinkWrap.create(WebArchive.class)
-            .addAsWebResource(new StringAsset("Hello World"), "index.jsp");
+    @Override
+    public void teardown() throws Exception {}
+  }
 }
 ```
 
-The default mode is `Standalone`, and credentials come from Sunstone Config properties. You can also specify them in the annotation.
+The flow is:
+**(1)** - At first, cloud resources defined by AWS CloudFormation template are deployed. You can specify multiple templates. You can use
+expression (`${my.property}`) in all parameters - they are resolved by SmallRye config.
 
-### About cloud resource identification annotations
+Note `perSuite`. If you wish to share cloud resources among multiple test classes, set `perSuite` parameter to true, include such test classes in a JUnit5 suite and run the suite, not the test classes. Resources will be deleted once the suite is finished. If the parameter is set to false (default value), resources are undeployed after the test class finishes.
 
-###### AwsEc2Instance
-Annotation is used to identify AWS EC2 instance. It may be expected, WildFly is running on it (for deployment operation or for injecting `OnlineManagementClient`):
-- for injection support see [injection](AWS-README.md#wildfly-deployment) chapter
-- for deploy operation support see [deploy](AWS-README.md#injection) chapter
+**(2)** - Then, Setup task is  run. As you can see, you can also inject into the class.
 
-If WildFly is running in standalone mode:
-```java
-@AwsEc2Instance(
-        nameTag = "instanceName",
-        region = "region",
-        mode = OperatingMode.STANDALONE,
-        standalone = @StandaloneMode(
-                user = "mgmtUser",
-                password = "mgmtPassword",
-                port = "mgmtPort"))
-static OnlineManagementClient client;
-```
+Note: test class fields are injected **after** a setup task is run. Example static fields are **null** when the SetupTask is run (and can't be used there).
 
-All values may contain expressions (`${my.property}`):
-- `nameTag` - mandatory, value of `name` tag of EC2 Instance
-- `region` - optional, if empty, `sunstone.aws.region` Sunstone Config property will be used
-- mode - optional, default to OperatingMode.STANDALONE
-- standalone - optional
-  - `user` - optional. Management user for WildFly. If empty, `sunstone.wildfly.mgmt.user` Sunstone Config property will be used
-  - `password` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mgmt.password` Sunstone Config property will be used
-  - `port` - optional. Management password for WildFly. If empty, `sunstone.wildfly.mgmt.port` Sunstone Config property will be used
-- domain - optional
-  - `user, password, port` - same as in standalone mode
-  - `host` - optional. Wildfly host controller. If empty, `sunstone.wildfly.mgmt.host` Sunstone Config property will be used
-  - `profile` - optional. Profile for WildFly. If empty, `sunstone.wildfly.mgmt.profile` Sunstone Config property will be used
+**(3)** - After the SetupTask is done, fields are injected
 
+## Injection
 
-If WildFly is running in domain mode:
-```java
-@AwsEc2Instance(
-        nameTag = "instanceName",
-        region = "region",
-        mode = OperatingMode.STANDALONE,
-        standalone = @StandaloneMode(
-                user = "mgmtUser",
-                password = "mgmtPassword",
-                port = "mgmtPort",
-                host = "mgmtHost",
-                profile = "mgmtProfile"))
-static OnlineManagementClient client;
-```
+Injection is based on a field's type and annotation. aws-wildfly module extend aws module in injection capabilities.
 
-###### AwsAutoResolve
-Annotation is used to identify AWS objects and clients with auto-resolution.
-- injection supported, see [injection](AWS-README.md#wildfly-deployment) chapter
+### aws module
+See what kind of AWS resources are supported, what and how you can inject.
+###### EC2 instance (virtual machine)
+You can inject:
+- Hostname - public ip of VM, see  and [here](aws/src/test/java/aws/cloudformation/di/suitetests/AwsHostnameTests.java)
+- Instance - AWS SDK object for resource manipulation, see [here](aws/src/test/java/aws/cloudformation/di/suitetests/AwsEC2InstanceTests.java)
 
-`region` parameter is optional. If empty, `sunstone.aws.region` Sunstone Config property will be used 
+###### AWS SDK clients
+See [here](aws/src/test/java/aws/cloudformation/di/AwsClientsTests.java), you can inject:
+- Ec2Client
+- S3Client
+
+### aws-wildfly module
+When you depend on aws-wildfly, you can inject wildfly specific objects. Here you can see what you can inject additionally to aws module
+###### Virtual machine
+Inject:
+- OnlineManagement Client, see [standalone here](aws-wildfly/src/test/java/aws/cloudformation/di/suitetests/AwsStandaloneManagementClientTests.java) and [domain here](aws-wildfly/src/test/java/aws/cloudformation/di/suitetests/AwsDomainManagementClientTests.java)
+
+You can deploy archive to running EAP instance. See [here](aws-wildfly/src/test/java/aws/cloudformation/archiveDeploy/ec2/suitetests/AwsEc2DeployFirstTest.java)

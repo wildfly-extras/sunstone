@@ -1,9 +1,7 @@
 package sunstone.aws.annotation;
 
 
-import sunstone.annotation.Deployment;
 import sunstone.aws.impl.AwsConfig;
-import sunstone.inject.Hostname;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,14 +9,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to identify AWS EC2 instance (VM) for injection purposes.
+ * Annotation used to identify AWS EC2 instance (VM).
  * <br>
- * Injectable: {@link Hostname} and
+ * nameTag - required, "tag:Name" of the EC2 instance
  * <br>
- * For more information about possible injection, see {@link AwsResourceIdentificationAnnotation}
- * <br>
- * Archive deploy operation (using {@link Deployment}) is supported under the name defined by {@link Deployment#name()}.
- * <br>
+ * region - Optional, region to look in. By default {@code sunstone.aws.region} Sunstone Config property is used
  */
 // represented by AwsIdentifiableSunstoneResource#EC2_INSTANCE
 @Retention(RetentionPolicy.RUNTIME)

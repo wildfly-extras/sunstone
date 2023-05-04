@@ -1,6 +1,7 @@
 package sunstone.azure.armTemplates.di;
 
 
+import com.azure.resourcemanager.postgresql.PostgreSqlManager;
 import sunstone.azure.annotation.AzureAutoResolve;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,7 +20,13 @@ public class AzClientsTests {
     static AzureResourceManager staticArmClient;
 
     @AzureAutoResolve
+    PostgreSqlManager staticPgsqlClient;
+
+    @AzureAutoResolve
     AzureResourceManager armClient;
+
+    @AzureAutoResolve
+    PostgreSqlManager pgsqlClient;
 
     @BeforeAll
     public static void verifyStaticDI() {
@@ -29,6 +36,8 @@ public class AzClientsTests {
     @Test
     public void testClients() {
         assertThat(armClient.resourceGroups().list().stream().collect(Collectors.toList())).isNotNull();
+        assertThat(pgsqlClient.servers().list().stream().collect(Collectors.toList())).isNotNull();
+        assertThat(staticPgsqlClient.servers().list().stream().collect(Collectors.toList())).isNotNull();
         assertThat(staticArmClient.resourceGroups().list().stream().collect(Collectors.toList())).isNotNull();
     }
 }
