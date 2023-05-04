@@ -9,10 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used for automatic resolution without providing any further details.
- * <br>
- * Injectable: {@link com.azure.resourcemanager.AzureResourceManager}
- * <br>
- * For more information about possible injection, see {@link AzureResourceIdentificationAnnotation}
  */
 // represented by AzureIdentifiableSunstoneResource#AUTO
 @Retention(RetentionPolicy.RUNTIME)

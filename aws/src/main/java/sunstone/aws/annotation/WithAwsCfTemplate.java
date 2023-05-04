@@ -37,7 +37,7 @@ public @interface WithAwsCfTemplate {
      * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz} -
      * var is resolved from system properties.
      *
-     * If empty, {@code sunstone.aws.region} Sunstone Config property is used.
+     * By default {@code sunstone.aws.region} Sunstone Config property is used.
      *
      * For the list of available regions see {@link software.amazon.awssdk.regions.Region}
      */

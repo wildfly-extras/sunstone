@@ -1,9 +1,7 @@
 package sunstone.azure.annotation;
 
 
-import sunstone.annotation.Deployment;
 import sunstone.azure.impl.AzureConfig;
-import sunstone.inject.Hostname;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,11 +11,9 @@ import java.lang.annotation.Target;
 /**
  * Annotation used to identify Azure virtual machine for injection purposes.
  * <br>
- * Injectable: {@link Hostname}
+ * name - required, name of the VM
  * <br>
- * For more information about possible injection, see {@link AzureResourceIdentificationAnnotation}
- * <br>
- * Archive deploy operation (using {@link Deployment}) is supported under the name defined by {@link Deployment#name()}.
+ * group - Optional, group to look in. By default {@code sunstone.azure.group} Sunstone Config property is used
  */
 // represented by AzureIdentifiableSunstoneResource#VM_INSTANCE
 @Retention(RetentionPolicy.RUNTIME)

@@ -24,22 +24,20 @@ The library is here to simplify test development for new clouds.
 * United approach for all supported cloud providers
 * Deploy resources to 3rd party cloud with Azure ARM templates, AWS CloudFormation Templates, ... 
 * Inject SDK clients, Management clients, hostnames of created resources, ...
-* Possibility to control WildFly nodes with [Creaper](https://github.com/wildfly-extras/creaper)
+* Possibility to control products (e.g. WildFly nodes with [Creaper](https://github.com/wildfly-extras/creaper))
 * JUnit5 test framework support
 
 ### How?
 
-Depends on the cloud you are working with. For every supported cloud, there is a module that brings all API and support you need. The flow always follow (even if you combine two clouds in one single test):
+Depends on the cloud you are working with. For every supported cloud, there is a module that brings all API and support you need. The flow always follow (even if you combine two cloud modules in one single test):
 
-1. Cloud deployment - creating cloud resources  
+1. Cloud deployment - creating cloud resources
 2. Setup task 
-3. WildFly deployment
+3. Deployment operation
 4. Inject static test class fields
 5. Inject non-static test instance fields
 
-For more information about specific clouds, see:
-* [Azure README](Azure-README.md)
-* [AWS README](AWS-README.md)
+1. - 4. are done in BeforeAllCallback. 5. in the postProcessTestInstance
 
 ##### Configuration
 
@@ -52,9 +50,14 @@ Nested expressions and their resolution to other properties are supported, i.e.
 ``` java
 ${my.property-${different.property}}
 ```
-Sunstone Config properties and their resolutions are backed by SmallRye Config so most of SR Config capabilities are also supported.
+Sunstone Config properties and their resolution is backed by SmallRye Config so most of SR Config capabilities are also supported.
 
-##### Cloud deployment
+### User stories
+For more information about specific clouds, see:
+* [Azure README](Azure-README.md)
+* [AWS README](AWS-README.md)
+
+
 Sunstone deploys and manages lifecycle of cloud resources - deploys resources before tests and deletes them once tests are finished. Various deploy methods are supported.
 
 See:

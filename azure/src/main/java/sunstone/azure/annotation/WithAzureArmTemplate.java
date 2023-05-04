@@ -52,14 +52,14 @@ public @interface WithAzureArmTemplate {
      * Resource group that should be used for deployment. Expression is allowed, e.g. {@code abc-${var:default}-xyz}.
      * Resources in a group share lifecycle and the group is deleted as it is for undeploy operation.
      *
-     * If empty, {@code sunstone.azure.group} Sunstone Config property is used.
+     * By default {@code sunstone.azure.group} Sunstone Config property is used.
      */
     String group() default "${" + AzureConfig.GROUP + "}";
 
     /**
      * Region that should be used for creating resource group. Expression is allowed, e.g. {@code abc-${var:default}-xyz}.
      *
-     * If empty, {@code sunstone.azure.region} Sunstone Config property is used.
+     * By default {@code sunstone.azure.region} Sunstone Config property is used.
      *
      * For the list of available regions see {@link com.azure.core.management.Region}
      */
