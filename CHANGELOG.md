@@ -1,5 +1,7 @@
 # Changelog
 
+## next is 2.1.1-SNAPSHOT
+
 ## 2.1.0 (2023-05-05)
 - Breaking change!
 - Architecture change: move WildFly dependencies into WildFly specific modules
