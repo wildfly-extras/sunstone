@@ -1,6 +1,12 @@
 # Changelog
 
-## 2.0.2-SNAPSHOT (not yet released)
+## 2.1.0 (2023-05-05)
+- Breaking change!
+- Architecture change: move WildFly dependencies into WildFly specific modules
+- WildFly domain support
+- Support for custom annotations (annotation annotated by Sunstone annotations)
+- Minor API changes
+- Support injecting sunstone properties
 
 ## 2.0.1 (2023-03-13)
 - JDK8 compatibility
