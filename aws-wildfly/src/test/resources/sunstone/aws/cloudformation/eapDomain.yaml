@@ -129,6 +129,7 @@ Resources:
 
           # wait up to 90 seconds
           for server in {"server-one","server-two"}; do 
+            RET_VAL=1
             for i in {1..9}; do 
               sleep 10; 
               $JBOSS_HOME/bin/jboss-cli.sh \
@@ -139,8 +140,8 @@ Resources:
                 | jq -r .result | grep -Fxq running && RET_VAL=$? && break; 
               done;  
             if [ "$RET_VAL" -ne 0 ]; then
-              echo ok
-              #cfn-signal -e $RET_VAL --stack ${AWS::StackName} --region ${AWS::Region} --resource EC2InstanceEAP
+              echo error
+              cfn-signal -e $RET_VAL --stack ${AWS::StackName} --region ${AWS::Region} --resource EC2InstanceEAP
             fi; 
           done
 

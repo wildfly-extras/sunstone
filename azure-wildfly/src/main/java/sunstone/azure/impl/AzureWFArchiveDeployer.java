@@ -1,21 +1,21 @@
 package sunstone.azure.impl;
 
 
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.junit.platform.commons.util.StringUtils;
-import sunstone.annotation.WildFly;
-import sunstone.azure.impl.AzureWFIdentifiableSunstoneResource.Identification;
 import com.azure.resourcemanager.appservice.models.DeployType;
 import com.azure.resourcemanager.appservice.models.PublishingProfile;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPSClient;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.util.StringUtils;
 import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.commands.deployments.Undeploy;
 import org.wildfly.extras.creaper.core.CommandFailedException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import sunstone.annotation.WildFly;
+import sunstone.azure.impl.AzureWFIdentifiableSunstoneResource.Identification;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -58,14 +58,14 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
         Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
         WebApp azureWebApp = resourceIdentification.get(store, WebApp.class);
         azureWebApp.deployAsync(DeployType.WAR, tempFile.toFile()).block();
-        azureWebApp.restartAsync().block();
+//        azureWebApp.restartAsync().block();
         AzureWFUtils.waitForWebAppDeployment(azureWebApp);
     }
 
     static void undeployFromWebApp(Identification resourceIdentification, AzureSunstoneStore store) throws SunstoneException {
         WebApp webApp = resourceIdentification.get(store, WebApp.class);
         PublishingProfile profile = webApp.getPublishingProfile();
-        FTPClient ftpClient = new FTPClient();
+        FTPSClient ftpClient = new FTPSClient();
         String[] ftpUrlSegments = profile.ftpUrl().split("/", 2);
         String server = ftpUrlSegments[0];
         try {

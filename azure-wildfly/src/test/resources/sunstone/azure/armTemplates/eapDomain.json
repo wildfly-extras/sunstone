@@ -195,7 +195,7 @@
         "typeHandlerVersion": "2.1",
         "autoUpgradeMinorVersion": true,
         "protectedSettings": {
-          "commandToExecute": "for server in {\"server-one\",\"server-two\"}; do for i in {1..6}; do sleep 10;RET_VAL=1; /opt/rh/eap7/root/usr/share/wildfly/bin/jboss-cli.sh --connect --output-json --command=\"/host=master/server=${server}:read-attribute(name=server-state)\" | jq -r .result | grep -Fxq running && RET_VAL=$? && break; done; if [ ${RET_VAL} -ne 0 ]; then exit 1; fi; done"
+          "commandToExecute": "for server in {\"server-one\",\"server-two\"}; do for i in {1..9}; do sleep 10;RET_VAL=1; /opt/rh/eap7/root/usr/share/wildfly/bin/jboss-cli.sh --connect --output-json --command=\"/host=master/server=${server}:read-attribute(name=server-state)\" | jq -r .result | grep -Fxq running && RET_VAL=$? && break; done; if [ ${RET_VAL} -ne 0 ]; then exit 1; fi; done"
         }
       }
     }
