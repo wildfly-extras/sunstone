@@ -6,6 +6,7 @@ import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.appservice.models.AppServicePlan;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import com.azure.resourcemanager.postgresql.PostgreSqlManager;
@@ -49,6 +50,15 @@ public class AzureUtils {
     static Optional<WebApp> findAzureWebApp(AzureResourceManager arm, String name, String resourceGroup) {
         try {
             return Optional.ofNullable(arm.webApps().getByResourceGroup(resourceGroup, name));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    static Optional<AppServicePlan> findAzureAppServicePlan(AzureResourceManager arm, String name, String resourceGroup) {
+        try {
+            return Optional.ofNullable(arm.appServicePlans().getByResourceGroup(resourceGroup, name));
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();

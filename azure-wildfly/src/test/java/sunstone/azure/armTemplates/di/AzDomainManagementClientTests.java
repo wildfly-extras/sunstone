@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
             @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
             @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
         },
-        template = "sunstone/azure/armTemplates/eapDomain.json", group = AzDomainManagementClientTests.group, perSuite = true)
+        template = "sunstone/azure/armTemplates/eapDomain.json", group = AzDomainManagementClientTests.group)
 public class AzDomainManagementClientTests {
 
     public static final String group = "${azure.group:sunstone-testing-group}";

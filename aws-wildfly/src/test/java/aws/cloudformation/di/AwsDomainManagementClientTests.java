@@ -1,26 +1,18 @@
-package aws.cloudformation.di.suitetests;
+package aws.cloudformation.di;
 
-
-import sunstone.annotation.WildFly;
-import sunstone.aws.annotation.AwsEc2Instance;
+import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.extras.creaper.core.online.CliException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import sunstone.annotation.DomainMode;
 import sunstone.annotation.OperatingMode;
 import sunstone.annotation.Parameter;
-import sunstone.annotation.StandaloneMode;
+import sunstone.annotation.WildFly;
+import sunstone.aws.annotation.AwsEc2Instance;
 import sunstone.aws.annotation.WithAwsCfTemplate;
-
-import java.io.IOException;
-
-import static aws.cloudformation.AwsTestConstants.mgmtPassword;
-import static aws.cloudformation.AwsTestConstants.mgmtPort;
-import static aws.cloudformation.AwsTestConstants.mgmtUser;
-import static aws.cloudformation.AwsTestConstants.instanceName;
-import static aws.cloudformation.AwsTestConstants.region;
+import static aws.cloudformation.AwsTestConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Shared resources (WildFly on AWS) among other DI tests - perSuite is true
@@ -31,21 +23,42 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithAwsCfTemplate(parameters = {
         @Parameter(k = "instanceName", v = instanceName)
 },
-        template = "sunstone/aws/cloudformation/eap.yaml", region = region, perSuite = true)
-public class AwsStandaloneManagementClientTests {
+        template = "sunstone/aws/cloudformation/eapDomain.yaml", region = region)
+
+public class AwsDomainManagementClientTests {
 
     @AwsEc2Instance(nameTag = instanceName)
+    @WildFly(mode = OperatingMode.DOMAIN)
     static OnlineManagementClient staticMgmtClient;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
-    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mgmtUser, password = mgmtPassword, port = mgmtPort))
+    @WildFly(
+            mode = OperatingMode.DOMAIN,
+            domain = @DomainMode(
+                    user = mgmtUser,
+                    password = mgmtPassword,
+                    port = mgmtPort,
+                    host = mgmtHost,
+                    profile = mgmtProfile
+            )
+    )
     static OnlineManagementClient staticMgmtClientSpecified;
 
     @AwsEc2Instance(nameTag = instanceName, region = region)
-    @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mgmtUser, password = mgmtPassword, port = mgmtPort))
+    @WildFly(
+            mode = OperatingMode.DOMAIN,
+            domain = @DomainMode(
+                    user = mgmtUser,
+                    password = mgmtPassword,
+                    port = mgmtPort,
+                    host = mgmtHost,
+                    profile = mgmtProfile
+            )
+    )
     OnlineManagementClient mgmtClientSpecified;
 
     @AwsEc2Instance(nameTag = instanceName)
+    @WildFly(mode = OperatingMode.DOMAIN)
     OnlineManagementClient mgmtClient;
 
     @BeforeAll

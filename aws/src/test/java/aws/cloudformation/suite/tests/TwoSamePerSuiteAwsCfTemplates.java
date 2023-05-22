@@ -1,8 +1,8 @@
 package aws.cloudformation.suite.tests;
 
 
-import aws.cloudformation.AwsTestUtils;
 import aws.cloudformation.AwsTestConstants;
+import aws.cloudformation.AwsTestUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         template = "sunstone/aws/cloudformation/keyPair.yaml", region = "us-east-1", perSuite = true)
 @WithAwsCfTemplate(parameters = {
         @Parameter(k = "keyTag", v = AwsTestConstants.TAG),
-        @Parameter(k = "keyName", v = AwsTestConstants.NAME_2)
+        @Parameter(k = "keyName", v = AwsTestConstants.NAME_1)
 },
         template = "sunstone/aws/cloudformation/keyPair.yaml", region = "us-east-1", perSuite = true)
 public class TwoSamePerSuiteAwsCfTemplates {

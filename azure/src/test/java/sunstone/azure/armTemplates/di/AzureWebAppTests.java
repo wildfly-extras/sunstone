@@ -1,6 +1,7 @@
 package sunstone.azure.armTemplates.di;
 
 
+import com.azure.resourcemanager.appservice.models.AppServicePlan;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -9,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.Parameter;
+import sunstone.azure.annotation.AzureAppServicePlan;
 import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureWebApplication;
 import sunstone.azure.annotation.WithAzureArmTemplate;
@@ -30,15 +32,22 @@ public class AzureWebAppTests {
     @AzureWebApplication(name = AzureTestConstants.instanceName, group = group)
     static WebApp staticWebApp;
 
+    @AzureAppServicePlan(name = AzureTestConstants.instanceName + "-plan", group = group)
+    static AppServicePlan staticPlan;
+
     @AzureWebApplication(name = AzureTestConstants.instanceName, group = group)
     Hostname hostname;
 
     @AzureWebApplication(name = AzureTestConstants.instanceName, group = group)
     WebApp webApp;
 
+    @AzureAppServicePlan(name = AzureTestConstants.instanceName + "-plan", group = group)
+    static AppServicePlan plan;
+
     @BeforeAll
     public static void verifyStaticDI() {
         assertThat(staticWebApp).isNotNull();
+        assertThat(staticPlan).isNotNull();
         assertThat(staticHostname).isNotNull();
     }
 
@@ -46,6 +55,8 @@ public class AzureWebAppTests {
     public void testDI() {
         assertThat(staticWebApp.id()).isNotBlank();
         assertThat(webApp.id()).isNotBlank();
+        assertThat(plan.id()).isNotBlank();
+        assertThat(staticPlan.id()).isNotBlank();
         assertThat(staticHostname.get()).isNotBlank();
         assertThat(hostname.get()).isNotBlank();
     }

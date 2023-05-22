@@ -12,7 +12,6 @@ import sunstone.core.exceptions.SunstoneException;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -65,20 +64,17 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
             }
 
             Map<String, String> parameters = getParameters(armTemplateDefinition.parameters());
-            String md5sum = sum(content);
 
-            if (!armTemplateDefinition.perSuite() || !store.suiteLevelDeploymentExists(md5sum)) {
+            if (!armTemplateDefinition.perSuite() || !store.suiteLevelDeploymentExists(armTemplateDefinition)) {
                 deploymentManager.deployAndRegister(group, region, content, parameters);
                 if (armTemplateDefinition.perSuite()) {
                     store.addSuiteLevelClosable(() -> deploymentManager.undeploy(group));
-                    store.addSuiteLevelDeployment(md5sum);
+                    store.addSuiteLevelDeployment(annotation);
                 } else {
                     store.addClosable(() -> deploymentManager.undeploy(group));
                 }
             }
         } catch (IOException e) {
-            throw new SunstoneException(e);
-        } catch (NoSuchAlgorithmException e) {
             throw new SunstoneException(e);
         }
     }

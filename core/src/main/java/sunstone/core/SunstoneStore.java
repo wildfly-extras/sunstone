@@ -5,11 +5,13 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 
 import java.io.Closeable;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * An abstraction over JUnit5 Extension store providing methods to set commonly used resources.
@@ -53,19 +55,19 @@ public class SunstoneStore {
     /**
      * Add sum to the root global store.
      */
-    public void addSuiteLevelDeployment(String checkSum) {
+    public void addSuiteLevelDeployment(Annotation annotation) {
         Store store = getContext().getRoot().getStore(ExtensionContext.Namespace.GLOBAL);
-        Set<String> checkSums = (Set<String>) store.getOrComputeIfAbsent(SUITE_LEVEL_DEPLOYMENTS, s -> new ConcurrentSkipListSet<String>());
-        checkSums.add(checkSum);
+        Set<Annotation> checkSums = (Set<Annotation>) store.getOrComputeIfAbsent(SUITE_LEVEL_DEPLOYMENTS, s -> Collections.synchronizedSet(new HashSet<>()));
+        checkSums.add(annotation);
     }
 
     /**
      * Check if sum is present in root global store.
      */
-    public boolean suiteLevelDeploymentExists(String checkSum) {
+    public boolean suiteLevelDeploymentExists(Annotation annotation) {
         Store store = getContext().getRoot().getStore(ExtensionContext.Namespace.GLOBAL);
-        Set<String> checkSums = (Set<String>) store.getOrComputeIfAbsent(SUITE_LEVEL_DEPLOYMENTS, s -> new ConcurrentSkipListSet<String>());
-        return checkSums.contains(checkSum);
+        Set<Annotation> checkSums = (Set<Annotation>) store.getOrComputeIfAbsent(SUITE_LEVEL_DEPLOYMENTS, s -> Collections.synchronizedSet(new HashSet<>()));
+        return checkSums.contains(annotation);
     }
 
     Deque<Closeable> getClosablesOrCreate() {

@@ -2,10 +2,12 @@ package sunstone.azure.impl;
 
 
 import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.appservice.models.AppServicePlan;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import com.azure.resourcemanager.postgresql.PostgreSqlManager;
 import com.azure.resourcemanager.postgresql.models.Server;
+import sunstone.azure.annotation.AzureAppServicePlan;
 import sunstone.azure.annotation.AzureAutoResolve;
 import sunstone.azure.annotation.AzurePgSqlServer;
 import sunstone.azure.annotation.AzureVirtualMachine;
@@ -110,6 +112,33 @@ enum AzureIdentifiableSunstoneResource {
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure Web App in '%s' resource group.", appName, appGroup))));
         }
     },
+    /**
+     * Azure Web application (application service) identification, representation for {@link AzureWebApplication}
+     *
+     * Injectable: {@link Hostname}
+     *
+     * Deployable: archive can be deployed to such resource
+     */
+    APP_SERVICE_PLAN(AzureAppServicePlan.class) {
+        final Class<?>[] supportedTypesForInjection = new Class[] {AppServicePlan.class};
+
+        @Override
+        boolean isTypeSupportedForInject(Class<?> type) {
+            return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
+        }
+        @Override
+        <T> T get(Annotation injectionAnnotation, AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {
+            if(!getRepresentedInjectionAnnotation().isAssignableFrom(injectionAnnotation.annotationType())) {
+                throw new IllegalArgumentSunstoneException(format("Expected %s annotation type but got %s",
+                        getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
+            }
+            AzureAppServicePlan plan = (AzureAppServicePlan) injectionAnnotation;
+            String planName = SunstoneConfig.resolveExpressionToString(plan.name());
+            String planGroup = SunstoneConfig.resolveExpressionToString(plan.group());
+            Optional<AppServicePlan> azureWebApp = AzureUtils.findAzureAppServicePlan(store.getAzureArmClientOrCreate(), planName, planGroup);
+            return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure App Service plan in '%s' resource group.", planName, planGroup))));
+        }
+    },
 
     /**
      * Azure Web application (application service) identification, representation for {@link AzureWebApplication}
@@ -166,18 +195,14 @@ enum AzureIdentifiableSunstoneResource {
     public static boolean isSupported(Annotation annotation) {
         return getType(annotation) != UNSUPPORTED;
     }
+
     public static AzureIdentifiableSunstoneResource getType(Annotation annotation) {
-        if(AzureVirtualMachine.class.isAssignableFrom(annotation.annotationType())) {
-            return VM_INSTANCE;
-        } else if(AzureWebApplication.class.isAssignableFrom(annotation.annotationType())) {
-            return WEB_APP;
-        } else if(AzurePgSqlServer.class.isAssignableFrom(annotation.annotationType())) {
-            return PGSQL_SERVER;
-        } else if(AzureAutoResolve.class.isAssignableFrom(annotation.annotationType())) {
-            return AUTO;
-        } else {
-            return UNSUPPORTED;
+        for (AzureIdentifiableSunstoneResource value : AzureIdentifiableSunstoneResource.values()) {
+            if (value != UNSUPPORTED && value.getRepresentedInjectionAnnotation().isAssignableFrom(annotation.annotationType())) {
+                return value;
+            }
         }
+        return UNSUPPORTED;
     }
 
     /**
@@ -193,6 +218,9 @@ enum AzureIdentifiableSunstoneResource {
         }
         <T> T get(AzureSunstoneStore store, Class<T> clazz) throws SunstoneException {
             return type.get(identification, store, clazz);
+        }
+        Object get(AzureSunstoneStore store) throws SunstoneException {
+            return type.get(identification, store, Object.class);
         }
     }
 

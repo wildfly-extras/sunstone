@@ -2,6 +2,7 @@ package sunstone.azure.impl;
 
 
 import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.appservice.models.AppServicePlan;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
 import com.azure.resourcemanager.postgresql.PostgreSqlManager;
@@ -61,15 +62,6 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
         if (Hostname.class.isAssignableFrom(fieldType)) {
             injected = AzureIdentifiableSunstoneResourceUtils.resolveHostname(identification, store);
             Objects.requireNonNull(injected, "Unable to determine hostname.");
-        } else if (VirtualMachine.class.isAssignableFrom(fieldType)) {
-            injected = identification.get(store, VirtualMachine.class);
-            Objects.requireNonNull(injected, "Unable to get VM abstraction object");
-        } else if (WebApp.class.isAssignableFrom(fieldType)) {
-            injected = identification.get(store, WebApp.class);
-            Objects.requireNonNull(injected, "Unable to get Web App abstraction object");
-        } else if (Server.class.isAssignableFrom(fieldType)) {
-            injected = identification.get(store, Server.class);
-            Objects.requireNonNull(injected, "Unable to get PostgreSql abstraction object");
         } else if (AzureResourceManager.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
             injected = store.getAzureArmClientOrCreate();
@@ -78,6 +70,11 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
             // we can inject cached client because it is not closable and a user can not change it
             injected = store.getAzurePgSqlManagerOrCreate();
             Objects.requireNonNull(injected, "Unable to determine Azure ARM client.");
+        } else {
+            // VirtualMachine, WebApp, AppServicePlan, Server
+            injected = identification.get(store);
+            Objects.requireNonNull(injected, "Unable to get abstraction object for "+ identification.identification);
+
         }
         return injected;
     }
@@ -87,6 +84,7 @@ public class AzureSunstoneResourceInjector implements SunstoneResourceInjector {
         if (Hostname.class.isAssignableFrom(obj.getClass())
                 || AzureResourceManager.class.isAssignableFrom(obj.getClass())
                 || WebApp.class.isAssignableFrom(obj.getClass())
+                || AppServicePlan.class.isAssignableFrom(obj.getClass())
                 || Server.class.isAssignableFrom(obj.getClass())
                 || PostgreSqlManager.class.isAssignableFrom(obj.getClass())
                 || VirtualMachine.class.isAssignableFrom(obj.getClass())) {

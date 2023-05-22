@@ -13,7 +13,6 @@ import sunstone.core.exceptions.SunstoneException;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -61,21 +60,17 @@ public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
                 throw new IllegalArgumentSunstoneException("Region for AWS template is not defined. It must be specified either "
                         + "in the annotation or as Sunstone Config property.");
             }
-            String md5sum = sum(content);
-
-            if (!awsTemplateDefinition.perSuite() || !store.suiteLevelDeploymentExists(md5sum)) {
+            if (!awsTemplateDefinition.perSuite() || !store.suiteLevelDeploymentExists(awsTemplateDefinition)) {
                 CloudFormationClient cfClient = store.getAwsCfClientOrCreate(region);
                 String stack = deploymentManager.deployAndRegister(cfClient, content, parameters);
                 if (awsTemplateDefinition.perSuite()) {
                     store.addSuiteLevelClosable(() -> deploymentManager.undeploy(stack));
-                    store.addSuiteLevelDeployment(md5sum);
+                    store.addSuiteLevelDeployment(annotation);
                 } else {
                     store.addClosable(() -> deploymentManager.undeploy(stack));
                 }
             }
         } catch (IOException e) {
-            throw new SunstoneException(e);
-        } catch (NoSuchAlgorithmException e) {
             throw new SunstoneException(e);
         }
     }
