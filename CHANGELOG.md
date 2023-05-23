@@ -1,6 +1,9 @@
 # Changelog
 
-## next is 2.1.1-SNAPSHOT
+## 2.1.1 (2023-05-23)
+- Per suite annotations are compared also with parameters
+- App Service plan support
+- Transitive annotation fix
 
 ## 2.1.0 (2023-05-05)
 - Breaking change!
