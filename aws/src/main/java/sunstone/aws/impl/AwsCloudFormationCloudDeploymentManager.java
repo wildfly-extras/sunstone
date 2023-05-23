@@ -14,12 +14,13 @@ import software.amazon.awssdk.services.cloudformation.waiters.CloudFormationWait
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Purpose: the class handles AWS CloudFormation template - deploy and undeploy the template to and from a stack.
@@ -89,7 +90,7 @@ class AwsCloudFormationCloudDeploymentManager implements Closeable {
 
     public String deployAndRegister(CloudFormationClient cfClient, String templateContent, Map<String, String> parameters) {
         String stack = deploy(cfClient, templateContent, parameters);
-        client2stacks.putIfAbsent(cfClient, new ConcurrentSkipListSet<>());
+        client2stacks.putIfAbsent(cfClient, Collections.synchronizedSet(new HashSet<>()));
         client2stacks.get(cfClient).add(stack);
         stack2Client.put(stack, cfClient);
         return stack;

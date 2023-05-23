@@ -1,6 +1,7 @@
 package sunstone.azure.armTemplates.di;
 
 
+import org.junit.jupiter.api.Disabled;
 import sunstone.annotation.WildFly;
 import sunstone.azure.armTemplates.AzureTestConstants;
 import sunstone.azure.annotation.AzureVirtualMachine;
@@ -22,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
-        template = "sunstone/azure/armTemplates/eap.json", group = AzStandaloneManagementClientTests.group, perSuite = true)
+        template = "sunstone/azure/armTemplates/eap.json", group = AzStandaloneManagementClientTests.group)
 public class AzStandaloneManagementClientTests {
     public static final String group = "${azure.group:sunstone-testing-group}";
 
