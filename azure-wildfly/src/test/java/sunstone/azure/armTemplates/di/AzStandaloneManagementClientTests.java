@@ -1,10 +1,6 @@
 package sunstone.azure.armTemplates.di;
 
 
-import org.junit.jupiter.api.Disabled;
-import sunstone.annotation.WildFly;
-import sunstone.azure.armTemplates.AzureTestConstants;
-import sunstone.azure.annotation.AzureVirtualMachine;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.extras.creaper.core.online.CliException;
@@ -12,7 +8,10 @@ import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import sunstone.annotation.OperatingMode;
 import sunstone.annotation.Parameter;
 import sunstone.annotation.StandaloneMode;
+import sunstone.annotation.WildFly;
+import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.azure.armTemplates.AzureTestConstants;
 
 import java.io.IOException;
 
