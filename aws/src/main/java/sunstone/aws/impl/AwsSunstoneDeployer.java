@@ -53,7 +53,7 @@ public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
         AwsCloudFormationCloudDeploymentManager deploymentManager = store.getAwsCfDemploymentManagerOrCreate();
 
         try {
-            String content = getResourceContent(awsTemplateDefinition.template());
+            String content = getResourceContent(SunstoneConfig.resolveExpressionToString(awsTemplateDefinition.template()));
             Map<String, String> parameters = getParameters(awsTemplateDefinition.parameters());
             String region = SunstoneConfig.resolveExpressionToString(awsTemplateDefinition.region());
             if (region == null) {
