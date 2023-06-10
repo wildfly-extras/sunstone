@@ -51,7 +51,7 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
 
         String content = null;
         try {
-            content = getResourceContent(armTemplateDefinition.template());
+            content = getResourceContent(SunstoneConfig.resolveExpressionToString(armTemplateDefinition.template()));
             String group = SunstoneConfig.resolveExpressionToString(armTemplateDefinition.group());
             if (group == null) {
                 throw new IllegalArgumentSunstoneException("Resource group for Azure ARM template is not defined. "

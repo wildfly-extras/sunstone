@@ -4,11 +4,11 @@ package sunstone.core;
 import io.smallrye.config.SmallRyeConfig;
 import io.smallrye.config.SmallRyeConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigSource;
-import org.junit.platform.commons.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -89,6 +89,10 @@ public class SunstoneConfig {
         return config.getValue(SunstoneExpressionSource.registerExpression(expression), clazz);
     }
 
+    public static <V> Optional<V> resolveOptionalExpression(String expression, Class<V> clazz) {
+        return config.getOptionalValue(SunstoneExpressionSource.registerExpression(expression), clazz);
+    }
+
 
     /**
      *
@@ -116,7 +120,7 @@ public class SunstoneConfig {
      *
      */
     public static String resolveExpressionToString(String expression) {
-        return StringUtils.isBlank(expression) ? expression : resolveExpression(expression, String.class);
+        return resolveExpression(expression, String.class);
     }
 
     /**

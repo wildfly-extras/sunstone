@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
+import org.junit.platform.commons.util.StringUtils;
 import sunstone.annotation.AbstractSetupTask;
 import sunstone.annotation.Setup;
 import sunstone.annotation.SunstoneCloudDeployAnnotation;
@@ -191,7 +192,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                     throw new IllegalArgumentSunstoneException("Deployment method must have 0 parameters");
                 }
                 Deployment annotation = method.getAnnotation(Deployment.class);
-                String deploymentName = SunstoneConfig.resolveExpressionToString(annotation.name());
+                String deploymentName = StringUtils.isBlank(annotation.name()) ? "" : SunstoneConfig.resolveExpressionToString(annotation.name());
 
                 method.setAccessible(true);
                 Object invoke = method.invoke(null);

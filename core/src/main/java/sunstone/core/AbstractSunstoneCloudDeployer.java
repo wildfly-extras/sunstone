@@ -12,6 +12,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static sunstone.core.SunstoneConfig.resolveExpression;
+import static sunstone.core.SunstoneConfig.resolveOptionalExpression;
+
 /**
  * Abstract class for providing common functionality for deploy operation to clouds. Tha class focuses on utilizing
  * work flow regarding getting resources, parameters and so on.
@@ -25,7 +28,7 @@ public abstract class AbstractSunstoneCloudDeployer implements SunstoneCloudDepl
         for (int i = 0; i < parameters.length; i++) {
             parametersMap.put(parameters[i].k(), parameters[i].v());
         }
-        parametersMap.forEach((key, value) -> parametersMap.put(key, SunstoneConfig.resolveExpressionToString(value)));
+        parametersMap.forEach((key, value) ->  parametersMap.put(resolveExpression(key, String.class), resolveOptionalExpression(value, String.class).orElse("")));
         return Collections.unmodifiableMap(parametersMap);
     }
 
