@@ -1,6 +1,7 @@
 # Changelog
 
-## next is 2.1.2 (not yet released)
+## 2.1.2 (2023-05-10)
+- Fixed bugs with expression resolution in cloud deployment annotations
 
 ## 2.1.1 (2023-05-23)
 - Per suite annotations are compared also with parameters
