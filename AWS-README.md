@@ -121,6 +121,12 @@ You can inject:
 See [here](aws/src/test/java/aws/cloudformation/di/AwsClientsTests.java), you can inject:
 - Ec2Client
 - S3Client
+- RdsClient
+
+###### Rds instance (database)
+You can inject:
+- Hostname - public ip of DB, see [here](aws/src/test/java/aws/cloudformation/di/suitetests/AwsRdsTests.java)
+- DBInstance - AWS SDK object for resource manipulation, see [here](aws/src/test/java/aws/cloudformation/di/suitetests/AwsRdsTests.java)
 
 ### aws-wildfly module
 When you depend on aws-wildfly, you can inject wildfly specific objects. Here you can see what you can inject additionally to aws module

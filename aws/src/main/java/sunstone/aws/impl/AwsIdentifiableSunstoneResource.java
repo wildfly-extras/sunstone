@@ -4,8 +4,11 @@ package sunstone.aws.impl;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.rds.RdsClient;
+import software.amazon.awssdk.services.rds.model.DBInstance;
 import sunstone.aws.annotation.AwsAutoResolve;
 import sunstone.aws.annotation.AwsEc2Instance;
+import sunstone.aws.annotation.AwsRds;
 import sunstone.core.SunstoneConfig;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
@@ -25,7 +28,7 @@ import static java.lang.String.format;
  * Enum of Aws resources that can be identified by {@link AwsEc2Instance} and so on and what field types are supported
  * for such identification by this module. Basically represent injection annotations and serves as a factory to get resources.
  *
- * I.e. for {@link #AUTO}, which effectively mean {@link AwsAutoResolve} is used, {@link Ec2Client} and {@link S3Client}
+ * I.e. for {@link #AUTO}, which effectively mean {@link AwsAutoResolve} is used. {@link Ec2Client}, {@link S3Client} and {@link RdsClient}
  * can be injected with such use of the annotation.
  *
  * Another example is  {@link AwsIdentifiableSunstoneResource#EC2_INSTANCE},
@@ -38,12 +41,12 @@ enum AwsIdentifiableSunstoneResource {
     /**
      * Empty identification - e.g. {@link AwsAutoResolve}
      *
-     * Injectable: {@link Ec2Client} and {@link S3Client}
+     * Injectable: {@link Ec2Client}, {@link S3Client} and {@link RdsClient}
      *
      * Deployable: archive can not be deployed to such resource
      */
     AUTO (AwsAutoResolve.class) {
-        final Class<?>[] supportedTypesForInjection = new Class[] {S3Client.class, Ec2Client.class};
+        final Class<?>[] supportedTypesForInjection = new Class[] {S3Client.class, Ec2Client.class, RdsClient.class};
 
         @Override
         boolean isTypeSupportedForInject(Class<?> type) {
@@ -77,6 +80,28 @@ enum AwsIdentifiableSunstoneResource {
             String region = SunstoneConfig.resolveExpressionToString(vm.region());
             Optional<Instance> awsEc2 = AwsUtils.findEc2InstanceByNameTag(store.getAwsEc2ClientOrCreate(region), vmNameTag);
             return clazz.cast(awsEc2.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' AWS EC2 instance in '%s' region.", vmNameTag, region))));
+        }
+    },
+
+    RDS_SERVICE(AwsRds.class) {
+        final Class<?>[] supportedTypesForInjection = new Class[] {Hostname.class, DBInstance.class};
+
+        @Override
+        boolean isTypeSupportedForInject(Class<?> type) {
+            return Arrays.stream(supportedTypesForInjection).anyMatch(clazz -> clazz.isAssignableFrom(type));
+        }
+
+        @Override
+        <T> T get(Annotation injectionAnnotation, AwsSunstoneStore store, Class<T> clazz) throws SunstoneException {
+            if(!getRepresentedInjectionAnnotation().isAssignableFrom(injectionAnnotation.annotationType())) {
+                throw new IllegalArgumentSunstoneException(format("Expected %s annotation type but got %s",
+                        getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
+            }
+            AwsRds rds = (AwsRds) injectionAnnotation;
+            String vmNameTag = SunstoneConfig.resolveExpressionToString(rds.name());
+            String region = SunstoneConfig.resolveExpressionToString(rds.region());
+            Optional<DBInstance> awsRds = AwsUtils.findRdsInstanceByNameTag(store.getAwsRdsClientOrCreate(region), vmNameTag);
+            return clazz.cast(awsRds.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' AWS RDS instance in '%s' region.", vmNameTag, region))));
         }
     };
 
@@ -113,6 +138,8 @@ enum AwsIdentifiableSunstoneResource {
     public static AwsIdentifiableSunstoneResource getType(Annotation annotation) {
         if(AwsEc2Instance.class.isAssignableFrom(annotation.annotationType())) {
             return EC2_INSTANCE;
+        } else if(AwsRds.class.isAssignableFrom(annotation.annotationType())) {
+            return RDS_SERVICE;
         } else if(AwsAutoResolve.class.isAssignableFrom(annotation.annotationType())) {
             return AUTO;
         } else {

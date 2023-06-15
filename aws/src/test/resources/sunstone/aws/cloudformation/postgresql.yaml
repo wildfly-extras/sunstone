@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+  Generator: "former2"
+Description: ""
+Parameters:
+  defaultTag:
+    Type: "String"
+    Default: "sunstone-template-tag"
+  username:
+    Type: "String"
+    Default: "testUser"
+  password:
+    Type: "String"
+    Default: "1234567890Ab"
+  serverName:
+    Type: "String"
+    Default: "awstest-pgsql"
+
+Resources:
+  RDSDBInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceIdentifier: !Ref serverName
+      AllocatedStorage: 20
+      DBInstanceClass: "db.t3.micro"
+      Engine: "postgres"
+      MasterUsername: !Ref username
+      MasterUserPassword: !Ref password
+      BackupRetentionPeriod: 7
+      AvailabilityZone: !Sub "${AWS::Region}a"
+      MultiAZ: false
+      EngineVersion: "14.7"
+      AutoMinorVersionUpgrade: true
+      LicenseModel: "postgresql-license"
+      PubliclyAccessible: true
+      StorageType: "gp2"
+      Port: 5432
+      StorageEncrypted: true
+      CopyTagsToSnapshot: true
+      MonitoringInterval: 0
+      EnableIAMDatabaseAuthentication: false
+      EnablePerformanceInsights: false
+      DeletionProtection: false
+      DBSubnetGroupName: "default"
+      MaxAllocatedStorage: 1000
+      CACertificateIdentifier: "rds-ca-2019"
+      Tags:
+        - Key: "cf-template"
+          Value: !Ref defaultTag
