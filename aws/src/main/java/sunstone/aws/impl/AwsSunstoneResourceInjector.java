@@ -4,6 +4,8 @@ package sunstone.aws.impl;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.rds.RdsClient;
+import software.amazon.awssdk.services.rds.model.DBInstance;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.utils.SdkAutoCloseable;
 import sunstone.aws.annotation.AwsAutoResolve;
@@ -62,6 +64,20 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         return client;
     }
 
+
+    private RdsClient resolveRdsClientDI(AwsIdentifiableSunstoneResource.Identification identification, AwsSunstoneStore store) throws SunstoneException {
+        RdsClient client;
+        if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
+            AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
+            client = AwsUtils.getRdsClient(SunstoneConfig.resolveExpressionToString(annotation.region()));
+        } else {
+            throw new UnsupportedSunstoneOperationException("RDS Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
+        }
+        return client;
+    }
+
+
+
     @Override
     public Object getResource(ExtensionContext ctx) throws SunstoneException {
         Object injected = null;
@@ -76,7 +92,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
             Objects.requireNonNull(injected, "Unable to determine hostname.");
         } else if (Instance.class.isAssignableFrom(fieldType)) {
             injected = identification.get(store, Instance.class);
-            Objects.requireNonNull(injected, "Unable to get EC2 Instance obstraction object.");
+            Objects.requireNonNull(injected, "Unable to get EC2 Instance abstraction object.");
         } else if (Ec2Client.class.isAssignableFrom(fieldType)) {
             // we can inject cached client because it is not closable and a user can not change it
             Ec2Client client = resolveEc2ClientDI(identification, store);
@@ -87,13 +103,24 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
             S3Client client = resolveS3ClientDI(identification, store);
             injected = client;
             Objects.requireNonNull(injected, "Unable to determine AWS S3 client.");
+        } else if (RdsClient.class.isAssignableFrom(fieldType)) {
+            // we can inject cached client because it is not closable and a user can not change it
+            RdsClient client = resolveRdsClientDI(identification, store);
+            injected = client;
+            Objects.requireNonNull(injected, "Unable to determine AWS RDS client.");
+        } else if(DBInstance.class.isAssignableFrom(fieldType)) {
+            injected = identification.get(store, DBInstance.class);
+            Objects.requireNonNull(injected, "Unable to get RDS DBInstance abstraction object.");
+        }
+        else {
+            throw new UnsupportedSunstoneOperationException("Unsupported type for injection: " + fieldType);
         }
         return injected;
     }
 
     @Override
     public void closeResource(Object obj) throws Exception {
-        if (Hostname.class.isAssignableFrom(obj.getClass()) || Instance.class.isAssignableFrom(obj.getClass())) {
+        if (Hostname.class.isAssignableFrom(obj.getClass()) || Instance.class.isAssignableFrom(obj.getClass()) || DBInstance.class.isAssignableFrom(obj.getClass()) ) {
             // nothing to close
         } else if(SdkAutoCloseable.class.isAssignableFrom(obj.getClass())) {
             ((SdkAutoCloseable) obj).close();

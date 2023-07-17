@@ -4,6 +4,7 @@ package sunstone.aws.impl;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.rds.RdsClient;
 import sunstone.core.SunstoneStore;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +17,7 @@ class AwsSunstoneStore extends SunstoneStore {
     private static final String AWS_CF_DEMPLOYMENT_MANAGER = "awsCfTemplateManager";
     private static final String AWS_REGION_2_CF_CLIENT = "awsCfClient";
     private static final String AWS_REGION_2_EC2_CLIENT = "awsEc2Clients";
+    private static final String AWS_REGION_2_RDS_CLIENT = "awsRdsClients";
 
 
     protected AwsSunstoneStore(ExtensionContext ctx) {
@@ -43,6 +45,15 @@ class AwsSunstoneStore extends SunstoneStore {
         ConcurrentMap<String, Ec2Client> region2Ec2Client = getStore().getOrComputeIfAbsent(AWS_REGION_2_EC2_CLIENT, s -> new ConcurrentHashMap<String, Ec2Client>(), ConcurrentMap.class);
         return  region2Ec2Client.computeIfAbsent(regionStr, r -> {
             Ec2Client client = AwsUtils.getEC2Client(r);
+            addSuiteLevelClosable(client);
+            return client;
+        });
+    }
+
+    RdsClient getAwsRdsClientOrCreate(String regionStr) {
+        ConcurrentMap<String, RdsClient> region2RdsClient = getStore().getOrComputeIfAbsent(AWS_REGION_2_RDS_CLIENT, s -> new ConcurrentHashMap<>(), ConcurrentMap.class);
+        return region2RdsClient.computeIfAbsent(regionStr, r -> {
+            RdsClient client = AwsUtils.getRdsClient(r);
             addSuiteLevelClosable(client);
             return client;
         });

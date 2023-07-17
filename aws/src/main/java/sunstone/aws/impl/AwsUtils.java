@@ -13,7 +13,12 @@ import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.Tag;
+import software.amazon.awssdk.services.rds.RdsClient;
+import software.amazon.awssdk.services.rds.model.DBInstance;
+import software.amazon.awssdk.services.rds.model.DescribeDbInstancesRequest;
+import software.amazon.awssdk.services.rds.model.DescribeDbInstancesResponse;
 import software.amazon.awssdk.services.s3.S3Client;
+
 import sunstone.core.SunstoneConfig;
 
 import java.util.Optional;
@@ -62,6 +67,14 @@ class AwsUtils {
         return s3Client;
     }
 
+    static RdsClient getRdsClient(String region) {
+        RdsClient rdsClient = RdsClient.builder()
+                .region(getAndCheckRegion(region))
+                .credentialsProvider(getCredentialsProvider())
+                .build();
+        return rdsClient;
+    }
+
     static Optional<Instance> findEc2InstanceByNameTag(Ec2Client client, String name) {
         Filter runningInstancesFilter = Filter.builder()
                 .name("instance-state-name")
@@ -88,5 +101,19 @@ class AwsUtils {
             }
         }
         return Optional.empty();
+    }
+
+    static Optional<DBInstance> findRdsInstanceByNameTag(RdsClient rdsClient, String name) {
+        software.amazon.awssdk.services.rds.model.Filter nameFilter = software.amazon.awssdk.services.rds.model.Filter.builder()
+                .name("db-instance-id")
+                .values(name)
+                .build();
+
+        DescribeDbInstancesRequest request = DescribeDbInstancesRequest.builder()
+                .filters(nameFilter).build();
+
+        DescribeDbInstancesResponse response = rdsClient.describeDBInstances(request);
+
+        return response.dbInstances().stream().filter(db -> db.dbInstanceStatus().equals("available")).findFirst();
     }
 }
