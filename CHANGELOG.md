@@ -1,6 +1,7 @@
 # Changelog
 
-## 2.1.3 (not yet released)
+## 2.1.3 (2023-08-01)
+- AWS RDS support
 
 ## 2.1.2 (2023-05-10)
 - Fixed bugs with expression resolution in cloud deployment annotations
