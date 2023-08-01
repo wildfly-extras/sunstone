@@ -29,23 +29,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * So the idea is to have only one testcase due to performance.
  */
 @WithAwsCfTemplate(parameters = {
-        @Parameter(k = "instanceName", v = instanceName)
+        @Parameter(k = "instanceName", v = AwsStandaloneManagementClientTests.classInstanceName)
 },
         template = "sunstone/aws/cloudformation/eap.yaml", region = region)
 public class AwsStandaloneManagementClientTests {
+    protected static final String classInstanceName = "AwsStandaloneManagementClientTests-" + instanceName;
 
-    @AwsEc2Instance(nameTag = instanceName)
+    @AwsEc2Instance(nameTag = classInstanceName)
     static OnlineManagementClient staticMgmtClient;
 
-    @AwsEc2Instance(nameTag = instanceName, region = region)
+    @AwsEc2Instance(nameTag = classInstanceName, region = region)
     @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mgmtUser, password = mgmtPassword, port = mgmtPort))
     static OnlineManagementClient staticMgmtClientSpecified;
 
-    @AwsEc2Instance(nameTag = instanceName, region = region)
+    @AwsEc2Instance(nameTag = classInstanceName, region = region)
     @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = mgmtUser, password = mgmtPassword, port = mgmtPort))
     OnlineManagementClient mgmtClientSpecified;
 
-    @AwsEc2Instance(nameTag = instanceName)
+    @AwsEc2Instance(nameTag = classInstanceName)
     OnlineManagementClient mgmtClient;
 
     @BeforeAll

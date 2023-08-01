@@ -14,27 +14,25 @@ import org.junit.jupiter.api.Test;
 import sunstone.annotation.Parameter;
 import sunstone.annotation.Deployment;
 import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.azure.armTemplates.archiveDeploy.vm.VmDeploySuiteTests;
 import sunstone.inject.Hostname;
 
 import java.io.IOException;
-
-import static sunstone.azure.armTemplates.archiveDeploy.vm.VmDeploySuiteTests.vmDeployGroup;
 
 @WithAzureArmTemplate(parameters = {
         @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
-        template = "sunstone/azure/armTemplates/eap.json", group = vmDeployGroup, perSuite = true)
+        template = "sunstone/azure/armTemplates/eap.json", group = VmDeploySuiteTests.groupName, perSuite = true)
 public class AzureVmDeployFirstTest {
-
     @Deployment(name = "testapp.war")
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = vmDeployGroup)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDeploySuiteTests.groupName)
     static WebArchive deploy() {
         return ShrinkWrap.create(WebArchive.class)
                 .addAsWebResource(new StringAsset("Hello World"), "index.jsp");
     }
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = vmDeployGroup)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDeploySuiteTests.groupName)
     Hostname hostname;
 
     @Test

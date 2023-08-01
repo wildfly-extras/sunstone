@@ -2,7 +2,6 @@ package sunstone.azure.armTemplates.archiveDeploy.webapp.suitetests;
 
 
 import sunstone.azure.armTemplates.AzureTestConstants;
-import sunstone.azure.armTemplates.archiveDeploy.webapp.WebAppDeploySuiteTests;
 import sunstone.azure.annotation.AzureWebApplication;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -15,21 +14,22 @@ import org.junit.jupiter.api.Test;
 import sunstone.annotation.Deployment;
 import sunstone.annotation.Parameter;
 import sunstone.azure.annotation.WithAzureArmTemplate;
+import sunstone.azure.armTemplates.archiveDeploy.webapp.WebAppDeploySuiteTests;
 import sunstone.inject.Hostname;
 
 import java.io.IOException;
 
 @WithAzureArmTemplate(template = "sunstone/azure/armTemplates/eapWebApp.json",
-        parameters = {@Parameter(k = "appName", v = AzureTestConstants.instanceName)}, group = WebAppDeploySuiteTests.webAppDeployGroup, perSuite = true)
+        parameters = {@Parameter(k = "appName", v = AzureTestConstants.instanceName)}, group = WebAppDeploySuiteTests.groupName, perSuite = true)
 public class AzureWebAppDeployFirstTest {
     @Deployment
-    @AzureWebApplication(name = AzureTestConstants.instanceName, group = WebAppDeploySuiteTests.webAppDeployGroup)
+    @AzureWebApplication(name = AzureTestConstants.instanceName, group = WebAppDeploySuiteTests.groupName)
     static WebArchive deploy() {
         return ShrinkWrap.create(WebArchive.class)
                 .addAsWebResource(new StringAsset("Hello World"), "index.jsp");
     }
 
-    @AzureWebApplication(name = AzureTestConstants.instanceName, group = WebAppDeploySuiteTests.webAppDeployGroup)
+    @AzureWebApplication(name = AzureTestConstants.instanceName, group = WebAppDeploySuiteTests.groupName)
     Hostname hostname;
 
     @Test

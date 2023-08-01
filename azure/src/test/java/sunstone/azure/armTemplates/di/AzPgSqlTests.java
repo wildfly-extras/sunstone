@@ -10,7 +10,7 @@ import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.inject.Hostname;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static sunstone.azure.armTemplates.di.AzVmTests.group;
+import static sunstone.azure.armTemplates.AzureTestConstants.deployGroup;
 
 
 @WithAzureArmTemplate(parameters = {
@@ -18,37 +18,35 @@ import static sunstone.azure.armTemplates.di.AzVmTests.group;
         @Parameter(k = "password", v = AzPgSqlTests.PGSQL_PASSWORD),
         @Parameter(k = "serverName", v = AzPgSqlTests.PGSQL_NAME),
 },
-        template = "sunstone/azure/armTemplates/posgresql.json", group = group, perSuite = true)
+        template = "sunstone/azure/armTemplates/posgresql.json", group = AzPgSqlTests.groupName)
 public class AzPgSqlTests {
+    static final String groupName = "AzPgSqlTests-" + deployGroup;
     public static final String PGSQL_NAME = "DSAzureTest-pgsql";
     public static final String PGSQL_USER = "user";
     public static final String PGSQL_PASSWORD = "1234567890Ab";
 
-    // must be same string as in MP Config
-    public static final String group = "${azure.group:sunstone-testing-group}";
-
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     static Hostname staticHostname;
 
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = group)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     static Hostname staticHostnameWithRegion;
 
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     static Server staticServer;
 
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = group)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     static Server staticServerWithGroup;
 
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     Hostname hostname;
 
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = group)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     Hostname hostnameWithGroup;
 
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     Server vm;
 
-    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = group)
+    @AzurePgSqlServer(name = AzPgSqlTests.PGSQL_NAME, group = groupName)
     Server vmWithGroup;
 
     @BeforeAll

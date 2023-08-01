@@ -11,40 +11,39 @@ import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static sunstone.azure.armTemplates.di.AzVmTests.group;
+import static sunstone.azure.armTemplates.AzureTestConstants.deployGroup;
 
 
 @WithAzureArmTemplate(parameters = {
         @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
-        template = "sunstone/azure/armTemplates/eap.json", group = group, perSuite = true)
+        template = "sunstone/azure/armTemplates/eap.json", group = AzVmTests.groupName)
 public class AzVmTests {
-    // must be same string as in MP Config
-    public static final String group = "${azure.group:sunstone-testing-group}";
+    static final String groupName = "AzVmTests-" + deployGroup;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     static Hostname staticHostname;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     static Hostname staticHostnameWithRegion;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     static VirtualMachine staticVM;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     static VirtualMachine staticVmWithRegion;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     Hostname hostname;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     Hostname hostnameWithRegion;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     VirtualMachine vm;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     VirtualMachine vmWithRegion;
 
     @BeforeAll

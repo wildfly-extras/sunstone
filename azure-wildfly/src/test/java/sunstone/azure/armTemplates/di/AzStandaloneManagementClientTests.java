@@ -22,21 +22,20 @@ import static org.assertj.core.api.Assertions.assertThat;
         @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
-        template = "sunstone/azure/armTemplates/eap.json", group = AzStandaloneManagementClientTests.group)
+        template = "sunstone/azure/armTemplates/eap.json", group = AzStandaloneManagementClientTests.groupName)
 public class AzStandaloneManagementClientTests {
-    public static final String group = "${azure.group:sunstone-testing-group}";
-
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    static final String groupName = "AzStandaloneManagementClientTests-" + AzureTestConstants.deployGroup;
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     static OnlineManagementClient staticMgmtClient;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzStandaloneManagementClientTests.group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort))
     static OnlineManagementClient staticMgmtClientSpecified;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     OnlineManagementClient mgmtClient;
 
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = AzStandaloneManagementClientTests.group)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = groupName)
     @WildFly(mode = OperatingMode.STANDALONE, standalone = @StandaloneMode(user = AzureTestConstants.mgmtUser, password = AzureTestConstants.mgmtPassword, port = AzureTestConstants.mgmtPort))
     OnlineManagementClient mgmtClientSpecified;
 

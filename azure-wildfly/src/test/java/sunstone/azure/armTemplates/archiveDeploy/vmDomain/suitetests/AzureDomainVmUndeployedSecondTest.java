@@ -9,11 +9,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.OperatingMode;
 import sunstone.annotation.Parameter;
-import sunstone.annotation.WildFly;import sunstone.inject.Hostname;
+import sunstone.annotation.WildFly;
+import sunstone.azure.armTemplates.archiveDeploy.vmDomain.VmDomainDeploySuiteTests;
+import sunstone.inject.Hostname;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.armTemplates.AzureTestConstants;
-import sunstone.azure.armTemplates.archiveDeploy.vmDomain.VmDomainDeploySuiteTests;
 
 /**
  * The test is supposed to run after AzureWebAppDeployFirstTest and verifies undeploy operation
@@ -22,9 +23,9 @@ import sunstone.azure.armTemplates.archiveDeploy.vmDomain.VmDomainDeploySuiteTes
         @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
         @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
 },
-        template = "sunstone/azure/armTemplates/eapDomain.json", group = VmDomainDeploySuiteTests.vmDeployGroup, perSuite = true)
+        template = "sunstone/azure/armTemplates/eapDomain.json", group = VmDomainDeploySuiteTests.groupName, perSuite = true)
 public class AzureDomainVmUndeployedSecondTest {
-    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDomainDeploySuiteTests.vmDeployGroup)
+    @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDomainDeploySuiteTests.groupName)
     @WildFly(mode = OperatingMode.DOMAIN)
     Hostname hostname;
 

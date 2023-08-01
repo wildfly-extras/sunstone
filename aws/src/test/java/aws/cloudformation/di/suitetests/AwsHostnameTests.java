@@ -8,8 +8,8 @@ import sunstone.annotation.Parameter;
 import sunstone.aws.annotation.WithAwsCfTemplate;
 import sunstone.inject.Hostname;
 
-import static aws.cloudformation.AwsTestConstants.instanceName;
 import static aws.cloudformation.AwsTestConstants.region;
+import static aws.cloudformation.di.SunstoneResourceAwsSuiteTests.suiteInstanceName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -20,21 +20,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * So the idea is to have only one testcase due to performance.
  */
 @WithAwsCfTemplate(parameters = {
-        @Parameter(k = "instanceName", v = instanceName)
+        @Parameter(k = "instanceName", v = suiteInstanceName)
 },
         template = "sunstone/aws/cloudformation/eap.yaml", region = region, perSuite = true)
 public class AwsHostnameTests {
 
-    @AwsEc2Instance(nameTag = instanceName)
+    @AwsEc2Instance(nameTag = suiteInstanceName)
     static Hostname staticHostname;
 
-    @AwsEc2Instance(nameTag = instanceName, region = region)
+    @AwsEc2Instance(nameTag = suiteInstanceName, region = region)
     static Hostname staticHostnameWithRegion;
 
-    @AwsEc2Instance(nameTag = instanceName)
+    @AwsEc2Instance(nameTag = suiteInstanceName)
     Hostname hostname;
 
-    @AwsEc2Instance(nameTag = instanceName, region = region)
+    @AwsEc2Instance(nameTag = suiteInstanceName, region = region)
     Hostname hostnameWithRegion;
 
     @BeforeAll
