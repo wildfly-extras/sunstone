@@ -61,7 +61,7 @@ public class SunstoneConfig {
     }
 
     /**
-     * This method resolves expression. Use cas is not value from key=value which is handled by {@link #getString(String)},
+     * This method resolves expression. Use case is not value from key=value which is handled by {@link #getString(String)},
      * {@link #getValue(String, Class)} or {@link #getValue(String, Object)}. The usecase is:
      * <ol>
      *     <li>

@@ -114,7 +114,10 @@ Resources:
                         -Djboss.bind.address.management=$INTERNAL_IP_ADDRESS\"" >> $JBOSS_HOME/bin/domain.conf
                     echo 'HOST_CONTROLLER_JAVA_OPTS="$HOST_CONTROLLER_JAVA_OPTS $JAVA_OPTS"' >> $JBOSS_HOME/bin/domain.conf
                     
-                    echo "" >> $JBOSS_HOME/bin/domain.conf
+                    echo 'Setting up clustering' >> /log
+                    sudo -u jboss $JBOSS_HOME/bin/jboss-cli.sh --echo-command \
+                    'embed-host-controller --std-out=echo',\
+                    '/host=master/server-config=server-three:write-attribute(name="auto-start",value=true)' >> /log 2>&1
                     
                     # set up users (for remote management connections and application connections)
                     $JBOSS_HOME/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e >> /log 2>&1   

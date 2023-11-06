@@ -132,6 +132,6 @@ You can inject:
 When you depend on aws-wildfly, you can inject wildfly specific objects. Here you can see what you can inject additionally to aws module
 ###### Virtual machine
 Inject:
-- OnlineManagement Client, see [standalone here](aws-wildfly/src/test/java/aws/cloudformation/di/suitetests/AwsStandaloneManagementClientTests.java) and [domain here](aws-wildfly/src/test/java/aws/cloudformation/di/suitetests/AwsDomainManagementClientTests.java)
+- OnlineManagement Client, see [standalone here](aws-wildfly/src/test/java/aws/cloudformation/di/AwsStandaloneManagementClientTests.java) and [domain here](aws-wildfly/src/test/java/aws/cloudformation/di/AwsDomainManagementClientTests.java)
 
 You can deploy archive to running EAP instance. See [here](aws-wildfly/src/test/java/aws/cloudformation/archiveDeploy/ec2/suitetests/AwsEc2DeployFirstTest.java)
