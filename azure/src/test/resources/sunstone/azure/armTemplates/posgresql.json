@@ -2,54 +2,119 @@
   "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "username": {
+    "administratorLogin": {
       "type": "string"
     },
-    "password": {
+    "administratorLoginPassword": {
       "type": "securestring"
     },
     "serverName": {
       "type": "string"
     },
+
     "version": {
       "type": "string",
-      "defaultValue": "9.6"
+      "defaultValue": "15"
     },
     "tags": {
       "type": "object",
       "defaultValue": {}
+    },
+    "firewallRules": {
+      "type": "object",
+      "defaultValue": {
+        "rules": [
+          {
+            "name": "AllowAllAzureServicesAndResourcesWithinAzureIps_2024-1-5_9-41-31",
+            "endIPAddress": "0.0.0.0",
+            "startIPAddress": "0.0.0.0"
+          },
+          {
+            "name": "AllowAll",
+            "startIPAddress": "0.0.0.0",
+            "endIPAddress": "255.255.255.255"
+          }
+        ]
+      }
+    },
+    "guid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
     }
+  },
+  "variables": {
+    "firewallRules": "[parameters('firewallRules').rules]"
   },
   "resources": [
     {
-      "apiVersion": "2017-12-01",
-      "kind": "",
+      "apiVersion": "2022-12-01",
       "location": "[resourceGroup().location]",
       "name": "[parameters('serverName')]",
+      "identity": "[json('null')]",
       "properties": {
+        "createMode": "Default",
         "version": "[parameters('version')]",
-        "sslEnforcement": "Disabled",
-        "minimalTlsVersion": "TLSEnforcementDisabled",
-        "infrastructureEncryption": "Disabled",
-        "publicNetworkAccess": "Enabled",
-        "administratorLogin": "[parameters('username')]",
-        "administratorLoginPassword": "[parameters('password')]",
-        "storageProfile": {
-          "storageMB": 5120,
+        "administratorLogin": "[parameters('administratorLogin')]",
+        "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+        "Network": "[json('null')]",
+        "availabilityZone": "",
+        "Storage": {
+          "StorageSizeGB": "32",
+          "Type": "[json('null')]",
+          "Autogrow": "Disabled",
+          "tier": "json('null')",
+          "Iops": "[json('null')]",
+          "Throughput": "[json('null')]"
+        },
+        "Backup": {
           "backupRetentionDays": 7,
-          "geoRedundantBackup": "Disabled",
-          "storageAutoGrow": "Disabled"
-        }
+          "geoRedundantBackup": "Disabled"
+        },
+        "highAvailability": {
+          "mode": "Disabled",
+          "standbyAvailabilityZone": ""
+        },
+        "dataencryption": "[json('null')]",
+        "authConfig": "[json('null')]"
       },
       "sku": {
-        "name": "B_Gen5_1",
-        "tier": "Basic",
-        "family": "Gen5",
-        "capacity": 1
+        "name": "Standard_D4s_v3",
+        "tier": "GeneralPurpose"
       },
       "tags": "[parameters('tags')]",
-      "type": "Microsoft.DBforPostgreSQL/servers"
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers"
+    },
+    {
+      "condition": "[greater(length(variables('firewallRules')), 0)]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-08-01",
+      "name": "[concat('firewallRules-', parameters('guid'), '-', copyIndex())]",
+      "copy": {
+        "count": "[if(greater(length(variables('firewallRules')), 0), length(variables('firewallRules')), 1)]",
+        "mode": "Serial",
+        "name": "firewallRulesIterator"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.DBforPostgreSQL/flexibleServers/', parameters('serverName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
+              "name": "[concat(parameters('serverName'),'/',variables('firewallRules')[copyIndex()].name)]",
+              "apiVersion": "2022-12-01",
+              "properties": {
+                "StartIpAddress": "[variables('firewallRules')[copyIndex()].startIPAddress]",
+                "EndIpAddress": "[variables('firewallRules')[copyIndex()].endIPAddress]"
+              }
+            }
+          ]
+        }
+      }
     }
-  ],
-  "variables": {}
+  ]
 }

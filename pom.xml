@@ -71,10 +71,9 @@
 
         <!-- Azure SDK dependencies & other due to dependencyManagement issues with Azure SDK-->
         <!-- Based on https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/resourcemanager#include-the-package-->
-        <version.azure-resourcemanager>2.20.0</version.azure-resourcemanager>
-        <version.com.azure.azure-identity>1.6.1</version.com.azure.azure-identity>
-        <version.com.azure.azure-core-http-netty>1.12.6</version.com.azure.azure-core-http-netty>
-        <version.azure-resourcemanager-postgresql>1.0.2</version.azure-resourcemanager-postgresql>
+        <version.azure-resourcemanager>2.34.0</version.azure-resourcemanager>
+        <version.azure-sdk-bom>1.2.19</version.azure-sdk-bom>
+        <version.azure-resourcemanager-postgresqlflexibleserver>1.0.0</version.azure-resourcemanager-postgresqlflexibleserver>
 
         <!-- Azure SDK uses okhttp3 which is also brought by Sunstone core...we need to find suitable version... -->
         <version.com.squareup.okhttp3>4.10.0</version.com.squareup.okhttp3>
@@ -321,24 +320,26 @@
 
             <!--        Azure-->
             <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-sdk-bom</artifactId>
+                <version>${version.azure-sdk-bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.azure.resourcemanager</groupId>
                 <artifactId>azure-resourcemanager</artifactId>
                 <version>${version.azure-resourcemanager}</version>
             </dependency>
             <dependency>
-                <groupId>com.azure</groupId>
-                <artifactId>azure-identity</artifactId>
-                <version>${version.com.azure.azure-identity}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.azure</groupId>
-                <artifactId>azure-core-http-netty</artifactId>
-                <version>${version.com.azure.azure-core-http-netty}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.azure.resourcemanager</groupId>
                 <artifactId>azure-resourcemanager-postgresql</artifactId>
                 <version>${version.azure-resourcemanager-postgresql}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure.resourcemanager</groupId>
+                <artifactId>azure-resourcemanager-postgresqlflexibleserver</artifactId>
+                <version>${version.azure-resourcemanager-postgresqlflexibleserver}</version>
             </dependency>
 
             <!--            logging -->
