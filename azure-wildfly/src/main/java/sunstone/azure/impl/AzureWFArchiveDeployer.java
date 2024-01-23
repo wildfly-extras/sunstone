@@ -14,8 +14,11 @@ import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.commands.deployments.Undeploy;
 import org.wildfly.extras.creaper.core.CommandFailedException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import sunstone.annotation.DomainMode;
 import sunstone.annotation.WildFly;
 import sunstone.azure.impl.AzureWFIdentifiableSunstoneResource.Identification;
+import sunstone.core.SunstoneConfig;
+import sunstone.core.WildFlyConfig;
 import sunstone.core.api.SunstoneArchiveDeployer;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -30,8 +33,11 @@ import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Optional;
 
 import static java.lang.String.format;
+import static sunstone.core.SunstoneConfig.isExpression;
 
 
 /**
@@ -88,11 +94,32 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
     }
 
     static void deployToVmInstance(String deploymentName, Identification resourceIdentification, WildFly wildFly, InputStream is, AzureSunstoneStore store) throws SunstoneException {
+        Deploy.Builder builder = new Deploy.Builder(is, deploymentName, false);
+        DomainMode domainMode = wildFly.domain();
+        //no further configuration needed for standalone mode,
+        //in domain mode, we need to specify server groups
+        if (domainMode != null) {
+            if (wildFly.domain().serverGroups() == null) {
+                throw new RuntimeException(WildFlyConfig.DOMAIN_SERVER_GROUPS + " is not set");
+            }
+            String[] serverGroupsParams = wildFly.domain().serverGroups();
+            boolean deployedToNone = true;
+
+            for (String sgParam : serverGroupsParams) {
+                Optional<String[]> serverGroups = isExpression(sgParam) ? SunstoneConfig.resolveOptionalExpression(sgParam, String[].class) : Optional.of(new String[]{sgParam});
+                if (serverGroups.isPresent()) {
+                    deployedToNone = false;
+                    serverGroups.ifPresent(groups -> Arrays.stream(groups).forEach(builder::toServerGroups));
+                }
+            }
+            //groups may not be set -> deploy to all groups
+            if (deployedToNone) {
+                builder.toAllServerGroups();
+            }
+        }
         try (OnlineManagementClient client = AzureWFIdentifiableSunstoneResourceUtils.resolveOnlineManagementClient(resourceIdentification, wildFly, store)){
-            client.apply(new Deploy.Builder(is, deploymentName, false).build());
-        } catch (CommandFailedException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+            client.apply(builder.build());
+        } catch (CommandFailedException | IOException e) {
             throw new RuntimeException(e);
         }
     }
