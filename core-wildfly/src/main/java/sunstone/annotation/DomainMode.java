@@ -15,4 +15,6 @@ public @interface DomainMode {
     String user() default "${" + WildFlyConfig.MGMT_USERNAME + "}";
     String password() default "${" + WildFlyConfig.MGMT_PASSWORD + "}";
     String port() default "${" + WildFlyConfig.MGMT_PORT + "}";
+    //comma separated list
+    String[] serverGroups() default "${" + WildFlyConfig.DOMAIN_SERVER_GROUPS + "}";
 }

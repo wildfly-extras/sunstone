@@ -9,5 +9,5 @@ public class WildFlyConfig {
     public static final String MGMT_HOST = "sunstone.wildfly.mgmt.host";
     public static final String MGMT_PROFILE = "sunstone.wildfly.mgmt.profile";
     public static final String MGMT_CONNECTION_TIMEOUT = "sunstone.wildfly.mgmt.connection.timeout";
-
+    public static final String DOMAIN_SERVER_GROUPS = "sunstone.wildfly.domain.serverGroups";
 }

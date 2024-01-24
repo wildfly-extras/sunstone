@@ -2,8 +2,8 @@ package aws.cloudformation.archiveDeploy.ec2Domain;
 
 
 import aws.cloudformation.AwsTestConstants;
-import aws.cloudformation.archiveDeploy.ec2Domain.suitetests.AwsDomainEc2DeployFirstTest;
-import aws.cloudformation.archiveDeploy.ec2Domain.suitetests.AwsDomainEc2UndeployedSecondTest;
+import aws.cloudformation.archiveDeploy.ec2Domain.suitetests.AwsDomainEc2FirstDeployAllGroupsTest;
+import aws.cloudformation.archiveDeploy.ec2Domain.suitetests.AwsDomainEc2SecondDeployOtherGroupTest;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
@@ -13,7 +13,7 @@ import org.junit.platform.suite.api.Suite;
  * verifies that undeploy operation works.
  */
 @Suite
-@SelectClasses({AwsDomainEc2DeployFirstTest.class, AwsDomainEc2UndeployedSecondTest.class})
+@SelectClasses({AwsDomainEc2FirstDeployAllGroupsTest.class, AwsDomainEc2SecondDeployOtherGroupTest.class})
 public class DomainEc2DeploySuiteTests {
     public static final String suiteInstanceName = "domain-ec2-deploy-" + AwsTestConstants.instanceName;
 }
