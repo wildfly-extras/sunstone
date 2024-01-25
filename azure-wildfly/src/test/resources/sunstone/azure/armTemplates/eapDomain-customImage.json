@@ -13,10 +13,34 @@
     "adminUsername": {
       "type": "string",
       "defaultValue": "sunstone"
+    },
+    "planName": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "publisher": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "product": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "offer": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "version": {
+      "type": "string",
+      "defaultValue": "none"
     }
   },
   "variables": {
-    "customData": "#cloud-config\nruncmd:\n  - touch /log\n  - echo 'Setting JAVA_OPTS' >> /log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address.management=0.0.0.0\"' >> /opt/rh/eap7/root/usr/share/wildfly/bin/standalone.conf 2>/log\n  - echo -e \"JAVA_OPTS=\\\"\\$JAVA_OPTS -Djboss.bind.address.private=$(hostname -I)\\\"\" >> /opt/rh/eap7/root/usr/share/wildfly/bin/standalone.conf 2>/log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address=0.0.0.0\"' >> /opt/rh/eap7/root/usr/share/wildfly/bin/standalone.conf 2>/log\n  - echo 'Enabling & restarting eap7-standalone service' >> /log\n  - systemctl enable  eap7-standalone.service >> /log 2>&1\n  - systemctl restart eap7-standalone.service >> /log 2>&1\n  - echo 'Stopping the firewall' >> /log\n  - systemctl stop firewalld >> /log 2>&1\n  - echo 'Setting up EAP' >> /log\n  - /opt/rh/eap7/root/usr/share/wildfly/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e >> /log 2>&1",
+    "customData": "#cloud-config\nruncmd:\n  - touch /log\n  - JBOSS_HOME=/opt/rh/eap7/root/usr/share/wildfly \n  - echo 'Setting JAVA_OPTS' >> /log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address.management=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - echo -e \"JAVA_OPTS=\\\"\\$JAVA_OPTS -Djboss.bind.address.private=$(hostname -I)\\\"\" >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - echo 'HOST_CONTROLLER_JAVA_OPTS=\"$HOST_CONTROLLER_JAVA_OPTS $JAVA_OPTS\"' >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - sed -i 's/auto-start=\"false\"/auto-start=\"true\"/' ${JBOSS_HOME}/domain/configuration/host.xml /dev/null 2>>/log\n  - echo 'Enabling & restarting eap7-domain service' >> /log\n  - systemctl enable  eap7-domain.service >> /log 2>&1\n  - systemctl restart eap7-domain.service >> /log 2>&1\n  - echo 'Stopping the firewall' >> /log\n  - systemctl stop firewalld >> /log 2>&1\n  - echo 'Setting up EAP' >> /log\n  - ${JBOSS_HOME}/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e >> /log 2>&1",
     "networkInterfaceName": "sunstoneInterface",
     "networkSecurityGroupName": "sunstone-nsg",
     "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
@@ -178,6 +202,24 @@
           "bootDiagnostics": {
             "enabled": true
           }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('virtualMachineName'),'/CustomScript')]",
+      "apiVersion": "2022-03-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.1",
+        "autoUpgradeMinorVersion": true,
+        "protectedSettings": {
+          "commandToExecute": "for server in {\"server-one\",\"server-two\"}; do for i in {1..9}; do sleep 10;RET_VAL=1; /opt/rh/eap7/root/usr/share/wildfly/bin/jboss-cli.sh --connect --output-json --command=\"/host=master/server=${server}:read-attribute(name=server-state)\" | jq -r .result | grep -Fxq running && RET_VAL=$? && break; done; if [ ${RET_VAL} -ne 0 ]; then exit 1; fi; done"
         }
       }
     }

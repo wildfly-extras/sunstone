@@ -22,9 +22,14 @@ import sunstone.azure.armTemplates.AzureTestConstants;
 
 @WithAzureArmTemplate(parameters = {
         @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
-        @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
+        @Parameter(k = "planName", v = AzureTestConstants.IMAGE_MARKETPLACE_PLAN),
+        @Parameter(k = "publisher", v = AzureTestConstants.IMAGE_MARKETPLACE_PUBLISHER),
+        @Parameter(k = "product", v = AzureTestConstants.IMAGE_MARKETPLACE_PRODUCT),
+        @Parameter(k = "offer", v = AzureTestConstants.IMAGE_MARKETPLACE_OFFER),
+        @Parameter(k = "sku", v = AzureTestConstants.IMAGE_MARKETPLACE_SKU),
+        @Parameter(k = "version", v = AzureTestConstants.IMAGE_MARKETPLACE_VERSION),
 },
-        template = "sunstone/azure/armTemplates/eapDomain.json", group = VmDomainDeploySuiteTests.groupName, perSuite = true)
+        template = "sunstone/azure/armTemplates/eapDomain-marketplaceImage.json", group = VmDomainDeploySuiteTests.groupName, perSuite = true)
 public class AzureDomainVmDeployFirstTest {
     @Deployment(name = "testapp.war")
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDomainDeploySuiteTests.groupName)
@@ -39,11 +44,11 @@ public class AzureDomainVmDeployFirstTest {
     Hostname hostname;
 
     @Test
-    public void test() throws IOException {
+    public void deployedAllTest() throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         //check all servers in group
-        int[] ports = {8080,8230};
+        int[] ports = {8080,8230,8330};
         for (int port : ports) {
             Request request = new Request.Builder()
                     .url("http://" + hostname.get() + ":" + port + "/testapp")
