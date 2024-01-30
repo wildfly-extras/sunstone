@@ -2,6 +2,7 @@ package sunstone.core;
 
 
 import org.slf4j.Logger;
+import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.core.ManagementClient;
 import org.wildfly.extras.creaper.core.online.ManagementProtocol;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
@@ -12,6 +13,8 @@ import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 import static sunstone.core.SunstoneConfig.getString;
 import static sunstone.core.SunstoneConfig.getValue;
@@ -63,6 +66,26 @@ public class CreaperUtils {
             return ManagementClient.online(clientOptions.build());
         } catch (NumberFormatException e) {
             throw new IllegalArgumentSunstoneException("Port is not a number.", e);
+        }
+    }
+
+    public static void setDomainServers(Deploy.Builder builder, DomainMode domainMode) {
+        if (domainMode == null || domainMode.serverGroups() == null) {
+            throw new RuntimeException(WildFlyConfig.DOMAIN_SERVER_GROUPS + " is not set");
+        }
+        String[] serverGroupsParams = domainMode.serverGroups();
+        boolean deployedToNone = true;
+
+        for (String sgParam : serverGroupsParams) {
+            Optional<String[]> serverGroups = isExpression(sgParam) ? SunstoneConfig.resolveOptionalExpression(sgParam, String[].class) : Optional.of(new String[]{sgParam});
+            if (serverGroups.isPresent()) {
+                deployedToNone = false;
+                serverGroups.ifPresent(groups -> Arrays.stream(groups).forEach(builder::toServerGroups));
+            }
+        }
+        //groups may not be set -> deploy to all groups
+        if (deployedToNone) {
+            builder.toAllServerGroups();
         }
     }
 }

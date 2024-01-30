@@ -29,7 +29,7 @@ import sunstone.azure.armTemplates.AzureTestConstants;
         @Parameter(k = "sku", v = AzureTestConstants.IMAGE_MARKETPLACE_SKU),
         @Parameter(k = "version", v = AzureTestConstants.IMAGE_MARKETPLACE_VERSION),
 },
-        template = "sunstone/azure/armTemplates/eapDomain-marketplaceImage.json", group = VmDomainDeploySuiteTests.groupName, perSuite = true)
+        template = "sunstone/azure/armTemplates/eapDomain.json", group = VmDomainDeploySuiteTests.groupName, perSuite = true)
 public class AzureDomainVmDeployFirstTest {
     @Deployment(name = "testapp.war")
     @AzureVirtualMachine(name = AzureTestConstants.instanceName, group = VmDomainDeploySuiteTests.groupName)

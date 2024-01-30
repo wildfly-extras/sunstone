@@ -6,10 +6,6 @@
       "type": "string",
       "defaultValue": "sunstoneVM"
     },
-    "imageRefId": {
-      "type": "string",
-      "defaultValue": "none"
-    },
     "adminUsername": {
       "type": "string",
       "defaultValue": "sunstone"

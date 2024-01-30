@@ -6,13 +6,33 @@
       "type": "string",
       "defaultValue": "sunstoneVM"
     },
-    "imageRefId": {
-      "type": "string",
-      "defaultValue": "/subscriptions/7dee6f21-9f05-414e-99fa-08d3215fb420/resourceGroups/istraka-test/providers/Microsoft.Compute/images/eap-test-image"
-    },
     "adminUsername": {
       "type": "string",
       "defaultValue": "sunstone"
+    },
+    "planName": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "publisher": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "product": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "offer": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "version": {
+      "type": "string",
+      "defaultValue": "none"
     }
   },
   "variables": {
@@ -91,8 +111,8 @@
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
-              "10.1.0.0/16"
-            ]
+            "10.1.0.0/16"
+          ]
         },
         "subnets": [
           {
@@ -137,7 +157,10 @@
             "deleteOption": "Detach"
           },
           "imageReference": {
-            "id": "[parameters('imageRefId')]"
+            "publisher": "[parameters('publisher')]",
+            "offer": "[parameters('offer')]",
+            "sku": "[parameters('sku')]",
+            "version": "[parameters('version')]"
           }
         },
         "networkProfile": {
@@ -179,6 +202,11 @@
             "enabled": true
           }
         }
+      },
+      "plan": {
+        "name": "[parameters('planName')]",
+        "publisher": "[parameters('publisher')]",
+        "product": "[parameters('product')]"
       }
     }
   ],
