@@ -1,7 +1,7 @@
 package sunstone.azure.armTemplates.di;
 
 
-import com.azure.resourcemanager.postgresql.models.Server;
+import com.azure.resourcemanager.postgresqlflexibleserver.models.Server;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sunstone.annotation.Parameter;
@@ -14,14 +14,14 @@ import static sunstone.azure.armTemplates.AzureTestConstants.deployGroup;
 
 
 @WithAzureArmTemplate(parameters = {
-        @Parameter(k = "username", v = AzPgSqlTests.PGSQL_USER),
-        @Parameter(k = "password", v = AzPgSqlTests.PGSQL_PASSWORD),
+        @Parameter(k = "administratorLogin", v = AzPgSqlTests.PGSQL_USER),
+        @Parameter(k = "administratorLoginPassword", v = AzPgSqlTests.PGSQL_PASSWORD),
         @Parameter(k = "serverName", v = AzPgSqlTests.PGSQL_NAME),
 },
         template = "sunstone/azure/armTemplates/posgresql.json", group = AzPgSqlTests.groupName)
 public class AzPgSqlTests {
     static final String groupName = "AzPgSqlTests-" + deployGroup;
-    public static final String PGSQL_NAME = "DSAzureTest-pgsql";
+    public static final String PGSQL_NAME = "ds-azure-test-pgsql-${ts.test.run}";
     public static final String PGSQL_USER = "user";
     public static final String PGSQL_PASSWORD = "1234567890Ab";
 

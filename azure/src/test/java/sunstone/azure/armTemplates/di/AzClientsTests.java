@@ -1,7 +1,7 @@
 package sunstone.azure.armTemplates.di;
 
 
-import com.azure.resourcemanager.postgresql.PostgreSqlManager;
+import com.azure.resourcemanager.postgresqlflexibleserver.PostgreSqlManager;
 import sunstone.azure.annotation.AzureAutoResolve;
 import com.azure.resourcemanager.AzureResourceManager;
 import org.junit.jupiter.api.BeforeAll;

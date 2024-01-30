@@ -9,8 +9,8 @@ import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.appservice.models.AppServicePlan;
 import com.azure.resourcemanager.appservice.models.WebApp;
 import com.azure.resourcemanager.compute.models.VirtualMachine;
-import com.azure.resourcemanager.postgresql.PostgreSqlManager;
-import com.azure.resourcemanager.postgresql.models.Server;
+import com.azure.resourcemanager.postgresqlflexibleserver.PostgreSqlManager;
+import com.azure.resourcemanager.postgresqlflexibleserver.models.Server;
 import sunstone.core.SunstoneConfig;
 
 import java.util.Optional;

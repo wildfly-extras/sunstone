@@ -2,7 +2,7 @@ package sunstone.azure.impl;
 
 
 import com.azure.resourcemanager.AzureResourceManager;
-import com.azure.resourcemanager.postgresql.PostgreSqlManager;
+import com.azure.resourcemanager.postgresqlflexibleserver.PostgreSqlManager;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.core.SunstoneStore;
 

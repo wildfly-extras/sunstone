@@ -53,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>com.azure.resourcemanager</groupId>
-            <artifactId>azure-resourcemanager-postgresql</artifactId>
+            <artifactId>azure-resourcemanager-postgresqlflexibleserver</artifactId>
         </dependency>
 
         <!--        JUnit5-->
