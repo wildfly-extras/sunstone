@@ -121,6 +121,11 @@ you don't have to do anything. For other loggers, see [the SLF4J manual](http://
 
 The loggers are called `sunstone.*`, short and clear. (For example: `sunstone.core`)
 
+### log downloader [WIP: azure only]
+
+In the event of a deployment failure, logs are automatically downloaded and stored within the `MODULE/target/logs/*.log` files.
+Please note that this feature is currently a work in progress and is available for Azure environments only.
+
 ## License
 
 * [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
