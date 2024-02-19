@@ -16,8 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @WithAzureArmTemplate(
         parameters = {
-            @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
-            @Parameter(k = "imageRefId", v = AzureTestConstants.IMAGE_REF)
+                @Parameter(k = "virtualMachineName", v = AzureTestConstants.instanceName),
+                @Parameter(k = "planName", v = AzureTestConstants.IMAGE_MARKETPLACE_PLAN),
+                @Parameter(k = "publisher", v = AzureTestConstants.IMAGE_MARKETPLACE_PUBLISHER),
+                @Parameter(k = "product", v = AzureTestConstants.IMAGE_MARKETPLACE_PRODUCT),
+                @Parameter(k = "offer", v = AzureTestConstants.IMAGE_MARKETPLACE_OFFER),
+                @Parameter(k = "sku", v = AzureTestConstants.IMAGE_MARKETPLACE_SKU),
+                @Parameter(k = "version", v = AzureTestConstants.IMAGE_MARKETPLACE_VERSION),
         },
         template = "sunstone/azure/armTemplates/eapDomain.json", group = AzDomainManagementClientTests.groupName)
 public class AzDomainManagementClientTests {

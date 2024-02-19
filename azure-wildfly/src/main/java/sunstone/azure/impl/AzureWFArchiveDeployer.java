@@ -14,6 +14,7 @@ import org.wildfly.extras.creaper.commands.deployments.Deploy;
 import org.wildfly.extras.creaper.commands.deployments.Undeploy;
 import org.wildfly.extras.creaper.core.CommandFailedException;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import sunstone.annotation.DomainMode;
 import sunstone.annotation.WildFly;
 import sunstone.azure.impl.AzureWFIdentifiableSunstoneResource.Identification;
 import sunstone.core.api.SunstoneArchiveDeployer;
@@ -32,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import static java.lang.String.format;
+import static sunstone.core.CreaperUtils.setDomainServers;
 
 
 /**
@@ -88,11 +90,16 @@ public class AzureWFArchiveDeployer implements SunstoneArchiveDeployer {
     }
 
     static void deployToVmInstance(String deploymentName, Identification resourceIdentification, WildFly wildFly, InputStream is, AzureSunstoneStore store) throws SunstoneException {
+        Deploy.Builder builder = new Deploy.Builder(is, deploymentName, false);
+        DomainMode domainMode = wildFly.domain();
+        //no further configuration needed for standalone mode,
+        //in domain mode, we need to specify server groups
+        if (domainMode != null) {
+            setDomainServers(builder,domainMode);
+        }
         try (OnlineManagementClient client = AzureWFIdentifiableSunstoneResourceUtils.resolveOnlineManagementClient(resourceIdentification, wildFly, store)){
-            client.apply(new Deploy.Builder(is, deploymentName, false).build());
-        } catch (CommandFailedException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+            client.apply(builder.build());
+        } catch (CommandFailedException | IOException e) {
             throw new RuntimeException(e);
         }
     }

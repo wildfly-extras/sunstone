@@ -1,22 +1,42 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "virtualMachineName": {
       "type": "string",
       "defaultValue": "sunstoneVM"
     },
-    "imageRefId": {
-      "type": "string",
-      "defaultValue": "/subscriptions/7dee6f21-9f05-414e-99fa-08d3215fb420/resourceGroups/istraka-test/providers/Microsoft.Compute/images/eap-test-image"
-    },
     "adminUsername": {
       "type": "string",
       "defaultValue": "sunstone"
+    },
+    "planName": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "publisher": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "product": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "offer": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "none"
+    },
+    "version": {
+      "type": "string",
+      "defaultValue": "none"
     }
   },
   "variables": {
-    "customData": "#cloud-config\nruncmd:\n  - touch /log\n  - JBOSS_HOME=/opt/rh/eap7/root/usr/share/wildfly \n  - echo 'Setting JAVA_OPTS' >> /log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address.management=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo -e \"JAVA_OPTS=\\\"\\$JAVA_OPTS -Djboss.bind.address.private=$(hostname -I)\\\"\" >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo 'HOST_CONTROLLER_JAVA_OPTS=\"$HOST_CONTROLLER_JAVA_OPTS $JAVA_OPTS\"' >> ${JBOSS_HOME}/bin/domain.conf 2>/log\n  - echo 'Enabling & restarting eap7-domain service' >> /log\n  - systemctl enable  eap7-domain.service >> /log 2>&1\n  - systemctl restart eap7-domain.service >> /log 2>&1\n  - echo 'Stopping the firewall' >> /log\n  - systemctl stop firewalld >> /log 2>&1\n  - echo 'Setting up EAP' >> /log\n  - ${JBOSS_HOME}/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e >> /log 2>&1",
+    "customData": "#cloud-config\nruncmd:\n  - touch /log\n  - JBOSS_HOME=/opt/rh/eap7/root/usr/share/wildfly \n  - echo 'Setting JAVA_OPTS' >> /log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address.management=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - echo -e \"JAVA_OPTS=\\\"\\$JAVA_OPTS -Djboss.bind.address.private=$(hostname -I)\\\"\" >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - echo -e 'JAVA_OPTS=\"$JAVA_OPTS -Djboss.bind.address=0.0.0.0\"' >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - echo 'HOST_CONTROLLER_JAVA_OPTS=\"$HOST_CONTROLLER_JAVA_OPTS $JAVA_OPTS\"' >> ${JBOSS_HOME}/bin/domain.conf 2>>/log\n  - sed -i 's/auto-start=\"false\"/auto-start=\"true\"/' ${JBOSS_HOME}/domain/configuration/host.xml /dev/null 2>>/log\n  - echo 'Enabling & restarting eap7-domain service' >> /log\n  - systemctl enable  eap7-domain.service >> /log 2>&1\n  - systemctl restart eap7-domain.service >> /log 2>&1\n  - echo 'Stopping the firewall' >> /log\n  - systemctl stop firewalld >> /log 2>&1\n  - echo 'Setting up EAP' >> /log\n  - ${JBOSS_HOME}/bin/add-user.sh -u admin -p pass.1234 -r ManagementRealm -g SuperUser -e >> /log 2>&1",
     "networkInterfaceName": "sunstoneInterface",
     "networkSecurityGroupName": "sunstone-nsg",
     "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
@@ -91,8 +111,8 @@
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
-              "10.1.0.0/16"
-            ]
+            "10.1.0.0/16"
+          ]
         },
         "subnets": [
           {
@@ -137,7 +157,10 @@
             "deleteOption": "Detach"
           },
           "imageReference": {
-            "id": "[parameters('imageRefId')]"
+            "publisher": "[parameters('publisher')]",
+            "offer": "[parameters('offer')]",
+            "sku": "[parameters('sku')]",
+            "version": "[parameters('version')]"
           }
         },
         "networkProfile": {
@@ -160,7 +183,7 @@
               "publicKeys": [
                 {
                   "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCbWLyxmSBH8XhikEs61USmxJHsUPIHEkrUc1HQoaw6AS0+DBIyLMBSDoGozC9Hp8hkZwMVqqrg+9ylMHyewm5Ta1Vbe8w/HDSl9Q+XY0cl3HaHTnmCmOBRGZTVNuHwYIba3PC2nd2wXUAEzyIwGM5No5QLw0XfzipzwkR6je6mBn8RzepaS+SJjwhZuJOcBzUtfLk6f3/ADgS3ENuAMecqBN6fclizl089STKLlBhnYo7xJNYOtbskWDuAB9XeuVO2cXDWXc6y77PptFC/8jHlZf/OFI4gTFlIbewC43ADaytA2Y4XKDyJDIRmpto8x3JIMyfKk0fyIYYx2XehfeIVrt63v/RaZ6qgSG4EN1j0hj7eGY+wO3CVbDoCvK/54vr2I+ZuPF77pDxoyU5BL3WWo2Ta1KXiTwb4lARS/Nl0oz3hm3/V6v6zsPTS9sCtQc/Q9XcB8amjaYr9Rznpkk/rgQUpvSsqHeA51CVJIxJRYTYztvgOG7fsRl75I3vFk9k= generated-by-azure"
+                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCJXDQ9nvcaUQz8wAamVsQD509M3+b7kFPfYkMZj1bIiMRYvDYAV9bNhumzwO195eA8207IWmTQvh9kPAEsu3jxPaPlF2q6VnNngR2lIbNHGUfPo1OlwJhoXXHaFPciwn38lp+Br2vXSDJXf1zjjV+6eiDAENll/mcp1q83tq7qbqta57ZeT7j3N97kDREB2EGFzK3H13qoSWrWwhYCxDK2cOcpqDvarFJpxcBnPnc1Qyvi289PvGHYA+GpXcic5RW6u6vIOR25NOjX7rePBUZzRTftt4jWz8c2A7viBkIrCr6sjbnx0wKntY+QuCN+u7//dcgFkZxDzoUIY1D+RMrb  jclouds-jenkins"
                 }
               ]
             },
@@ -179,6 +202,11 @@
             "enabled": true
           }
         }
+      },
+      "plan": {
+        "name": "[parameters('planName')]",
+        "publisher": "[parameters('publisher')]",
+        "product": "[parameters('product')]"
       }
     },
     {
@@ -195,7 +223,7 @@
         "typeHandlerVersion": "2.1",
         "autoUpgradeMinorVersion": true,
         "protectedSettings": {
-          "commandToExecute": "for server in {\"server-one\",\"server-two\"}; do for i in {1..9}; do sleep 10;RET_VAL=1; /opt/rh/eap7/root/usr/share/wildfly/bin/jboss-cli.sh --connect --output-json --command=\"/host=master/server=${server}:read-attribute(name=server-state)\" | jq -r .result | grep -Fxq running && RET_VAL=$? && break; done; if [ ${RET_VAL} -ne 0 ]; then exit 1; fi; done"
+          "commandToExecute": "RET_VAL=1; for i in {1..9}; do sleep 10; status=$(/opt/rh/eap7/root/usr/share/wildfly/bin/jboss-cli.sh --connect --output-json --command=\"/host=master/server=server-one:read-attribute(name=server-state)\" 2>&1); fgrep result <<< $status | fgrep -q running && RET_VAL=0 && break; done; exit ${RET_VAL}"
         }
       }
     }
