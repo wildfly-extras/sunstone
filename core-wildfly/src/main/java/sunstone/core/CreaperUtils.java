@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static sunstone.core.SunstoneConfig.getString;
-import static sunstone.core.SunstoneConfig.getValue;
-import static sunstone.core.SunstoneConfig.isExpression;
-import static sunstone.core.SunstoneConfig.resolveExpressionToString;
+import static sunstone.core.SunstoneConfigResolver.getString;
+import static sunstone.core.SunstoneConfigResolver.getValue;
+import static sunstone.core.SunstoneConfigResolver.isExpression;
+import static sunstone.core.SunstoneConfigResolver.resolveExpressionToString;
 
 public class CreaperUtils {
     static Logger LOGGER = WildFlyLogger.DEFAULT;
@@ -27,7 +27,7 @@ public class CreaperUtils {
     public static OnlineManagementClient createStandaloneManagementClient(String hostname, StandaloneMode standaloneMode) throws IOException, SunstoneException {
 
         try {
-            int port = isExpression(standaloneMode.port()) ? SunstoneConfig.resolveExpression(standaloneMode.port(), Integer.class) : Integer.parseInt(standaloneMode.port());
+            int port = isExpression(standaloneMode.port()) ? SunstoneConfigResolver.resolveExpression(standaloneMode.port(), Integer.class) : Integer.parseInt(standaloneMode.port());
             String user = isExpression(standaloneMode.user()) ? resolveExpressionToString(standaloneMode.user()) : standaloneMode.user();
             String pass = isExpression(standaloneMode.password()) ? resolveExpressionToString(standaloneMode.password()) : standaloneMode.password();
             int timeout = (int) TimeoutUtils.adjust(getValue(WildFlyConfig.MGMT_CONNECTION_TIMEOUT, 120000));
@@ -46,7 +46,7 @@ public class CreaperUtils {
 
     public static OnlineManagementClient createDomainManagementClient(String hostname, DomainMode domainMode) throws IOException, SunstoneException {
         try {
-            int port = isExpression(domainMode.port()) ? SunstoneConfig.resolveExpression(domainMode.port(), Integer.class) : Integer.parseInt(domainMode.port());
+            int port = isExpression(domainMode.port()) ? SunstoneConfigResolver.resolveExpression(domainMode.port(), Integer.class) : Integer.parseInt(domainMode.port());
             String user = isExpression(domainMode.user()) ? resolveExpressionToString(domainMode.user()) : getString(domainMode.user());
             String pass = isExpression(domainMode.password()) ? resolveExpressionToString(domainMode.password()) : domainMode.password();
             int timeout = (int) TimeoutUtils.adjust(getValue(WildFlyConfig.MGMT_CONNECTION_TIMEOUT, 120000));
@@ -77,7 +77,7 @@ public class CreaperUtils {
         boolean deployedToNone = true;
 
         for (String sgParam : serverGroupsParams) {
-            Optional<String[]> serverGroups = isExpression(sgParam) ? SunstoneConfig.resolveOptionalExpression(sgParam, String[].class) : Optional.of(new String[]{sgParam});
+            Optional<String[]> serverGroups = isExpression(sgParam) ? SunstoneConfigResolver.resolveOptionalExpression(sgParam, String[].class) : Optional.of(new String[]{sgParam});
             if (serverGroups.isPresent()) {
                 deployedToNone = false;
                 serverGroups.ifPresent(groups -> Arrays.stream(groups).forEach(builder::toServerGroups));

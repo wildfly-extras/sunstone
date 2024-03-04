@@ -6,7 +6,7 @@ import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import sunstone.aws.annotation.WithAwsCfTemplate;
 import sunstone.aws.annotation.WithAwsCfTemplateRepeatable;
 import sunstone.core.AbstractSunstoneCloudDeployer;
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 import sunstone.core.SunstoneExtension;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -53,9 +53,9 @@ public class AwsSunstoneDeployer extends AbstractSunstoneCloudDeployer {
         AwsCloudFormationCloudDeploymentManager deploymentManager = store.getAwsCfDemploymentManagerOrCreate();
 
         try {
-            String content = getResourceContent(SunstoneConfig.resolveExpressionToString(awsTemplateDefinition.template()));
+            String content = getResourceContent(SunstoneConfigResolver.resolveExpressionToString(awsTemplateDefinition.template()));
             Map<String, String> parameters = getParameters(awsTemplateDefinition.parameters());
-            String region = SunstoneConfig.resolveExpressionToString(awsTemplateDefinition.region());
+            String region = SunstoneConfigResolver.resolveExpressionToString(awsTemplateDefinition.region());
             if (region == null) {
                 throw new IllegalArgumentSunstoneException("Region for AWS template is not defined. It must be specified either "
                         + "in the annotation or as Sunstone Config property.");

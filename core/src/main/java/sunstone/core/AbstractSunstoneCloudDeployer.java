@@ -12,8 +12,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static sunstone.core.SunstoneConfig.resolveExpression;
-import static sunstone.core.SunstoneConfig.resolveOptionalExpression;
+import static sunstone.core.SunstoneConfigResolver.resolveExpression;
+import static sunstone.core.SunstoneConfigResolver.resolveOptionalExpression;
 
 /**
  * Abstract class for providing common functionality for deploy operation to clouds. Tha class focuses on utilizing

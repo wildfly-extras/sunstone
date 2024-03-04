@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import sunstone.azure.annotation.WithAzureArmTemplate;
 import sunstone.azure.annotation.WithAzureArmTemplateRepeatable;
 import sunstone.core.AbstractSunstoneCloudDeployer;
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 import sunstone.core.SunstoneExtension;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -51,13 +51,13 @@ public class AzureSunstoneDeployer extends AbstractSunstoneCloudDeployer {
 
         String content = null;
         try {
-            content = getResourceContent(SunstoneConfig.resolveExpressionToString(armTemplateDefinition.template()));
-            String group = SunstoneConfig.resolveExpressionToString(armTemplateDefinition.group());
+            content = getResourceContent(SunstoneConfigResolver.resolveExpressionToString(armTemplateDefinition.template()));
+            String group = SunstoneConfigResolver.resolveExpressionToString(armTemplateDefinition.group());
             if (group == null) {
                 throw new IllegalArgumentSunstoneException("Resource group for Azure ARM template is not defined. "
                         + "It must be specified either in the annotation or as Sunstone Config property.");
             }
-            String region = SunstoneConfig.resolveExpressionToString(armTemplateDefinition.region());
+            String region = SunstoneConfigResolver.resolveExpressionToString(armTemplateDefinition.region());
             if (region == null) {
                 throw new IllegalArgumentSunstoneException("Region for Azure ARM template is not defined. It must be specified either "
                         + "in the annotation or as Sunstone Config property.");

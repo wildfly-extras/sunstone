@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * The class wraps and configure SmallRyeConfig so that it can resolve bare expressions and read sunstone.properties
  */
-public class SunstoneConfig {
+public class SunstoneConfigResolver {
 
     static final SmallRyeConfig config = new SmallRyeConfigBuilder()
             .addDefaultInterceptors()

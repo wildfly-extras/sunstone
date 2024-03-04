@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static sunstone.core.SunstoneConfig.getValue;
+import static sunstone.core.SunstoneConfigResolver.getValue;
 
 /**
  * Purpose: the class handles Azure template - deploy and undeploy the template to and from a stack.

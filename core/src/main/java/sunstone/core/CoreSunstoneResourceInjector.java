@@ -31,10 +31,10 @@ public class CoreSunstoneResourceInjector implements SunstoneResourceInjector {
         }
         SunstoneProperty sunstoneProperty = SunstoneProperty.class.cast(identification);
         if (!StringUtils.isBlank(sunstoneProperty.value())) {
-            return SunstoneConfig.getValue(sunstoneProperty.value(), fieldType);
+            return SunstoneConfigResolver.getValue(sunstoneProperty.value(), fieldType);
         }
         if (!StringUtils.isBlank(sunstoneProperty.expression())) {
-            return SunstoneConfig.resolveExpression(sunstoneProperty.expression(), fieldType);
+            return SunstoneConfigResolver.resolveExpression(sunstoneProperty.expression(), fieldType);
         }
         throw new IllegalArgumentSunstoneException("Both value and expression in @SunstoneProperty are blank, which is not allowed.");
     }
