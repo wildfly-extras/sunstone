@@ -2,15 +2,21 @@ package sunstone.azure.impl;
 
 
 import com.azure.core.management.Region;
+import com.azure.core.util.polling.LongRunningOperationStatus;
+import com.azure.core.util.polling.PollResponse;
 import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.resources.fluentcore.model.Accepted;
+import com.azure.resourcemanager.resources.models.Deployment;
 import com.azure.resourcemanager.resources.models.DeploymentMode;
 import com.azure.resourcemanager.resources.models.ResourceGroups;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
+import sunstone.core.TimeoutUtils;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static sunstone.core.SunstoneConfig.getValue;
 
 /**
  * Purpose: the class handles Azure template - deploy and undeploy the template to and from a stack.
@@ -60,12 +67,35 @@ class AzureArmTemplateCloudDeploymentManager {
             LOGGER.warn("Azure resource group '{}' already exists! It will be reused and deleted when tests are finished.", group);
         }
 
-        armManager.deployments().define(deploymentName)
+        //.create() doesn't allow status check and fails
+        Accepted<Deployment> acceptedDeployment = armManager.deployments().define(deploymentName)
                 .withExistingResourceGroup(group)
                 .withTemplate(template)
                 .withParameters(parametersFromMap(template, parameters))
                 .withMode(DeploymentMode.INCREMENTAL)
-                .create();
+                .beginCreate();
+
+        // polling wait
+        final Duration pollInterval = Duration.ofSeconds(TimeoutUtils.adjust(getValue(AzureConfig.DEPLOY_POLL_WAIT, 1)));
+        LongRunningOperationStatus pollStatus = acceptedDeployment.getActivationResponse().getStatus();
+        long delayInMills = pollInterval.toMillis();
+        while (!pollStatus.isComplete()) {
+            try {
+                Thread.sleep(delayInMills);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            PollResponse<?> pollResponse = acceptedDeployment.getSyncPoller().poll();
+            pollStatus = pollResponse.getStatus();
+        }
+        if (pollStatus != LongRunningOperationStatus.SUCCESSFULLY_COMPLETED) {
+            LOGGER.error("Azure deployment from template {} in \"{}\" group failed", deploymentName, group);
+            AzureUtils.downloadResourceGroupLogs(armManager, group);
+            undeploy(group);
+            throw new RuntimeException("Deployment failed for group:" + group);
+        }
+
         LOGGER.debug("Azure deployment from template {} in \"{}\" group is ready", deploymentName, group);
     }
 

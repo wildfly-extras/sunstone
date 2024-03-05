@@ -10,4 +10,6 @@ public class AzureConfig {
     public static final String PASSWORD = "sunstone.azure.password";
     public static final String REGION = "sunstone.azure.region";
     public static final String GROUP = "sunstone.azure.group";
+    public static final String DEPLOY_POLL_WAIT = "sunstone.azure.deployPollWait";
+    public static final String RG_LOGGER_TIME_START = "sunstone.azure.logDownloadTimeStart";
 }

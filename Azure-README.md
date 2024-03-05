@@ -158,3 +158,7 @@ You can deploy archive to running EAP instance. See [here](azure-wildfly/src/tes
 ###### Web application
 You can deploy archive to running EAP instance. See [here](azure-wildfly/src/test/java/sunstone/azure/armTemplates/archiveDeploy/webapp/suitetests/AzureWebAppDeployFirstTest.java)
 
+### log downloader [WIP: azure only]
+
+activityLog Downloader starting Time is configurable by `sunstone.azure.logDownloadTimeStart`, which is offset from current time. Default is 1 hour.
+API is restricted by RGName but not specific RG, potentially fetching logs from previous RGs with the same name.
