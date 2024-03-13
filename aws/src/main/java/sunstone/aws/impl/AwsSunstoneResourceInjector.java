@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.rds.model.DBInstance;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.utils.SdkAutoCloseable;
 import sunstone.aws.annotation.AwsAutoResolve;
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 import sunstone.core.api.SunstoneResourceInjector;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneException;
@@ -46,7 +46,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         Ec2Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getEC2Client(SunstoneConfig.resolveExpressionToString(annotation.region()));
+            client = AwsUtils.getEC2Client(SunstoneConfigResolver.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }
@@ -57,7 +57,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         S3Client client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getS3Client(SunstoneConfig.resolveExpressionToString(annotation.region()));
+            client = AwsUtils.getS3Client(SunstoneConfigResolver.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("EC2 Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }
@@ -69,7 +69,7 @@ public class AwsSunstoneResourceInjector implements SunstoneResourceInjector {
         RdsClient client;
         if (identification.type == AwsIdentifiableSunstoneResource.AUTO) {
             AwsAutoResolve annotation = (AwsAutoResolve) identification.identification;
-            client = AwsUtils.getRdsClient(SunstoneConfig.resolveExpressionToString(annotation.region()));
+            client = AwsUtils.getRdsClient(SunstoneConfigResolver.resolveExpressionToString(annotation.region()));
         } else {
             throw new UnsupportedSunstoneOperationException("RDS Client may be injected only with " + AwsIdentifiableSunstoneResource.AUTO);
         }

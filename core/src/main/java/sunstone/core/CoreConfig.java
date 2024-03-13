@@ -1,7 +1,7 @@
 package sunstone.core;
 
 
-public class ConfigProperties {
+public class CoreConfig {
 
     public static final String TIMEOUT_FACTOR = "sunstone.timeout.factor";
 }

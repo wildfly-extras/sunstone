@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.rds.model.DBInstance;
 import sunstone.aws.annotation.AwsAutoResolve;
 import sunstone.aws.annotation.AwsEc2Instance;
 import sunstone.aws.annotation.AwsRds;
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;
@@ -76,8 +76,8 @@ enum AwsIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AwsEc2Instance vm = (AwsEc2Instance) injectionAnnotation;
-            String vmNameTag = SunstoneConfig.resolveExpressionToString(vm.nameTag());
-            String region = SunstoneConfig.resolveExpressionToString(vm.region());
+            String vmNameTag = SunstoneConfigResolver.resolveExpressionToString(vm.nameTag());
+            String region = SunstoneConfigResolver.resolveExpressionToString(vm.region());
             Optional<Instance> awsEc2 = AwsUtils.findEc2InstanceByNameTag(store.getAwsEc2ClientOrCreate(region), vmNameTag);
             return clazz.cast(awsEc2.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' AWS EC2 instance in '%s' region.", vmNameTag, region))));
         }
@@ -98,8 +98,8 @@ enum AwsIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AwsRds rds = (AwsRds) injectionAnnotation;
-            String vmNameTag = SunstoneConfig.resolveExpressionToString(rds.name());
-            String region = SunstoneConfig.resolveExpressionToString(rds.region());
+            String vmNameTag = SunstoneConfigResolver.resolveExpressionToString(rds.name());
+            String region = SunstoneConfigResolver.resolveExpressionToString(rds.region());
             Optional<DBInstance> awsRds = AwsUtils.findRdsInstanceByNameTag(store.getAwsRdsClientOrCreate(region), vmNameTag);
             return clazz.cast(awsRds.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' AWS RDS instance in '%s' region.", vmNameTag, region))));
         }

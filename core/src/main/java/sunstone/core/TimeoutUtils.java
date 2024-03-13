@@ -2,7 +2,7 @@ package sunstone.core;
 
 
 public class TimeoutUtils {
-    private static double factor = SunstoneConfig.getValue(ConfigProperties.TIMEOUT_FACTOR, 1.0);
+    private static double factor = SunstoneConfigResolver.getValue(CoreConfig.TIMEOUT_FACTOR, 1.0);
 
      public static long adjust(long amount) {
         if (amount < 0) {

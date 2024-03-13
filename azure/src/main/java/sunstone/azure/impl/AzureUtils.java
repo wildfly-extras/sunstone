@@ -15,7 +15,7 @@ import com.azure.resourcemanager.monitor.models.EventData;
 import com.azure.resourcemanager.postgresqlflexibleserver.PostgreSqlManager;
 import com.azure.resourcemanager.postgresqlflexibleserver.models.Server;
 import org.slf4j.Logger;
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,33 +26,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static sunstone.core.SunstoneConfig.getValue;
+import static sunstone.core.SunstoneConfigResolver.getValue;
 
 public class AzureUtils {
     static Logger LOGGER = AzureLogger.DEFAULT;
     static AzureResourceManager getResourceManager() {
         return AzureResourceManager
                 .authenticate(getCredentials(), new AzureProfile(AzureEnvironment.AZURE))
-                .withSubscription(SunstoneConfig.getString(AzureConfig.SUBSCRIPTION_ID));
+                .withSubscription(SunstoneConfigResolver.getString(AzureConfig.SUBSCRIPTION_ID));
     }
     static PostgreSqlManager getPgsqlManager() {
         return PostgreSqlManager
-                .authenticate(getCredentials(), new AzureProfile(SunstoneConfig.getString(AzureConfig.TENANT_ID), SunstoneConfig.getString(AzureConfig.SUBSCRIPTION_ID), AzureEnvironment.AZURE));
+                .authenticate(getCredentials(), new AzureProfile(SunstoneConfigResolver.getString(AzureConfig.TENANT_ID), SunstoneConfigResolver.getString(AzureConfig.SUBSCRIPTION_ID), AzureEnvironment.AZURE));
     }
 
     private static TokenCredential getCredentials() {
         return new ClientSecretCredentialBuilder()
-                .tenantId(SunstoneConfig.getString(AzureConfig.TENANT_ID))
-                .clientId(SunstoneConfig.getString(AzureConfig.APPLICATION_ID))
-                .clientSecret(SunstoneConfig.getString(AzureConfig.PASSWORD))
+                .tenantId(SunstoneConfigResolver.getString(AzureConfig.TENANT_ID))
+                .clientId(SunstoneConfigResolver.getString(AzureConfig.APPLICATION_ID))
+                .clientSecret(SunstoneConfigResolver.getString(AzureConfig.PASSWORD))
                 .build();
     }
 
     static boolean propertiesForArmClientArePresent() {
-        return SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.SUBSCRIPTION_ID)
-                && SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.TENANT_ID)
-                && SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.APPLICATION_ID)
-                && SunstoneConfig.unwrap().isPropertyPresent(AzureConfig.PASSWORD);
+        return SunstoneConfigResolver.unwrap().isPropertyPresent(AzureConfig.SUBSCRIPTION_ID)
+                && SunstoneConfigResolver.unwrap().isPropertyPresent(AzureConfig.TENANT_ID)
+                && SunstoneConfigResolver.unwrap().isPropertyPresent(AzureConfig.APPLICATION_ID)
+                && SunstoneConfigResolver.unwrap().isPropertyPresent(AzureConfig.PASSWORD);
     }
 
     static Optional<VirtualMachine> findAzureVM(AzureResourceManager arm, String name, String resourceGroup) {

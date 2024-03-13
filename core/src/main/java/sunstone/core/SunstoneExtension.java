@@ -192,7 +192,7 @@ public class SunstoneExtension implements BeforeAllCallback, AfterAllCallback, T
                     throw new IllegalArgumentSunstoneException("Deployment method must have 0 parameters");
                 }
                 Deployment annotation = method.getAnnotation(Deployment.class);
-                String deploymentName = StringUtils.isBlank(annotation.name()) ? "" : SunstoneConfig.resolveExpressionToString(annotation.name());
+                String deploymentName = StringUtils.isBlank(annotation.name()) ? "" : SunstoneConfigResolver.resolveExpressionToString(annotation.name());
 
                 method.setAccessible(true);
                 Object invoke = method.invoke(null);
