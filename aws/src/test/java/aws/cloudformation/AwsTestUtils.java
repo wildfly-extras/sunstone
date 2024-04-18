@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.ec2.model.DescribeKeyPairsResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.KeyPairInfo;
 import sunstone.aws.impl.AwsConfig;
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class AwsTestUtils {
 
     private static AwsCredentialsProvider getCredentialsProvider() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(SunstoneConfig.getString(AwsConfig.ACCESS_KEY_ID), SunstoneConfig.getString(AwsConfig.SECRET_ACCESS_KEY));
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(SunstoneConfigResolver.getString(AwsConfig.ACCESS_KEY_ID), SunstoneConfigResolver.getString(AwsConfig.SECRET_ACCESS_KEY));
         return StaticCredentialsProvider.create(credentials);
     }
 
@@ -33,7 +33,7 @@ public class AwsTestUtils {
 
     public static Ec2Client getEC2Client() {
         Ec2Client ec2Client = Ec2Client.builder()
-                .region(Region.of(SunstoneConfig.getString(AwsConfig.REGION)))
+                .region(Region.of(SunstoneConfigResolver.getString(AwsConfig.REGION)))
                 .credentialsProvider(getCredentialsProvider())
                 .build();
         return ec2Client;

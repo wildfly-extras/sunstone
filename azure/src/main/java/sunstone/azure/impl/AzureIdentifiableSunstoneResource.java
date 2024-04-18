@@ -12,7 +12,7 @@ import sunstone.azure.annotation.AzureAutoResolve;
 import sunstone.azure.annotation.AzurePgSqlServer;
 import sunstone.azure.annotation.AzureVirtualMachine;
 import sunstone.azure.annotation.AzureWebApplication;
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 import sunstone.core.exceptions.IllegalArgumentSunstoneException;
 import sunstone.core.exceptions.SunstoneCloudResourceException;
 import sunstone.core.exceptions.SunstoneException;
@@ -78,8 +78,8 @@ enum AzureIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AzureVirtualMachine vm = (AzureVirtualMachine) injectionAnnotation;
-            String vmName = SunstoneConfig.resolveExpressionToString(vm.name());
-            String vmGroup = SunstoneConfig.resolveExpressionToString(vm.group());
+            String vmName = SunstoneConfigResolver.resolveExpressionToString(vm.name());
+            String vmGroup = SunstoneConfigResolver.resolveExpressionToString(vm.group());
             Optional<VirtualMachine> azureVM = AzureUtils.findAzureVM(store.getAzureArmClientOrCreate(), vmName, vmGroup);
             return clazz.cast(azureVM.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure VM in '%s' resource group.", vmName, vmGroup))));
         }
@@ -106,8 +106,8 @@ enum AzureIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AzureWebApplication webApp = (AzureWebApplication) injectionAnnotation;
-            String appName = SunstoneConfig.resolveExpressionToString(webApp.name());
-            String appGroup = SunstoneConfig.resolveExpressionToString(webApp.group());
+            String appName = SunstoneConfigResolver.resolveExpressionToString(webApp.name());
+            String appGroup = SunstoneConfigResolver.resolveExpressionToString(webApp.group());
             Optional<WebApp> azureWebApp = AzureUtils.findAzureWebApp(store.getAzureArmClientOrCreate(), appName, appGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure Web App in '%s' resource group.", appName, appGroup))));
         }
@@ -133,8 +133,8 @@ enum AzureIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AzureAppServicePlan plan = (AzureAppServicePlan) injectionAnnotation;
-            String planName = SunstoneConfig.resolveExpressionToString(plan.name());
-            String planGroup = SunstoneConfig.resolveExpressionToString(plan.group());
+            String planName = SunstoneConfigResolver.resolveExpressionToString(plan.name());
+            String planGroup = SunstoneConfigResolver.resolveExpressionToString(plan.group());
             Optional<AppServicePlan> azureWebApp = AzureUtils.findAzureAppServicePlan(store.getAzureArmClientOrCreate(), planName, planGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure App Service plan in '%s' resource group.", planName, planGroup))));
         }
@@ -159,8 +159,8 @@ enum AzureIdentifiableSunstoneResource {
                         getRepresentedInjectionAnnotation().getName(), injectionAnnotation.annotationType().getName()));
             }
             AzurePgSqlServer pgsqlServer = (AzurePgSqlServer) injectionAnnotation;
-            String serverName = SunstoneConfig.resolveExpressionToString(pgsqlServer.name());
-            String serverGroup = SunstoneConfig.resolveExpressionToString(pgsqlServer.group());
+            String serverName = SunstoneConfigResolver.resolveExpressionToString(pgsqlServer.name());
+            String serverGroup = SunstoneConfigResolver.resolveExpressionToString(pgsqlServer.group());
             Optional<Server> azureWebApp = AzureUtils.findAzurePgSqlServer(store.getAzurePgSqlManagerOrCreate(), serverName, serverGroup);
             return clazz.cast(azureWebApp.orElseThrow(() -> new SunstoneCloudResourceException(format("Unable to find '%s' Azure PostgreSql Server in '%s' resource group.", serverName, serverGroup))));
         }

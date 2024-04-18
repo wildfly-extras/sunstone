@@ -19,20 +19,20 @@ import software.amazon.awssdk.services.rds.model.DescribeDbInstancesRequest;
 import software.amazon.awssdk.services.rds.model.DescribeDbInstancesResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 
-import sunstone.core.SunstoneConfig;
+import sunstone.core.SunstoneConfigResolver;
 
 import java.util.Optional;
 
 class AwsUtils {
 
     private static AwsCredentialsProvider getCredentialsProvider() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(SunstoneConfig.getString(AwsConfig.ACCESS_KEY_ID), SunstoneConfig.getString(AwsConfig.SECRET_ACCESS_KEY));
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(SunstoneConfigResolver.getString(AwsConfig.ACCESS_KEY_ID), SunstoneConfigResolver.getString(AwsConfig.SECRET_ACCESS_KEY));
         return StaticCredentialsProvider.create(credentials);
     }
 
     static boolean propertiesForAwsClientArePresent() {
-        return SunstoneConfig.unwrap().isPropertyPresent(AwsConfig.ACCESS_KEY_ID)
-                && SunstoneConfig.unwrap().isPropertyPresent(AwsConfig.SECRET_ACCESS_KEY);
+        return SunstoneConfigResolver.unwrap().isPropertyPresent(AwsConfig.ACCESS_KEY_ID)
+                && SunstoneConfigResolver.unwrap().isPropertyPresent(AwsConfig.SECRET_ACCESS_KEY);
     }
 
     static Region getAndCheckRegion(String regionStr) {
