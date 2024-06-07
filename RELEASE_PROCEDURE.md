@@ -28,7 +28,7 @@ This text assumes that the version number for a release is X.Y.Z.
 1. Close the relevant GitHub Milestone. Optionally create a new Milestone
 1. Set a new `-SNAPSHOT` version in `pom.xml` and corresponding heading to the top of `CHANGELOG.md`.
    Its text should be: `X.Y+1.0 (not yet released)`.  
-   `mvn versions:set -DgenerateBackupPoms=false -DnewVersion=X.Y+1.0-SNAPSHOT`
+   mvn versions:set -DgenerateBackupPoms=false -DnewVersion=X.Y+1.0-SNAPSHOT
 1. `git commit -a -m "next is X.Y+1.0"`
 1. Upgrade the version in the dependant project (testsuites, quickstarts, ...) if possible
 1. If viable, send a release announcement with information about migration to new version
