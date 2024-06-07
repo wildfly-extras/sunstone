@@ -1,6 +1,7 @@
 # Changelog
 
-## 2.1.3 (not released yet)
+## 2.2 (2024-06-07)
+- Azure PG SQL server support
 
 ## 2.1.3 (2023-08-01)
 - AWS RDS support
