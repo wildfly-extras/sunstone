@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.cloudformation.model.DescribeStacksRespon
 import software.amazon.awssdk.services.cloudformation.model.OnFailure;
 import software.amazon.awssdk.services.cloudformation.model.Parameter;
 import software.amazon.awssdk.services.cloudformation.waiters.CloudFormationWaiter;
+import sunstone.core.CoreConfig;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static sunstone.core.SunstoneConfigResolver.getValue;
 
 /**
  * Purpose: the class handles AWS CloudFormation template - deploy and undeploy the template to and from a stack.
@@ -48,12 +51,19 @@ class AwsCloudFormationCloudDeploymentManager implements Closeable {
         List<Parameter> cfParameters = new ArrayList<>();
         parameters.forEach((k, v) -> cfParameters.add(Parameter.builder().parameterKey(k).parameterValue(v).build()));
 
-        CreateStackRequest stackRequest = CreateStackRequest.builder()
+        CreateStackRequest.Builder stackBuilder = CreateStackRequest.builder()
                 .stackName(stackName)
                 .templateBody(template)//templateURL(location)
                 .parameters(cfParameters)
-                .onFailure(OnFailure.ROLLBACK)
-                .build();
+                .onFailure(OnFailure.ROLLBACK);
+
+        Boolean keepOnFailure = getValue(CoreConfig.KEEP_FAILED_DEPLOY, false);
+        if (keepOnFailure) {
+            stackBuilder.onFailure(OnFailure.DO_NOTHING);
+            LOGGER.debug("Stack will be {} preserved on failure due to {}", stackName, CoreConfig.KEEP_FAILED_DEPLOY);
+        }
+
+        CreateStackRequest stackRequest = stackBuilder.build();
 
         cfClient.createStack(stackRequest);
         DescribeStacksRequest stacksRequest = DescribeStacksRequest.builder()
