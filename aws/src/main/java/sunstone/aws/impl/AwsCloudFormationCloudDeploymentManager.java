@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.cloudformation.model.DescribeStacksRespon
 import software.amazon.awssdk.services.cloudformation.model.OnFailure;
 import software.amazon.awssdk.services.cloudformation.model.Parameter;
 import software.amazon.awssdk.services.cloudformation.waiters.CloudFormationWaiter;
+import sunstone.core.CoreConfig;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static sunstone.core.SunstoneConfigResolver.getValue;
 
 /**
  * Purpose: the class handles AWS CloudFormation template - deploy and undeploy the template to and from a stack.
@@ -69,6 +72,15 @@ class AwsCloudFormationCloudDeploymentManager implements Closeable {
         CloudFormationClient cfClient = stack2Client.get(stack);
         CloudFormationWaiter waiter = cfClient.waiter();
 
+        stack2Client.remove(stack);
+        client2stacks.get(cfClient).remove(stack);
+
+        boolean keepResources = getValue(CoreConfig.KEEP_FAIL_DEPLOY, false);
+        if (keepResources) {
+            LOGGER.debug("Stack {} is preserved", stack);
+            return;
+        }
+
         DeleteStackRequest stackRequest = DeleteStackRequest.builder()
                 .stackName(stack)
                 .build();
@@ -80,8 +92,6 @@ class AwsCloudFormationCloudDeploymentManager implements Closeable {
 
         WaiterResponse<DescribeStacksResponse> waiterResponse = waiter.waitUntilStackDeleteComplete(stacksRequest);
         LOGGER.debug("Stack {} is deleted {}", stack, waiterResponse.matched().response().orElse(null));
-        stack2Client.remove(stack);
-        client2stacks.get(cfClient).remove(stack);
     }
 
     public void close() {

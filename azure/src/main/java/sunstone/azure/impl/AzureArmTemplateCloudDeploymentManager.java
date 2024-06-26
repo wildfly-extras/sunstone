@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
+import sunstone.core.CoreConfig;
 import sunstone.core.TimeoutUtils;
 
 import java.io.IOException;
@@ -135,8 +136,14 @@ class AzureArmTemplateCloudDeploymentManager {
 
     public void undeploy(String rgName) {
         ResourceGroups rgs = armManager.resourceGroups();
+        boolean keepResources = getValue(CoreConfig.KEEP_FAIL_DEPLOY, false);
+        if (keepResources) {
+            LOGGER.debug("Azure resource group '{}' is preserved", rgName);
+            return;
+        }
         if (rgs.contain(rgName)) {
             rgs.deleteByName(rgName);
+            LOGGER.debug("Azure resource group '{}' is deleted", rgName);
         }
         usedRG.remove(rgName);
     }
