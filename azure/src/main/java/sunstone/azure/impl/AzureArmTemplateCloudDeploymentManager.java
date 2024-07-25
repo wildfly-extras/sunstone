@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
+import sunstone.core.CoreConfig;
 import sunstone.core.TimeoutUtils;
 
 import java.io.IOException;
@@ -92,7 +93,13 @@ class AzureArmTemplateCloudDeploymentManager {
         if (pollStatus != LongRunningOperationStatus.SUCCESSFULLY_COMPLETED) {
             LOGGER.error("Azure deployment from template {} in \"{}\" group failed", deploymentName, group);
             AzureUtils.downloadResourceGroupLogs(armManager, group);
-            undeploy(group);
+            boolean keepOnFailure = getValue(CoreConfig.KEEP_FAILED_DEPLOY, false);
+            if (keepOnFailure) {
+                LOGGER.debug("Resource group {} is preserved due to {}", group, CoreConfig.KEEP_FAILED_DEPLOY);
+            } else {
+                undeploy(group);
+            }
+
             throw new RuntimeException("Deployment failed for group:" + group);
         }
 
