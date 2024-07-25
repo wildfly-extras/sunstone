@@ -60,7 +60,14 @@ class AwsCloudFormationCloudDeploymentManager implements Closeable {
                 .stackName(stackName)
                 .build();
 
-        WaiterResponse<DescribeStacksResponse> waiterResponse = waiter.waitUntilStackCreateComplete(stacksRequest);
+        WaiterResponse<DescribeStacksResponse> waiterResponse;
+        try {
+            waiterResponse = waiter.waitUntilStackCreateComplete(stacksRequest);
+        } catch (Exception e) {
+            LOGGER.error("Stack {} failed to create", stackName);
+            AwsUtils.downloadStackEvents(cfClient, stackName);
+            throw e;
+        }
         LOGGER.debug("Stack {} is ready {}", stackName, waiterResponse.matched().response().orElse(null));
         return stackName;
     }
